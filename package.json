@@ -1,7 +1,7 @@
 {
   "name": "cli-engine-config",
   "description": "base cli-engine config objects and interfaces",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Jeff Dickey @dickeyxxx",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {},
