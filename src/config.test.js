@@ -7,6 +7,7 @@ import path from 'path'
 test('default props are set', () => {
   const config = buildConfig()
   expect(config.name).toEqual('cli-engine')
+  expect(config.dirname).toEqual('cli-engine')
   expect(config.version).toEqual('0.0.0')
   expect(config.channel).toEqual('stable')
   expect(config.updateDisabled).toBeUndefined()
@@ -20,10 +21,14 @@ test('default props are set', () => {
 test('reads pjson values', () => {
   const config = buildConfig({pjson: {
     name: 'mycli',
-    version: '1.0.0'
+    version: '1.0.0',
+    'cli-engine': {
+      dirname: 'heroku'
+    }
   }})
   expect(config.name).toEqual('mycli')
   expect(config.version).toEqual('1.0.0')
+  expect(config.dirname).toEqual('heroku')
 })
 
 test('sets version from options', () => {

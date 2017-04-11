@@ -10,6 +10,7 @@ type S3 = {
 }
 
 type CLI = {
+  dirname?: string,
   defaultCommand?: string,
   bin?: string,
   s3?: S3,
@@ -25,6 +26,7 @@ export type PJSON = {
 
 export type Config = {
   name: string,             // name of CLI
+  dirname: string,          // name of CLI directory
   bin: string,              // name of binary
   s3: S3,                   // S3 config
   root: string,             // root of CLI
@@ -50,7 +52,7 @@ function dir (config: ConfigOptions, category: string, d: ?string): string {
   d = d || path.join(config.home, category === 'data' ? '.local/share' : '.' + category)
   if (config.windows) d = process.env.LOCALAPPDATA || d
   d = process.env.XDG_DATA_HOME || d
-  d = path.join(d, config.name)
+  d = path.join(d, config.dirname)
   fs.mkdirpSync(d)
   return d
 }
@@ -70,6 +72,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   const defaults: ConfigOptions = {
     pjson,
     name,
+    dirname: cli.dirname || name,
     version: pjson.version || '0.0.0',
     channel: 'stable',
     home: os.homedir() || os.tmpdir(),
