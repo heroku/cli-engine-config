@@ -2,6 +2,7 @@
 
 import path from 'path'
 import os from 'os'
+import fs from 'fs-extra'
 
 type S3 = {
   host?: string,
@@ -22,14 +23,36 @@ export type PJSON = {
   'cli-engine'?: ?CLI
 }
 
-export type ConfigOptions = {
-  mock?: boolean,
-  root?: string,
-  updateDisabled?: ?string,
-  channel?: string,
-  version?: string,
-  debug?: number,
-  argv?: string[]
+export type Config = {
+  name: string,             // name of CLI
+  bin: string,              // name of binary
+  s3: S3,                   // S3 config
+  root: string,             // root of CLI
+  home: string,             // user home directory
+  pjson: PJSON,             // parsed CLI package.json
+  updateDisabled: ?string,  // CLI updates are disabled
+  defaultCommand: string,   // default command if no args passed (usually help)
+  channel: string,          // CLI channel for updates
+  version: string,          // CLI version
+  debug: number,            // debugging level
+  dataDir: string,          // directory for storing CLI data
+  cacheDir: string,         // directory for storing temporary CLI data
+  configDir: string,        // directory for storing CLI config
+  arch: string,             // CPU architecture
+  platform: string,         // operating system
+  windows: boolean,         // is windows OS
+  _version: '1'             // config schema version
+}
+
+export type ConfigOptions = $Shape<Config>
+
+function dir (config: ConfigOptions, category: string, d: ?string): string {
+  d = d || path.join(config.home, category === 'data' ? '.local/share' : '.' + category)
+  if (config.windows) d = process.env.LOCALAPPDATA || d
+  d = process.env.XDG_DATA_HOME || d
+  d = path.join(d, config.name)
+  fs.mkdirpSync(d)
+  return d
 }
 
 function debug () {
@@ -39,103 +62,49 @@ function debug () {
   return 0
 }
 
-class Dirs {
-  constructor (config: Config) {
-    this._config = config
+export function buildConfig (options: ConfigOptions = {}): Config {
+  if (options._version) return options
+  const pjson = options.pjson || {}
+  const cli: CLI = pjson['cli-engine'] || {}
+  const name = options.name || pjson.name || 'cli-engine'
+  const defaults: ConfigOptions = {
+    pjson,
+    name,
+    version: pjson.version || '0.0.0',
+    channel: 'stable',
+    home: os.homedir() || os.tmpdir(),
+    debug: debug() || 0,
+    s3: {},
+    root: path.join(__dirname, '..'),
+    platform: os.platform(),
+    arch: os.arch(),
+    bin: cli.bin || 'cli-engine',
+    defaultCommand: cli.defaultCommand || 'help'
   }
-
-  _config: Config
-
-  get home (): string { return os.homedir() || os.tmpdir() }
-  get data (): string { return this._fetch('data') }
-  get config (): string { return this._fetch('config') }
-  get cache (): string {
-    let def
-    if (process.platform === 'darwin') def = path.join(this.home, 'Library', 'Caches')
-    return this._fetch('cache', def)
-  }
-
-  get _fs () { return require('fs-extra') }
-  _mkdirp (dir: string) { this._fs.mkdirpSync(dir) }
-
-  _fetch (category: string, d?: ?string): string {
-    d = d || path.join(this.home, category === 'data' ? '.local/share' : '.' + category)
-    if (this.windows) d = process.env.LOCALAPPDATA || d
-    d = process.env.XDG_DATA_HOME || d
-    d = path.join(d, this._config.name)
-    this._mkdirp(d)
-    return d
-  }
-
-  toJSON () {
-    return {
-      cache: this.cache,
-      data: this.data,
-      config: this.config,
-      home: this.home
-    }
-  }
+  const config: ConfigOptions = Object.assign(defaults, options)
+  config.windows = config.platform === 'win32'
+  config.dataDir = config.dataDir || dir(config, 'data')
+  config.configDir = config.configDir || dir(config, 'config')
+  let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
+  config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
+  config._version = '1'
+  return config
 }
 
-export default class Config {
-  constructor (options: ConfigOptions | Config = {}) {
-    this._options = options
-    this._pjson = this._options.root
-        // flow$ignore
-      ? require(path.join(options.root, 'package.json'))
-      : {}
-    this.debug = debug() || options.debug || 0
-    this.dirs = new Dirs(this)
-    this.mock = options.mock || false
-    this.argv = options.argv || []
-  }
-
-  dirs: Dirs
-  argv: string[]
-  debug: number
-  mock: boolean
-  _pjson: PJSON
-  _options: ConfigOptions | Config
-
-  get name ():string { return this._pjson.name || 'cli-engine' }
-  get version ():string { return this._options.version || this._pjson.version || '0.0.0' }
-  get channel ():string { return this._options.channel || 'stable' }
-  get updateDisabled (): ?string { return this._options.updateDisabled }
-  get bin (): string { return this._cli.bin || this._pjson.name || 'cli-engine' }
-  get root (): string { return this._options.root || path.join(__dirname, '..') }
-  get defaultCommand (): string { return this._cli.defaultCommand || 'help' }
-  get s3 (): S3 { return this._cli.s3 || {} }
-  get _cli (): CLI { return this._pjson['cli-engine'] || {} }
-  get windows (): boolean { return os.platform === 'win32' }
-
-  toJSON () {
-    return {
-      name: this.name,
-      version: this.version,
-      channel: this.channel,
-      mock: this.mock,
-      updateDisabled: this.updateDisabled,
-      bin: this.bin,
-      defaultCommand: this.defaultCommand,
-      root: this.root,
-      s3: this.s3,
-      windows: this.windows,
-      debug: this.debug,
-      dirs: this.dirs
-    }
-  }
+export interface IRunOptions {
+  argv?: string[],
+  config?: ConfigOptions
 }
 
-export type ICommand = {
-  topic: string,
-  command: ?string,
-  description: ?string,
-  hidden: ?boolean,
-  usage: ?string,
-  help: ?string,
-  aliases: string[],
-  _version: string,
-  id: string,
-  run: (argv: string[], config: Config) => Promise<any>,
-  mock: (argv: ?string[], config: ?Config) => Promise<any>
+export interface ICommand {
+  +topic: string,
+  +command: ?string,
+  +description: ?string,
+  +hidden: ?boolean,
+  +usage: ?string,
+  +help: ?string,
+  +aliases: string[],
+  +_version: string,
+  +id: string,
+  +run: (options: $Shape<IRunOptions>) => Promise<any>
 }
