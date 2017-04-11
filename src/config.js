@@ -74,7 +74,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     channel: 'stable',
     home: os.homedir() || os.tmpdir(),
     debug: debug() || 0,
-    s3: {},
+    s3: cli.s3 || {},
     root: path.join(__dirname, '..'),
     platform: os.platform(),
     arch: os.arch(),
