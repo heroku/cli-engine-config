@@ -3,7 +3,7 @@
 import path from 'path'
 import os from 'os'
 import fs from 'fs-extra'
-
+import Netrc from 'netrc-parser'
 type S3 = {
   host?: string,
   bucket?: string
@@ -20,7 +20,7 @@ type CLI = {
 export type PJSON = {
   name?: ?string,
   version?: ?string,
-  dependencies?: ?{[name: string]: string},
+  dependencies?: ?{ [name: string]: string },
   'cli-engine'?: ?CLI
 }
 
@@ -43,7 +43,11 @@ export type Config = {
   arch: string,             // CPU architecture
   platform: string,         // operating system
   windows: boolean,         // is windows OS
-  _version: '1'             // config schema version
+  _version: '1',             // config schema version
+  _skipAnalytics: boolean,
+  skipAnalytics: any,
+  netrcLogin: any
+
 }
 
 export type ConfigOptions = $Shape<Config>
@@ -63,6 +67,23 @@ function debug () {
   if (HEROKU_DEBUG) return parseInt(HEROKU_DEBUG)
   return 0
 }
+function skipAnalytics () {
+  if (process.env['TESTING'] && process.env['TESTING'].match(/[\w]+/)) {
+    return true
+  } else if (this._skipAnalytics) {
+    return true
+  } else if (this.netrcLogin() === false) {
+    return true
+  }
+  return false
+}
+
+async function netrcLogin () {
+  // flow$ignore
+  if (process.env['HEROKU_API_KEY'] !== undefined && process.env['HEROKU_API_KEY'].length > 0) return false
+  let netrc = new Netrc()
+  return netrc.machines['api.heroku.com'].login
+}
 
 export function buildConfig (options: ConfigOptions = {}): Config {
   if (options._version) return options
@@ -81,6 +102,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     root: path.join(__dirname, '..'),
     platform: os.platform(),
     arch: os.arch(),
+    _skipAnalytics: false,
     bin: cli.bin || 'cli-engine',
     defaultCommand: cli.defaultCommand || 'help'
   }
@@ -91,6 +113,9 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
+  config._skipAnalytics = config.skipAnalytics
+  config.skipAnalytics = skipAnalytics
+  config.netrcLogin = netrcLogin
   return config
 }
 
