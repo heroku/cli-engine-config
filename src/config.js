@@ -3,7 +3,8 @@
 import path from 'path'
 import os from 'os'
 import fs from 'fs-extra'
-import Netrc from 'netrc-parser'
+import { type UserConfig } from './user-config'
+
 type S3 = {
   host?: string,
   bucket?: string
@@ -44,9 +45,8 @@ export type Config = {
   platform: string,         // operating system
   windows: boolean,         // is windows OS
   _version: '1',             // config schema version
-  _skipAnalytics: boolean,
-  skipAnalytics: any,
-  netrcLogin: any
+  userConfig: UserConfig,
+  skipAnalytics: any
 
 }
 
@@ -70,19 +70,15 @@ function debug () {
 function skipAnalytics () {
   if (process.env['TESTING'] && process.env['TESTING'] === '1') {
     return true
-  } else if (this._skipAnalytics) {
-    return true
-  } else if (this.netrcLogin() === false) {
+  } else if (this.userConfig.skipAnalytics) {
     return true
   }
   return false
 }
 
-async function netrcLogin () {
-  // flow$ignore
-  if (process.env['HEROKU_API_KEY'] !== undefined && process.env['HEROKU_API_KEY'].length > 0) return false
-  let netrc = new Netrc()
-  return netrc.machines['api.heroku.com'].login
+let loadUserConfig = function (configDir) {
+  const rawdata = fs.readFileSync(`${configDir}/user_config.json`, 'utf8')
+  return JSON.parse(rawdata)
 }
 
 export function buildConfig (options: ConfigOptions = {}): Config {
@@ -102,9 +98,9 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     root: path.join(__dirname, '..'),
     platform: os.platform(),
     arch: os.arch(),
-    _skipAnalytics: false,
     bin: cli.bin || 'cli-engine',
-    defaultCommand: cli.defaultCommand || 'help'
+    defaultCommand: cli.defaultCommand || 'help',
+    userConfig: {}
   }
   const config: ConfigOptions = Object.assign(defaults, options)
   config.windows = config.platform === 'win32'
@@ -113,9 +109,8 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
-  config._skipAnalytics = config.skipAnalytics
+  config.userConfig = loadUserConfig(config.configDir)
   config.skipAnalytics = skipAnalytics
-  config.netrcLogin = netrcLogin
   return config
 }
 
