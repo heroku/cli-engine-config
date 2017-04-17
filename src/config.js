@@ -46,7 +46,7 @@ export type Config = {
   windows: boolean,         // is windows OS
   _version: '1',             // config schema version
   userConfig: UserConfig,
-  skipAnalytics: any
+  skipAnalytics: boolean
 
 }
 
@@ -67,13 +67,14 @@ function debug () {
   if (HEROKU_DEBUG) return parseInt(HEROKU_DEBUG)
   return 0
 }
-function skipAnalytics () {
+function skipAnalytics (config) {
   if (process.env['TESTING'] && process.env['TESTING'] === '1') {
     return true
-  } else if (this.userConfig.skipAnalytics) {
+  } else if (config.userConfig.skipAnalytics) {
     return true
+  } else {
+    return false
   }
-  return false
 }
 
 let loadUserConfig = function (configDir) {
@@ -100,7 +101,8 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     arch: os.arch(),
     bin: cli.bin || 'cli-engine',
     defaultCommand: cli.defaultCommand || 'help',
-    userConfig: {}
+    userConfig: {},
+    skipAnalytics: false
   }
   const config: ConfigOptions = Object.assign(defaults, options)
   config.windows = config.platform === 'win32'
@@ -110,7 +112,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
   config.userConfig = loadUserConfig(config.configDir)
-  config.skipAnalytics = skipAnalytics
+  config.skipAnalytics = skipAnalytics(config)
   return config
 }
 
