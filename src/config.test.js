@@ -51,11 +51,11 @@ beforeAll(() => {
   }
 })
 describe('skipAnalytics', () => {
-  it('returns true when testing environment is true', () => {
+  it('returns true when testing environment is set to "1"', () => {
     let sampleConfig = buildConfig(configOptions)
-    process.env['TESTING'] = 'true'
+    process.env['TESTING'] = '1'
     expect(sampleConfig.skipAnalytics()).toBeTruthy()
-    process.env['TESTING'] = ''
+    process.env['TESTING'] = 'true'
     expect(sampleConfig.skipAnalytics()).not.toBeTruthy()
   })
   it('returns true when the config specificies to skip analytics', () => {
