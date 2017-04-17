@@ -8,6 +8,7 @@ import fs from 'fs-extra'
 let mockUserConfig: string = '{ "skipAnalytics": true }'
 const originalReadFileSync = fs.readFileSync
 beforeEach(() => {
+  mockUserConfig = '{ "skipAnalytics": true }'
   fs.readFileSync = jest.fn(() => { return mockUserConfig })
 })
 afterEach(() => {
@@ -70,15 +71,16 @@ describe('skipAnalytics', () => {
   it('returns true when testing environment is set to "1"', () => {
     mockUserConfig = '{ "skipAnalytics": false }'
     fs.readFileSync = jest.fn(() => { return mockUserConfig })
-    let sampleConfig = buildConfig(configOptions)
     process.env['TESTING'] = '1'
-    expect(sampleConfig.skipAnalytics()).toBeTruthy()
+    let sampleConfig = buildConfig(configOptions)
+    expect(sampleConfig.skipAnalytics).toBeTruthy()
     process.env['TESTING'] = 'true'
-    expect(sampleConfig.skipAnalytics()).not.toBeTruthy()
+    sampleConfig = buildConfig(configOptions)
+    expect(sampleConfig.skipAnalytics).not.toBeTruthy()
   })
   it('returns true when the UserConfig specificies to skip analytics', () => {
+    delete process.env.TESTING
     let sampleConfig = buildConfig(configOptions)
-    const skipAnalytics = sampleConfig.skipAnalytics()
-    expect(skipAnalytics).not.toBeTruthy()
+    expect(sampleConfig.skipAnalytics).toBeTruthy()
   })
 })
