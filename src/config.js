@@ -68,7 +68,7 @@ function debug () {
   return 0
 }
 function skipAnalytics () {
-  if (process.env['TESTING'] && process.env['TESTING'].match(/[\w]+/)) {
+  if (process.env['TESTING'] && process.env['TESTING'] === '1') {
     return true
   } else if (this._skipAnalytics) {
     return true
