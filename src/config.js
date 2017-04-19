@@ -45,9 +45,7 @@ export type Config = {
   platform: string,         // operating system
   windows: boolean,         // is windows OS
   _version: '1',             // config schema version
-  userConfig: UserConfig,
-  skipAnalytics: boolean
-
+  skipAnalytics: boolean    // skip processing of analytics
 }
 
 export type ConfigOptions = $Shape<Config>
@@ -67,21 +65,29 @@ function debug () {
   if (HEROKU_DEBUG) return parseInt(HEROKU_DEBUG)
   return 0
 }
-function skipAnalytics (config) {
-  if (process.env['TESTING'] && process.env['TESTING'] === '1') {
+function skipAnalytics (userConfig: UserConfig) {
+  if (userConfig.skipAnalytics) {
     return true
-  } else if (config.userConfig.skipAnalytics) {
+  } else if (process.env['TESTING'] && process.env['TESTING'] === '1') {
     return true
-  } else {
-    return false
   }
+  return false
 }
 
 let loadUserConfig = function (configDir) {
-  const rawdata = fs.readFileSync(`${configDir}/user_config.json`, 'utf8')
-  return JSON.parse(rawdata)
+  try {
+    const config: UserConfig = fs.readJsonSync(path.join(configDir, 'user_config.json'), 'utf8')
+    return config
+  } catch (e) {
+    if (e.message.match(/no such file/)) {
+      return {}
+    } else {
+      throw e
+    }
+  }
 }
 
+let userConfig
 export function buildConfig (options: ConfigOptions = {}): Config {
   if (options._version) return options
   const pjson = options.pjson || {}
@@ -101,7 +107,6 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     arch: os.arch(),
     bin: cli.bin || 'cli-engine',
     defaultCommand: cli.defaultCommand || 'help',
-    userConfig: {},
     skipAnalytics: false
   }
   const config: ConfigOptions = Object.assign(defaults, options)
@@ -111,8 +116,8 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
-  config.userConfig = loadUserConfig(config.configDir)
-  config.skipAnalytics = skipAnalytics(config)
+  userConfig = loadUserConfig(config.configDir)
+  config.skipAnalytics = skipAnalytics(userConfig)
   return config
 }
 
