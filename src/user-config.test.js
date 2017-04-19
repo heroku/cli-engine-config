@@ -1,3 +1,5 @@
+// @flow
+
 import { type UserConfig } from './user-config'
 
 describe('UserConfig', () => {

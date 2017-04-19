@@ -5,14 +5,14 @@ import os from 'os'
 import path from 'path'
 import fs from 'fs-extra'
 
-let mockUserConfig: string = '{ "skipAnalytics": true }'
-const originalReadFileSync = fs.readFileSync
+let mockUserConfig = { 'skipAnalytics': true }
+const originalReadJsonSync = fs.readJsonSync
 beforeEach(() => {
-  mockUserConfig = '{ "skipAnalytics": true }'
-  fs.readFileSync = jest.fn(() => { return mockUserConfig })
+  mockUserConfig = { 'skipAnalytics': true }
+  fs.readJsonSync = jest.fn(() => { return mockUserConfig })
 })
 afterEach(() => {
-  fs.readFileSync = originalReadFileSync
+  fs.readJsonSync = originalReadJsonSync
 })
 let configOptions
 beforeAll(() => {
@@ -39,7 +39,6 @@ test('default props are set', () => {
   expect(config.defaultCommand).toEqual('help')
   expect(config.s3).toEqual({})
   expect(config.windows).toEqual(os.platform === 'win32')
-  expect(config.userConfig).toBeDefined()
 })
 
 test('reads pjson values', () => {
@@ -64,13 +63,13 @@ test('sets version from options', () => {
 
 test('loads the user config when present', () => {
   let sampleConfig = buildConfig(configOptions)
-  expect(sampleConfig.userConfig.skipAnalytics).toBe(true)
+  expect(sampleConfig.skipAnalytics).toBe(true)
 })
 
 describe('skipAnalytics', () => {
   it('returns true when testing environment is set to "1"', () => {
     mockUserConfig = '{ "skipAnalytics": false }'
-    fs.readFileSync = jest.fn(() => { return mockUserConfig })
+    fs.readJsonSync = jest.fn(() => { return mockUserConfig })
     process.env['TESTING'] = '1'
     let sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.skipAnalytics).toBeTruthy()
