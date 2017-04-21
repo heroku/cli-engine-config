@@ -3,6 +3,7 @@
 import path from 'path'
 import os from 'os'
 import fs from 'fs-extra'
+import { type UserConfig } from './user-config'
 
 type S3 = {
   host?: string,
@@ -20,7 +21,7 @@ type CLI = {
 export type PJSON = {
   name?: ?string,
   version?: ?string,
-  dependencies?: ?{[name: string]: string},
+  dependencies?: ?{ [name: string]: string },
   'cli-engine'?: ?CLI
 }
 
@@ -43,7 +44,8 @@ export type Config = {
   arch: string,             // CPU architecture
   platform: string,         // operating system
   windows: boolean,         // is windows OS
-  _version: '1'             // config schema version
+  _version: '1',             // config schema version
+  skipAnalytics: boolean    // skip processing of analytics
 }
 
 export type ConfigOptions = $Shape<Config>
@@ -63,8 +65,30 @@ function debug () {
   if (HEROKU_DEBUG) return parseInt(HEROKU_DEBUG)
   return 0
 }
+function skipAnalytics (userConfig: UserConfig) {
+  if (userConfig.skipAnalytics) {
+    return true
+  } else if (process.env['TESTING'] === '1') {
+    return true
+  }
+  return false
+}
+
+let loadUserConfig = function (configDir) {
+  try {
+    const config: UserConfig = fs.readJsonSync(path.join(configDir, 'config.json'), 'utf8')
+    return config
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      return {'skipAnalytics': false}
+    } else {
+      throw e
+    }
+  }
+}
 
 export function buildConfig (options: ConfigOptions = {}): Config {
+  let userConfig: UserConfig
   if (options._version) return options
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
@@ -82,7 +106,8 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     platform: os.platform(),
     arch: os.arch(),
     bin: cli.bin || 'cli-engine',
-    defaultCommand: cli.defaultCommand || 'help'
+    defaultCommand: cli.defaultCommand || 'help',
+    skipAnalytics: undefined
   }
   const config: ConfigOptions = Object.assign(defaults, options)
   config.windows = config.platform === 'win32'
@@ -91,6 +116,10 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
+  userConfig = loadUserConfig(config.configDir)
+  if (config.skipAnalytics === undefined) {
+    config.skipAnalytics = skipAnalytics(userConfig)
+  }
   return config
 }
 
