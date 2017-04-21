@@ -44,7 +44,7 @@ export type Config = {
   arch: string,             // CPU architecture
   platform: string,         // operating system
   windows: boolean,         // is windows OS
-  _version: '1',            // config schema version
+  _version: '1',             // config schema version
   skipAnalytics: boolean    // skip processing of analytics
 }
 
@@ -76,7 +76,7 @@ function skipAnalytics (userConfig: UserConfig) {
 
 let loadUserConfig = function (configDir) {
   try {
-    const config: UserConfig = fs.readJsonSync(path.join(configDir, 'user_config.json'), 'utf8')
+    const config: UserConfig = fs.readJsonSync(path.join(configDir, 'config.json'), 'utf8')
     return config
   } catch (e) {
     if (e.code === 'ENOENT') {
