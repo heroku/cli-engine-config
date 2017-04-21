@@ -5,10 +5,10 @@ import os from 'os'
 import path from 'path'
 import fs from 'fs-extra'
 
-let mockUserConfig = { 'skipAnalytics': true }
+let mockUserConfig = {'skipAnalytics': true}
 const originalReadJsonSync = fs.readJsonSync
 beforeEach(() => {
-  mockUserConfig = { 'skipAnalytics': true }
+  mockUserConfig = {'skipAnalytics': true}
   fs.readJsonSync = jest.fn(() => { return mockUserConfig })
 })
 afterEach(() => {
@@ -81,5 +81,18 @@ describe('skipAnalytics', () => {
     delete process.env.TESTING
     let sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.skipAnalytics).toBeTruthy()
+  })
+  it('prefers the constructor argument over user config', () => {
+    // flow$ignore
+    configOptions.skipAnalytics = true
+    fs.readJsonSync = jest.fn(() => { return mockUserConfig })
+    let sampleConfig = buildConfig(configOptions)
+    expect(sampleConfig.skipAnalytics).toBe(true)
+
+    // flow$ignore
+    configOptions.skipAnalytics = false
+    fs.readJsonSync = jest.fn(() => { return mockUserConfig })
+    sampleConfig = buildConfig(configOptions)
+    expect(sampleConfig.skipAnalytics).toBe(false)
   })
 })

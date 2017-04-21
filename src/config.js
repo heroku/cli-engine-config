@@ -44,7 +44,7 @@ export type Config = {
   arch: string,             // CPU architecture
   platform: string,         // operating system
   windows: boolean,         // is windows OS
-  _version: '1',             // config schema version
+  _version: '1',            // config schema version
   skipAnalytics: boolean    // skip processing of analytics
 }
 
@@ -80,15 +80,15 @@ let loadUserConfig = function (configDir) {
     return config
   } catch (e) {
     if (e.code === 'ENOENT') {
-      return { 'skipAnalytics': false }
+      return {'skipAnalytics': false}
     } else {
       throw e
     }
   }
 }
 
-let userConfig : UserConfig
 export function buildConfig (options: ConfigOptions = {}): Config {
+  let userConfig: UserConfig
   if (options._version) return options
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
@@ -107,7 +107,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     arch: os.arch(),
     bin: cli.bin || 'cli-engine',
     defaultCommand: cli.defaultCommand || 'help',
-    skipAnalytics: false
+    skipAnalytics: undefined
   }
   const config: ConfigOptions = Object.assign(defaults, options)
   config.windows = config.platform === 'win32'
@@ -117,7 +117,9 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
   userConfig = loadUserConfig(config.configDir)
-  config.skipAnalytics = skipAnalytics(userConfig)
+  if (config.skipAnalytics === undefined) {
+    config.skipAnalytics = skipAnalytics(userConfig)
+  }
   return config
 }
 
