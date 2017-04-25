@@ -76,7 +76,7 @@ function skipAnalytics (userConfig: UserConfig) {
 
 let loadUserConfig = function (configDir) {
   try {
-    const config: UserConfig = fs.readJsonSync(path.join(configDir, 'config.json'), 'utf8')
+    const config: UserConfig = fs.readJSONSync(path.join(configDir, 'config.json'))
     return config
   } catch (e) {
     if (e.code === 'ENOENT') {
