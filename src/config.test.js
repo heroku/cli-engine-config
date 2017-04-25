@@ -6,13 +6,13 @@ import path from 'path'
 import fs from 'fs-extra'
 
 let mockUserConfig = {'skipAnalytics': true}
-const originalReadJsonSync = fs.readJsonSync
+const originalReadJSONSync = fs.readJSONSync
 beforeEach(() => {
   mockUserConfig = {'skipAnalytics': true}
-  fs.readJsonSync = jest.fn(() => { return mockUserConfig })
+  fs.readJSONSync = jest.fn(() => { return mockUserConfig })
 })
 afterEach(() => {
-  fs.readJsonSync = originalReadJsonSync
+  fs.readJSONSync = originalReadJSONSync
 })
 let configOptions
 beforeAll(() => {
