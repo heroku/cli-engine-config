@@ -66,6 +66,12 @@ test('loads the user config when present', () => {
   expect(sampleConfig.skipAnalytics).toBe(true)
 })
 
+test('sets debug value', () => {
+  process.env['CLI_ENGINE_DEBUG'] = '2'
+  let sampleConfig = buildConfig(configOptions)
+  expect(sampleConfig.debug).toBe(2)
+})
+
 describe('skipAnalytics', () => {
   it('returns true when testing environment is set to "1"', () => {
     mockUserConfig = '{ "skipAnalytics": false }'
