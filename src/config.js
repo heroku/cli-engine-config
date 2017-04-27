@@ -59,12 +59,13 @@ function dir (config: ConfigOptions, category: string, d: ?string): string {
   return d
 }
 
-function debug () {
-  const HEROKU_DEBUG = process.env.HEROKU_DEBUG
-  if (HEROKU_DEBUG === 'true') return 1
-  if (HEROKU_DEBUG) return parseInt(HEROKU_DEBUG)
+function debug (bin: string) {
+  const DEBUG = process.env[bin.replace('-', '_').toUpperCase() + '_DEBUG']
+  if (DEBUG === 'true') return 1
+  if (DEBUG) return parseInt(DEBUG)
   return 0
 }
+
 function skipAnalytics (userConfig: UserConfig) {
   if (userConfig.skipAnalytics) {
     return true
@@ -100,7 +101,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     version: pjson.version || '0.0.0',
     channel: 'stable',
     home: os.homedir() || os.tmpdir(),
-    debug: debug() || 0,
+    debug: debug(cli.bin || 'cli-engine') || 0,
     s3: cli.s3 || {},
     root: path.join(__dirname, '..'),
     platform: os.platform(),
