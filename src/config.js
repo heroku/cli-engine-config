@@ -94,11 +94,10 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
   const name = options.name || pjson.name || 'cli-engine'
-  const namespaces = pjson.namespaces
   const defaults: ConfigOptions = {
     pjson,
     name,
-    namespaces,
+    namespaces: pjson.namespaces,
     dirname: cli.dirname || name,
     version: pjson.version || '0.0.0',
     channel: 'stable',
