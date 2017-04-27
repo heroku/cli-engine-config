@@ -29,6 +29,7 @@ export type Config = {
   name: string,             // name of CLI
   dirname: string,          // name of CLI directory
   bin: string,              // name of binary
+  namespaces: ?(?string)[], // names of permitted plugin namespaces
   s3: S3,                   // S3 config
   root: string,             // root of CLI
   home: string,             // user home directory
@@ -93,9 +94,11 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
   const name = options.name || pjson.name || 'cli-engine'
+  const namespaces = options.namespaces || pjson.namespaces
   const defaults: ConfigOptions = {
     pjson,
     name,
+    namespaces,
     dirname: cli.dirname || name,
     version: pjson.version || '0.0.0',
     channel: 'stable',
