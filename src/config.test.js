@@ -69,7 +69,7 @@ test('loads the user config when present', () => {
 describe('skipAnalytics', () => {
   it('returns true when testing environment is set to "1"', () => {
     mockUserConfig = '{ "skipAnalytics": false }'
-    fs.readJsonSync = jest.fn(() => { return mockUserConfig })
+    fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     process.env['TESTING'] = '1'
     let sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.skipAnalytics).toBeTruthy()
@@ -85,13 +85,13 @@ describe('skipAnalytics', () => {
   it('prefers the constructor argument over user config', () => {
     // flow$ignore
     configOptions.skipAnalytics = true
-    fs.readJsonSync = jest.fn(() => { return mockUserConfig })
+    fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     let sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.skipAnalytics).toBe(true)
 
     // flow$ignore
     configOptions.skipAnalytics = false
-    fs.readJsonSync = jest.fn(() => { return mockUserConfig })
+    fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.skipAnalytics).toBe(false)
   })
