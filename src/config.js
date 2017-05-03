@@ -3,6 +3,7 @@
 import path from 'path'
 import os from 'os'
 import fs from 'fs-extra'
+import uuidV4 from 'uuid/v4'
 import { type UserConfig } from './user-config'
 
 type S3 = {
@@ -46,7 +47,8 @@ export type Config = {
   platform: string,         // operating system
   windows: boolean,         // is windows OS
   _version: '1',             // config schema version
-  skipAnalytics: boolean    // skip processing of analytics
+  skipAnalytics: boolean,   // skip processing of analytics
+  install: ?string          // generated uuid of this install
 }
 
 export type ConfigOptions = $Shape<Config>
@@ -66,6 +68,7 @@ function debug () {
   if (HEROKU_DEBUG) return parseInt(HEROKU_DEBUG)
   return 0
 }
+
 function skipAnalytics (userConfig: UserConfig) {
   if (userConfig.skipAnalytics) {
     return true
@@ -76,16 +79,30 @@ function skipAnalytics (userConfig: UserConfig) {
 }
 
 let loadUserConfig = function (configDir) {
+  let config: UserConfig
+  let configPath = path.join(configDir, 'config.json')
   try {
-    const config: UserConfig = fs.readJSONSync(path.join(configDir, 'config.json'))
-    return config
+    config = fs.readJSONSync(configPath)
   } catch (e) {
     if (e.code === 'ENOENT') {
-      return {'skipAnalytics': false}
+      config = { skipAnalytics: undefined, install: undefined }
     } else {
       throw e
     }
   }
+
+  if (config.skipAnalytics) {
+    config.install = null
+  } else if (config.install === undefined) {
+    config.install = uuidV4()
+    try {
+      fs.writeJSONSync(configPath, config)
+    } catch (e) {
+      config.install = null
+    }
+  }
+
+  return config
 }
 
 export function buildConfig (options: ConfigOptions = {}): Config {
@@ -122,6 +139,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   if (config.skipAnalytics === undefined) {
     config.skipAnalytics = skipAnalytics(userConfig)
   }
+  config.install = userConfig.install
   return config
 }
 
