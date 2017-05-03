@@ -15,7 +15,7 @@ afterEach(() => {
   fs.readJSONSync = originalReadJSONSync
 })
 let configOptions
-beforeAll(() => {
+beforeEach(() => {
   configOptions = {
     pjson: {
       name: 'analytics',
