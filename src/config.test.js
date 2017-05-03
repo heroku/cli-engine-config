@@ -68,7 +68,7 @@ test('loads the user config when present', () => {
 
 describe('skipAnalytics', () => {
   it('returns true when testing environment is set to "1"', () => {
-    mockUserConfig = '{ "skipAnalytics": false }'
+    mockUserConfig = { 'skipAnalytics': false }
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     process.env['TESTING'] = '1'
     let sampleConfig = buildConfig(configOptions)
