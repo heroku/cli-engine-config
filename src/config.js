@@ -14,6 +14,7 @@ type CLI = {
   dirname?: string,
   defaultCommand?: string,
   bin?: string,
+  namespaces?: ?(?string)[],
   s3?: S3,
   plugins?: string[]
 }
@@ -97,7 +98,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   const defaults: ConfigOptions = {
     pjson,
     name,
-    namespaces: pjson.namespaces,
+    namespaces: cli.namespaces,
     dirname: cli.dirname || name,
     version: pjson.version || '0.0.0',
     channel: 'stable',
