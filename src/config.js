@@ -78,7 +78,7 @@ function skipAnalytics (userConfig: UserConfig) {
   return false
 }
 
-let loadUserConfig = function (configDir) {
+let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) {
   let config: UserConfig
   let configPath = path.join(configDir, 'config.json')
   try {
@@ -93,7 +93,7 @@ let loadUserConfig = function (configDir) {
 
   if (config.skipAnalytics) {
     config.install = null
-  } else if (config.install === undefined) {
+  } else if (config.install === undefined && configOptions.install === undefined) {
     config.install = uuidV4()
     try {
       fs.writeJSONSync(configPath, config)
@@ -135,11 +135,13 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
-  userConfig = loadUserConfig(config.configDir)
+  userConfig = loadUserConfig(config.configDir, options)
   if (config.skipAnalytics === undefined) {
     config.skipAnalytics = skipAnalytics(userConfig)
   }
-  config.install = userConfig.install
+  if (config.install === undefined) {
+    config.install = userConfig.install
+  }
   return config
 }
 
