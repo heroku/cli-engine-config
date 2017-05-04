@@ -23,7 +23,8 @@ beforeEach(() => {
       'cli-engine': {
         dirname: 'heroku'
       }
-    }
+    },
+    install: undefined
   }
 })
 
@@ -186,6 +187,16 @@ describe('install', () => {
     fs.writeJSONSync = jest.fn()
     let sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.install).toBeNull()
+    expect(fs.writeJSONSync.mock.calls.length).toEqual(0)
+  })
+
+  it('passes through install in buildConfig', () => {
+    mockUserConfig = { 'skipAnalytics': false }
+    fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+    fs.writeJSONSync = jest.fn()
+    configOptions.install = '1234'
+    let sampleConfig = buildConfig(configOptions)
+    expect(sampleConfig.install).toBe('1234')
     expect(fs.writeJSONSync.mock.calls.length).toEqual(0)
   })
 })
