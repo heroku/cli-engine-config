@@ -1,5 +1,6 @@
 // @flow
 
 export type UserConfig = {
-  skipAnalytics: boolean
+  skipAnalytics: ?boolean,
+  install: ?string
 }
