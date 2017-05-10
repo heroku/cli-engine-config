@@ -1,6 +1,6 @@
 // @flow
 
-import { type UserConfig } from './user-config'
+import { type UserConfig } from './user_config'
 
 describe('UserConfig', () => {
   test('has a skipAnalytics flag', () => {
