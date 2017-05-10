@@ -4,7 +4,7 @@ import path from 'path'
 import os from 'os'
 import fs from 'fs-extra'
 import uuidV4 from 'uuid/v4'
-import { type UserConfig } from './user-config'
+import { type UserConfig } from './user_config'
 
 type S3 = {
   host?: string,
