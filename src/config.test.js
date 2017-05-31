@@ -33,6 +33,7 @@ test('default props are set', () => {
   expect(config.name).toEqual('cli-engine')
   expect(config.dirname).toEqual('cli-engine')
   expect(config.version).toEqual('0.0.0')
+  expect(config.userAgent).toEqual(`cli-engine/0.0.0 (${config.platform}-${config.arch}) node-${process.version}`)
   expect(config.channel).toEqual('stable')
   expect(config.updateDisabled).toBeUndefined()
   expect(config.bin).toEqual('cli-engine')
