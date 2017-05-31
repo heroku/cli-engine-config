@@ -47,9 +47,10 @@ export type Config = {
   arch: string,             // CPU architecture
   platform: string,         // operating system
   windows: boolean,         // is windows OS
-  _version: '1',             // config schema version
+  _version: '1',            // config schema version
   skipAnalytics: boolean,   // skip processing of analytics
-  install: ?string          // generated uuid of this install
+  install: ?string,         // generated uuid of this install
+  userAgent: string         // user agent for API calls
 }
 
 export type ConfigOptions = $Shape<Config>
@@ -136,6 +137,8 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
   config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
   config._version = '1'
+  let channel = config.channel === 'stable' ? '' : ` ${config.channel}`
+  config.userAgent = `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
   userConfig = loadUserConfig(config.configDir, options)
   if (config.skipAnalytics === undefined) {
     config.skipAnalytics = skipAnalytics(userConfig)
