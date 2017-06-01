@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: dickeyxxx/cli-engine-docker:v1.0.0
+      - image: dickeyxxx/cli-engine-docker:v1.1.0
     working_directory: ~/cli-engine-config
     steps:
       - checkout
@@ -17,9 +17,9 @@ jobs:
           yarn --prefer-offline --pure-lockfile
 
           # test project
-          ./node_modules/.bin/jest --coverage
-          ./node_modules/.bin/flow check
-          ./node_modules/.bin/standard
+          jest --coverage
+          flow check
+          eslint .
           bash <(curl -s https://codecov.io/bash)
       - save_cache:
           key: cli-engine-config-{{ .Branch }}-{{checksum "package.json"}}
