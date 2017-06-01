@@ -40,7 +40,7 @@ test('default props are set', () => {
   expect(config.root).toEqual(path.join(__dirname, '..'))
   expect(config.defaultCommand).toEqual('help')
   expect(config.s3).toEqual({})
-  expect(config.windows).toEqual(os.platform === 'win32')
+  expect(config.windows).toEqual(os.platform() === 'win32')
 })
 
 test('reads pjson values', () => {
