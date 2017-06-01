@@ -50,7 +50,8 @@ export type Config = {
   _version: '1',            // config schema version
   skipAnalytics: boolean,   // skip processing of analytics
   install: ?string,         // generated uuid of this install
-  userAgent: string         // user agent for API calls
+  userAgent: string,        // user agent for API calls
+  shell: string             // the shell in which the command is run
 }
 
 export type ConfigOptions = $Shape<Config>
@@ -136,7 +137,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   if (config.windows) {
     config.shell = 'windows'
   } else {
-    const shell = process.env['SHELL'].split(`/`)
+    const shell = process.env['SHELL'] ? process.env['SHELL'].split(`/`) : ['unknown']
     config.shell = shell[shell.length - 1]
   }
   config.dataDir = config.dataDir || dir(config, 'data')
