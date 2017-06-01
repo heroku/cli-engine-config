@@ -42,6 +42,26 @@ test('default props are set', () => {
   expect(config.s3).toEqual({})
   expect(config.windows).toEqual(os.platform() === 'win32')
 })
+describe('shell property', () => {
+  let originalFunc
+  beforeAll(() => {
+    originalFunc = os.platform
+  })
+  it('is set to "windows" when running windows', () => {
+    os.platform = jest.fn(() => { return 'win32' })
+    const config = buildConfig()
+
+    expect(config.shell).toEqual('windows')
+    os.platform = originalFunc
+  })
+  it('is set dynamically when running unix-like', () => {
+    os.platform = jest.fn(() => { return 'darwin' })
+    process.env['SHELL'] = `/usr/bin/fish`
+    const config = buildConfig()
+    expect(config.shell).toEqual('fish')
+    os.platform = originalFunc
+  })
+})
 
 test('reads pjson values', () => {
   const config = buildConfig({
@@ -76,7 +96,7 @@ test('sets debug value', () => {
 
 describe('skipAnalytics', () => {
   it('returns true when testing environment is set to "1"', () => {
-    mockUserConfig = { 'skipAnalytics': false }
+    mockUserConfig = {'skipAnalytics': false}
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     process.env['TESTING'] = '1'
     let sampleConfig = buildConfig(configOptions)
@@ -107,7 +127,7 @@ describe('skipAnalytics', () => {
 
 describe('install', () => {
   it('when file does not have an install one is generated', () => {
-    mockUserConfig = { 'skipAnalytics': false }
+    mockUserConfig = {'skipAnalytics': false}
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     fs.writeJSONSync = jest.fn()
     let sampleConfig = buildConfig(configOptions)
@@ -117,7 +137,7 @@ describe('install', () => {
   })
 
   it('when file does have an install one is not generated', () => {
-    mockUserConfig = { 'skipAnalytics': false, 'install': '1234' }
+    mockUserConfig = {'skipAnalytics': false, 'install': '1234'}
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     fs.writeJSONSync = jest.fn()
     let sampleConfig = buildConfig(configOptions)
@@ -180,7 +200,7 @@ describe('install', () => {
   })
 
   it('install is not defined if skipAnalytics is true', () => {
-    mockUserConfig = { 'skipAnalytics': true }
+    mockUserConfig = {'skipAnalytics': true}
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     fs.writeJSONSync = jest.fn()
     let sampleConfig = buildConfig(configOptions)
@@ -189,7 +209,7 @@ describe('install', () => {
   })
 
   it('install is not defined if skipAnalytics is true and install is set', () => {
-    mockUserConfig = { 'skipAnalytics': true, 'install': '1234' }
+    mockUserConfig = {'skipAnalytics': true, 'install': '1234'}
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     fs.writeJSONSync = jest.fn()
     let sampleConfig = buildConfig(configOptions)
@@ -198,7 +218,7 @@ describe('install', () => {
   })
 
   it('passes through install in buildConfig', () => {
-    mockUserConfig = { 'skipAnalytics': false }
+    mockUserConfig = {'skipAnalytics': false}
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     fs.writeJSONSync = jest.fn()
     configOptions.install = '1234'
