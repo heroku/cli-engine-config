@@ -43,8 +43,11 @@ test('default props are set', () => {
   expect(config.windows).toEqual(os.platform === 'win32')
 })
 describe('shell property', () => {
+  let originalFunc
+  beforeAll(() => {
+    originalFunc = os.platform
+  })
   it('is set to "windows" when running windows', () => {
-    const originalFunc = os.platform
     os.platform = jest.fn(() => { return 'win32' })
     const config = buildConfig()
 
@@ -56,6 +59,7 @@ describe('shell property', () => {
     process.env['SHELL'] = `/usr/bin/fish`
     const config = buildConfig()
     expect(config.shell).toEqual('fish')
+    os.platform = originalFunc
   })
 })
 
