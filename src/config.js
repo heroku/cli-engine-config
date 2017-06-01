@@ -87,7 +87,7 @@ let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) 
     config = fs.readJSONSync(configPath)
   } catch (e) {
     if (e.code === 'ENOENT') {
-      config = { skipAnalytics: undefined, install: undefined }
+      config = {skipAnalytics: undefined, install: undefined}
     } else {
       throw e
     }
@@ -128,10 +128,17 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     arch: os.arch(),
     bin: cli.bin || 'cli-engine',
     defaultCommand: cli.defaultCommand || 'help',
-    skipAnalytics: undefined
+    skipAnalytics: undefined,
+    shell: undefined
   }
   const config: ConfigOptions = Object.assign(defaults, options)
   config.windows = config.platform === 'win32'
+  if (config.windows) {
+    config.shell = 'windows'
+  } else {
+    const shell = process.env['SHELL'].split(`/`)
+    config.shell = shell[shell.length - 1]
+  }
   config.dataDir = config.dataDir || dir(config, 'data')
   config.configDir = config.configDir || dir(config, 'config')
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
