@@ -108,7 +108,7 @@ let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) 
   return config
 }
 
-function shell (onWindows: boolean = false) : string {
+function shell (onWindows: boolean = false): string {
   let shellPath
   if (onWindows) {
     shellPath = (process.env['COMSPEC'] && process.env['COMSPEC'].split(/\\|\//)) || (process.env['SHELL'] && process.env['SHELL'].split(`/`))
