@@ -43,23 +43,40 @@ test('default props are set', () => {
   expect(config.windows).toEqual(os.platform() === 'win32')
 })
 describe('shell property', () => {
-  let originalFunc
+  let originalFunc, originalShell
+
   beforeAll(() => {
+    originalShell = process.env.SHELL
     originalFunc = os.platform
   })
-  it('is set to "windows" when running windows', () => {
-    os.platform = jest.fn(() => { return 'win32' })
-    const config = buildConfig()
 
-    expect(config.shell).toEqual('windows')
+  afterEach(() => {
     os.platform = originalFunc
+    process.env['SHELL'] = originalShell
   })
+
+  it('is set dynamically when running windows', () => {
+    os.platform = jest.fn(() => { return 'win32' })
+    delete process.env.SHELL
+    process.env['COMSPEC'] = 'C:\\ProgramFiles\\cmd.exe'
+    let config = buildConfig()
+    expect(config.shell).toEqual('cmd.exe')
+    delete process.env.COMSPEC
+  })
+
+  it('is set dynamically when running cywin', () => {
+    os.platform = jest.fn(() => { return 'win32' })
+    process.env['SHELL'] = '/bin/bash'
+    delete process.env.COMSPEC
+    const config = buildConfig()
+    expect(config.shell).toEqual('bash')
+  })
+
   it('is set dynamically when running unix-like', () => {
     os.platform = jest.fn(() => { return 'darwin' })
     process.env['SHELL'] = `/usr/bin/fish`
     const config = buildConfig()
     expect(config.shell).toEqual('fish')
-    os.platform = originalFunc
   })
 })
 
