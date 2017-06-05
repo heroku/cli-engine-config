@@ -108,6 +108,17 @@ let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) 
   return config
 }
 
+function shell (onWindows: boolean = false) : string {
+  let shellPath
+  if (onWindows) {
+    shellPath = (process.env['COMSPEC'] && process.env['COMSPEC'].split(/\\|\//)) || (process.env['SHELL'] && process.env['SHELL'].split(`/`))
+  } else {
+    shellPath = process.env['SHELL'] && process.env['SHELL'].split(`/`)
+  }
+  if (!shellPath) shellPath = ['unknown']
+  return shellPath[shellPath.length - 1]
+}
+
 export function buildConfig (options: ConfigOptions = {}): Config {
   let userConfig: UserConfig
   if (options._version) return options
@@ -134,12 +145,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   }
   const config: ConfigOptions = Object.assign(defaults, options)
   config.windows = config.platform === 'win32'
-  if (config.windows) {
-    config.shell = 'windows'
-  } else {
-    const shell = process.env['SHELL'] ? process.env['SHELL'].split(`/`) : ['unknown']
-    config.shell = shell[shell.length - 1]
-  }
+  config.shell = shell(config.windows)
   config.dataDir = config.dataDir || dir(config, 'data')
   config.configDir = config.configDir || dir(config, 'config')
   let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
