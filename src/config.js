@@ -150,7 +150,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   if (config.skipAnalytics === undefined) {
     config.skipAnalytics = skipAnalytics(userConfig)
   }
-  if (config.install === undefined) {
+  if (config.install === undefined && userConfig) {
     config.install = userConfig.install
   }
   return config
