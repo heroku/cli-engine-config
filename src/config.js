@@ -73,7 +73,7 @@ function debug (bin: string) {
 }
 
 function skipAnalytics (userConfig: UserConfig) {
-  if (userConfig.skipAnalytics) {
+  if (userConfig && userConfig.skipAnalytics) {
     return true
   } else if (process.env['TESTING'] === '1') {
     return true
@@ -94,9 +94,9 @@ let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) 
     }
   }
 
-  if (config.skipAnalytics) {
+  if (config && config.skipAnalytics) {
     config.install = null
-  } else if (config.install === undefined && configOptions.install === undefined) {
+  } else if (config && config.install === undefined && configOptions.install === undefined) {
     config.install = uuidV4()
     try {
       fs.writeJSONSync(configPath, config)
@@ -109,7 +109,6 @@ let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) 
 }
 
 export function buildConfig (options: ConfigOptions = {}): Config {
-  let userConfig: UserConfig
   if (options._version) return options
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
@@ -147,7 +146,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   config._version = '1'
   let channel = config.channel === 'stable' ? '' : ` ${config.channel}`
   config.userAgent = `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
-  userConfig = loadUserConfig(config.configDir, options)
+  let userConfig = loadUserConfig(config.configDir, options)
   if (config.skipAnalytics === undefined) {
     config.skipAnalytics = skipAnalytics(userConfig)
   }
