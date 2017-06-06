@@ -110,12 +110,13 @@ let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) 
 
 function shell (onWindows: boolean = false): string {
   let shellPath
-  if (onWindows) {
-    shellPath = (process.env['SHELL'] && process.env['SHELL'].split(`/`)) || (process.env['COMSPEC'] && process.env['COMSPEC'].split(/\\|\//))
+  if (process.env['SHELL']) {
+    shellPath = process.env['SHELL'].split(`/`)
+  } else if (onWindows && process.env['COMSPEC']) {
+    shellPath = process.env['COMSPEC'].split(/\\|\//)
   } else {
-    shellPath = process.env['SHELL'] && process.env['SHELL'].split(`/`)
+    shellPath = ['unknown']
   }
-  if (!shellPath) shellPath = ['unknown']
   return shellPath[shellPath.length - 1]
 }
 
