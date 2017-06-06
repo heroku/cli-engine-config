@@ -226,4 +226,14 @@ describe('install', () => {
     expect(sampleConfig.install).toBe('1234')
     expect(fs.writeJSONSync.mock.calls.length).toEqual(0)
   })
+
+  it('deals with invalid config', () => {
+    mockUserConfig = undefined
+    fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+    fs.writeJSONSync = jest.fn()
+    configOptions.install = '1234'
+    let sampleConfig = buildConfig(configOptions)
+    expect(sampleConfig.install).toBe('1234')
+    expect(fs.writeJSONSync.mock.calls.length).toEqual(0)
+  })
 })
