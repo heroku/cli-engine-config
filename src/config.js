@@ -137,7 +137,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     s3: cli.s3 || {},
     root: path.join(__dirname, '..'),
     platform: os.platform(),
-    arch: os.arch(),
+    arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
     bin: cli.bin || 'cli-engine',
     defaultCommand: cli.defaultCommand || 'help',
     skipAnalytics: undefined,
