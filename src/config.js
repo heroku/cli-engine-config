@@ -144,7 +144,8 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     shell: undefined
   }
   const config: ConfigOptions = Object.assign(defaults, options)
-  config.windows = config.platform === 'win32'
+  if (config.platform === 'win32') config.platform = 'windows'
+  config.windows = config.platform === 'windows'
   config.shell = shell(config.windows)
   config.dataDir = config.dataDir || dir(config, 'data')
   config.configDir = config.configDir || dir(config, 'config')

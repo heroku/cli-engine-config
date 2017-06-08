@@ -42,6 +42,39 @@ test('default props are set', () => {
   expect(config.s3).toEqual({})
   expect(config.windows).toEqual(os.platform() === 'win32')
 })
+
+describe('windows', () => {
+  let originalFunc
+  beforeAll(() => {
+    originalFunc = os.platform
+  })
+
+  afterEach(() => {
+    os.platform = originalFunc
+  })
+
+  test('win32', () => {
+    os.platform = jest.fn(() => 'win32')
+    let config = buildConfig()
+    expect(config.platform).toEqual('windows')
+    expect(config.windows).toEqual(true)
+  })
+
+  test('windows', () => {
+    os.platform = jest.fn(() => 'win32')
+    let config = buildConfig()
+    expect(config.platform).toEqual('windows')
+    expect(config.windows).toEqual(true)
+  })
+
+  test('other', () => {
+    os.platform = jest.fn(() => 'other')
+    let config = buildConfig()
+    expect(config.platform).toEqual('other')
+    expect(config.windows).toEqual(false)
+  })
+})
+
 describe('shell property', () => {
   let originalFunc, originalShell
 
