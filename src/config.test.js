@@ -1,6 +1,6 @@
 // @flow
 
-import { buildConfig } from './config'
+import { buildConfig, type ConfigOptions } from './config'
 import os from 'os'
 import path from 'path'
 import fs from 'fs-extra'
@@ -14,7 +14,10 @@ beforeEach(() => {
 afterEach(() => {
   fs.readJSONSync = originalReadJSONSync
 })
-let configOptions
+
+let env = process.env
+let configOptions: ConfigOptions
+
 beforeEach(() => {
   configOptions = {
     pjson: {
@@ -26,6 +29,14 @@ beforeEach(() => {
     },
     install: undefined
   }
+
+  beforeEach(() => {
+    process.env = {}
+  })
+
+  afterEach(() => {
+    process.env = env
+  })
 })
 
 test('default props are set', () => {
@@ -76,21 +87,18 @@ describe('windows', () => {
 })
 
 describe('shell property', () => {
-  let originalFunc, originalShell
+  let originalFunc
 
   beforeAll(() => {
-    originalShell = process.env.SHELL
     originalFunc = os.platform
   })
 
   afterEach(() => {
     os.platform = originalFunc
-    process.env['SHELL'] = originalShell
   })
 
   it('is set dynamically when running windows', () => {
     os.platform = jest.fn(() => { return 'win32' })
-    delete process.env.SHELL
     process.env['COMSPEC'] = 'C:\\ProgramFiles\\cmd.exe'
     let config = buildConfig()
     expect(config.shell).toEqual('cmd.exe')
@@ -100,7 +108,6 @@ describe('shell property', () => {
   it('is set dynamically when running cywin', () => {
     os.platform = jest.fn(() => { return 'win32' })
     process.env['SHELL'] = '/bin/bash'
-    delete process.env.COMSPEC
     const config = buildConfig()
     expect(config.shell).toEqual('bash')
   })
@@ -145,7 +152,7 @@ test('sets debug value', () => {
 })
 
 describe('skipAnalytics', () => {
-  it('returns true when testing environment is set to "1"', () => {
+  it('returns true when testing environment is set to "1" or "true"', () => {
     mockUserConfig = {'skipAnalytics': false}
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     process.env['TESTING'] = '1'
@@ -153,21 +160,28 @@ describe('skipAnalytics', () => {
     expect(sampleConfig.skipAnalytics).toBeTruthy()
     process.env['TESTING'] = 'true'
     sampleConfig = buildConfig(configOptions)
-    expect(sampleConfig.skipAnalytics).not.toBeTruthy()
+    expect(sampleConfig.skipAnalytics).toBeTruthy()
   })
-  it('returns true when the UserConfig specificies to skip analytics', () => {
-    delete process.env.TESTING
+
+  it('returns true when HEROKU_SKIP_TESTING is set', () => {
+    mockUserConfig = {'skipAnalytics': false}
+    fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+    process.env['CLI_ENGINE_SKIP_ANALYTICS'] = '1'
     let sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.skipAnalytics).toBeTruthy()
   })
+
+  it('returns true when the UserConfig specificies to skip analytics', () => {
+    let sampleConfig = buildConfig(configOptions)
+    expect(sampleConfig.skipAnalytics).toBeTruthy()
+  })
+
   it('prefers the constructor argument over user config', () => {
-    // flow$ignore
     configOptions.skipAnalytics = true
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     let sampleConfig = buildConfig(configOptions)
     expect(sampleConfig.skipAnalytics).toBe(true)
 
-    // flow$ignore
     configOptions.skipAnalytics = false
     fs.readJSONSync = jest.fn(() => { return mockUserConfig })
     sampleConfig = buildConfig(configOptions)
