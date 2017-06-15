@@ -66,16 +66,25 @@ function dir (config: ConfigOptions, category: string, d: ?string): string {
 }
 
 function debug (bin: string) {
-  const DEBUG = process.env[bin.replace('-', '_').toUpperCase() + '_DEBUG']
+  const DEBUG = process.env[envVarKey(bin, 'DEBUG')]
   if (DEBUG === 'true') return 1
   if (DEBUG) return parseInt(DEBUG)
   return 0
 }
 
-function skipAnalytics (userConfig: UserConfig) {
+function envVarKey (...parts: string[]) {
+  return parts.map(p => p.replace('-', '_')).join('_').toUpperCase()
+}
+
+function envVarTrue (k: string): boolean {
+  let v = process.env[k]
+  return v === '1' || v === 'true'
+}
+
+function skipAnalytics (bin: string, userConfig: UserConfig) {
   if (userConfig && userConfig.skipAnalytics) {
     return true
-  } else if (process.env['TESTING'] === '1') {
+  } else if (envVarTrue('TESTING') || envVarTrue(envVarKey(bin, 'SKIP_ANALYTICS'))) {
     return true
   }
   return false
@@ -156,7 +165,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   config.userAgent = `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
   let userConfig = loadUserConfig(config.configDir, options)
   if (config.skipAnalytics === undefined) {
-    config.skipAnalytics = skipAnalytics(userConfig)
+    config.skipAnalytics = skipAnalytics(config.bin, userConfig)
   }
   if (config.install === undefined && userConfig) {
     config.install = userConfig.install
