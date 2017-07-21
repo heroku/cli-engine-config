@@ -28,30 +28,30 @@ export type PJSON = {
 }
 
 export type Config = {
-  name: string,             // name of CLI
-  dirname: string,          // name of CLI directory
-  bin: string,              // name of binary
+  name: string, // name of CLI
+  dirname: string, // name of CLI directory
+  bin: string, // name of binary
   namespaces: ?(?string)[], // names of permitted plugin namespaces
-  s3: S3,                   // S3 config
-  root: string,             // root of CLI
-  home: string,             // user home directory
-  pjson: PJSON,             // parsed CLI package.json
-  updateDisabled: ?string,  // CLI updates are disabled
-  defaultCommand: string,   // default command if no args passed (usually help)
-  channel: string,          // CLI channel for updates
-  version: string,          // CLI version
-  debug: number,            // debugging level
-  dataDir: string,          // directory for storing CLI data
-  cacheDir: string,         // directory for storing temporary CLI data
-  configDir: string,        // directory for storing CLI config
-  arch: string,             // CPU architecture
-  platform: string,         // operating system
-  windows: boolean,         // is windows OS
-  _version: '1',            // config schema version
-  skipAnalytics: boolean,   // skip processing of analytics
-  install: ?string,         // generated uuid of this install
-  userAgent: string,        // user agent for API calls
-  shell: string             // the shell in which the command is run
+  s3: S3, // S3 config
+  root: string, // root of CLI
+  home: string, // user home directory
+  pjson: PJSON, // parsed CLI package.json
+  updateDisabled: ?string, // CLI updates are disabled
+  defaultCommand: string, // default command if no args passed (usually help)
+  channel: string, // CLI channel for updates
+  version: string, // CLI version
+  debug: number, // debugging level
+  dataDir: string, // directory for storing CLI data
+  cacheDir: string, // directory for storing temporary CLI data
+  configDir: string, // directory for storing CLI config
+  arch: string, // CPU architecture
+  platform: string, // operating system
+  windows: boolean, // is windows OS
+  _version: '1', // config schema version
+  skipAnalytics: boolean, // skip processing of analytics
+  install: ?string, // generated uuid of this install
+  userAgent: string, // user agent for API calls
+  shell: string // the shell in which the command is run
 }
 
 export type ConfigOptions = $Shape<Config>
