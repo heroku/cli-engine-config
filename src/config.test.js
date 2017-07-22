@@ -30,13 +30,11 @@ beforeEach(() => {
     install: undefined
   }
 
-  beforeEach(() => {
-    process.env = {}
-  })
+  process.env = {}
+})
 
-  afterEach(() => {
-    process.env = env
-  })
+afterEach(() => {
+  process.env = env
 })
 
 test('default props are set', () => {
@@ -117,6 +115,25 @@ describe('shell property', () => {
     process.env['SHELL'] = `/usr/bin/fish`
     const config = buildConfig()
     expect(config.shell).toEqual('fish')
+  })
+})
+
+describe('UPDATE_DISABLED', () => {
+  test('false', () => {
+    const config = buildConfig()
+    expect(config.updateDisabled).toEqual(undefined)
+  })
+
+  test('update with npm update -g cli-engine', () => {
+    process.env['CLI_ENGINE_UPDATE_DISABLED'] = 'npm update -g cli-engine'
+    const config = buildConfig()
+    expect(config.updateDisabled).toEqual(`npm update -g cli-engine`)
+  })
+
+  test('1', () => {
+    process.env['CLI_ENGINE_UPDATE_DISABLED'] = '1'
+    const config = buildConfig()
+    expect(config.updateDisabled).toEqual(`update with cli-engine update`)
   })
 })
 

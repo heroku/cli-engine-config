@@ -72,6 +72,14 @@ function debug (bin: string) {
   return 0
 }
 
+function updateDisabled (bin: string): ?string {
+  const disabled = process.env[envVarKey(bin, 'UPDATE_DISABLED')]
+  if (['1', 'true'].includes(disabled)) {
+    return `update with ${bin} update`
+  }
+  return disabled
+}
+
 function envVarKey (...parts: string[]) {
   return parts.map(p => p.replace('-', '_')).join('_').toUpperCase()
 }
@@ -134,6 +142,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
   const name = options.name || pjson.name || 'cli-engine'
+  const bin = cli.bin || 'cli-engine'
   const defaults: ConfigOptions = {
     pjson,
     name,
@@ -142,12 +151,13 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     version: pjson.version || '0.0.0',
     channel: 'stable',
     home: os.homedir() || os.tmpdir(),
-    debug: debug(cli.bin || 'cli-engine') || 0,
+    debug: debug(bin) || 0,
+    updateDisabled: updateDisabled(bin),
     s3: cli.s3 || {},
     root: path.join(__dirname, '..'),
     platform: os.platform(),
     arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
-    bin: cli.bin || 'cli-engine',
+    bin,
     defaultCommand: cli.defaultCommand || 'help',
     skipAnalytics: undefined,
     shell: undefined
