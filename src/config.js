@@ -131,8 +131,33 @@ function shell (onWindows: boolean = false): string {
   return shellPath[shellPath.length - 1]
 }
 
+function validate (pjson: PJSON) {
+  const exampleConfig = {
+    dirname: 'heroku-cli',
+    node: '8.0.0',
+    hooks: {
+      'prerun': './lib/hooks/prerun.js',
+      'plugins:preinstall': './lib/hooks/plugins/preinstall.js'
+    },
+    defaultCommand: 'dashboard',
+    s3: {host: 'host'},
+    plugins: ['heroku-pg', 'heroku-redis']
+  }
+  const {version} = require('../package.json')
+  const {validate} = require('jest-validate')
+  validate(pjson, {
+    comment: `cli-engine-config@${version}`,
+    exampleConfig,
+    title: {
+      warning: 'cli-engine validation warning',
+      error: 'cli-engine validation error'
+    }
+  })
+}
+
 export function buildConfig (options: ConfigOptions = {}): Config {
   if (options._version) return options
+  validate(options)
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
   const name = options.name || pjson.name || 'cli-engine'

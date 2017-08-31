@@ -5,6 +5,7 @@
   "author": "Jeff Dickey @dickeyxxx",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {
+    "jest-validate": "^20.0.3",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
