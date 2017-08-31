@@ -140,10 +140,10 @@ function shell (onWindows: boolean = false): string {
   return shellPath[shellPath.length - 1]
 }
 
-function validate (pjson: PJSON) {
+function validateCLI (cli: CLI) {
   const {version} = require('../package.json')
   const {validate} = require('jest-validate')
-  validate(pjson, {
+  validate(cli, {
     comment: `cli-engine-config@${version}`,
     exampleConfig: exampleCLI,
     title: {
@@ -155,9 +155,9 @@ function validate (pjson: PJSON) {
 
 export function buildConfig (options: ConfigOptions = {}): Config {
   if (options._version) return options
-  validate(options)
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
+  validateCLI(cli)
   const name = options.name || pjson.name || 'cli-engine'
   const config: ConfigOptions = {
     pjson,
