@@ -21,11 +21,13 @@ type CLI = {
 const exampleCLI = {
   dirname: 'heroku-cli',
   node: '8.0.0',
+  defaultCommand: 'dashboard',
   hooks: {
-    'prerun': './lib/hooks/prerun.js',
+    init: './lib/hooks/init.js',
+    update: './lib/hooks/update.js',
+    prerun: './lib/hooks/prerun.js',
     'plugins:preinstall': './lib/hooks/plugins/preinstall.js'
   },
-  defaultCommand: 'dashboard',
   s3: {host: 'host'},
   plugins: ['heroku-pg', 'heroku-redis']
 }
@@ -143,13 +145,16 @@ function shell (onWindows: boolean = false): string {
 function validateCLI (cli: CLI) {
   const {version} = require('../package.json')
   const {validate} = require('jest-validate')
-  validate(cli, {
-    comment: `cli-engine-config@${version}`,
-    exampleConfig: exampleCLI,
-    title: {
-      warning: 'cli-engine validation warning',
-      error: 'cli-engine validation error'
-    }
+  const comment = `cli-engine-config@${version}`
+  const title = {
+    warning: 'invalid CLI package.json',
+    error: 'invalid CLI package.json' }
+  validate(cli, {comment, title, exampleConfig: exampleCLI})
+  ;[
+    's3',
+    'hooks'
+  ].map(attr => {
+    validate(cli[attr], {comment, title, exampleConfig: exampleCLI[attr]})
   })
 }
 
