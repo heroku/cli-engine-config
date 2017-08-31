@@ -13,9 +13,9 @@ jobs:
             - cli-engine-config-master
       - run: |
           yarn
-          jest --coverage
-          flow check
-          eslint .
+          npx jest --coverage
+          npx flow check
+          npx eslint .
           bash <(curl -s https://codecov.io/bash)
       - save_cache:
           key: cli-engine-config-{{ .Branch }}-{{checksum "yarn.lock"}}
