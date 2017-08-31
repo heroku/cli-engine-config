@@ -8,7 +8,7 @@ buildConfig({
       // s3: 'not a string',
       hooks: {
         notahook: 'butlookslikeone'
-      },
+      }
       // this doesn't work for some reason
       // plugins: [
       //   {a: 'b'},
