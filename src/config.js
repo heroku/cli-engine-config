@@ -7,18 +7,27 @@ import uuidV4 from 'uuid/v4'
 import { type UserConfig } from './user_config'
 
 type S3 = {
-  host?: string,
-  bucket?: string
+  host?: string
 }
 
 type CLI = {
   dirname?: string,
   defaultCommand?: string,
   bin?: string,
-  namespaces?: ?(?string)[],
   s3?: S3,
   hooks?: {[name: string]: string},
   plugins?: string[]
+}
+const exampleCLI = {
+  dirname: 'heroku-cli',
+  node: '8.0.0',
+  hooks: {
+    'prerun': './lib/hooks/prerun.js',
+    'plugins:preinstall': './lib/hooks/plugins/preinstall.js'
+  },
+  defaultCommand: 'dashboard',
+  s3: {host: 'host'},
+  plugins: ['heroku-pg', 'heroku-redis']
 }
 
 export type PJSON = {
@@ -132,22 +141,11 @@ function shell (onWindows: boolean = false): string {
 }
 
 function validate (pjson: PJSON) {
-  const exampleConfig = {
-    dirname: 'heroku-cli',
-    node: '8.0.0',
-    hooks: {
-      'prerun': './lib/hooks/prerun.js',
-      'plugins:preinstall': './lib/hooks/plugins/preinstall.js'
-    },
-    defaultCommand: 'dashboard',
-    s3: {host: 'host'},
-    plugins: ['heroku-pg', 'heroku-redis']
-  }
   const {version} = require('../package.json')
   const {validate} = require('jest-validate')
   validate(pjson, {
     comment: `cli-engine-config@${version}`,
-    exampleConfig,
+    exampleConfig: exampleCLI,
     title: {
       warning: 'cli-engine validation warning',
       error: 'cli-engine validation error'
@@ -164,7 +162,6 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   const config: ConfigOptions = {
     pjson,
     name,
-    namespaces: cli.namespaces,
     dirname: cli.dirname || name,
     version: pjson.version || '0.0.0',
     channel: 'stable',
