@@ -8,13 +8,14 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "babel-cli": "6.24.1",
+    "babel-cli": "^6.26.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
+    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-plugin-transform-class-properties": "6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-plugin-transform-flow-strip-types": "6.22.0",
-    "eslint": "^4.3.0",
+    "eslint": "^4.5.0",
     "eslint-config-standard": "10.2.1",
     "eslint-plugin-flowtype": "^2.35.0",
     "eslint-plugin-import": "^2.7.0",
@@ -22,8 +23,8 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "3.5.0",
     "eslint-plugin-standard": "3.0.1",
-    "flow-bin": "^0.50.0",
-    "flow-copy-source": "^1.2.0",
+    "flow-bin": "^0.53.1",
+    "flow-copy-source": "^1.2.1",
     "flow-typed": "^2.1.5",
     "jest": "20.0.4",
     "rimraf": "2.6.1"
