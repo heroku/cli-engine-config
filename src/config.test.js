@@ -301,3 +301,19 @@ describe('install', () => {
     expect(fs.writeJSONSync.mock.calls.length).toEqual(0)
   })
 })
+
+describe('hooks', () => {
+  test('is initialized', () => {
+    const config = buildConfig()
+    expect(config.hooks).toEqual({})
+  })
+  test('has hooks', () => {
+    const config = buildConfig({
+      pjson: {
+        'cli-engine': {
+          hooks: {
+            prerun: './lib/hooks/prerun.js'
+          }}}})
+    expect(config.hooks.prerun).toEqual('./lib/hooks/prerun.js')
+  })
+})

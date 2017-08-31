@@ -52,7 +52,8 @@ export type Config = {
   skipAnalytics: boolean, // skip processing of analytics
   install: ?string, // generated uuid of this install
   userAgent: string, // user agent for API calls
-  shell: string // the shell in which the command is run
+  shell: string, // the shell in which the command is run
+  hooks: {[name: string]: string} // scripts to run in the CLI on lifecycle events like prerun
 }
 
 export type ConfigOptions = $Shape<Config>
