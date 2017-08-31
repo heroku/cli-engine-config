@@ -135,7 +135,7 @@ export function buildConfig (options: ConfigOptions = {}): Config {
   const pjson = options.pjson || {}
   const cli: CLI = pjson['cli-engine'] || {}
   const name = options.name || pjson.name || 'cli-engine'
-  const defaults: ConfigOptions = {
+  const config: ConfigOptions = {
     pjson,
     name,
     namespaces: cli.namespaces,
@@ -151,9 +151,10 @@ export function buildConfig (options: ConfigOptions = {}): Config {
     bin: cli.bin || 'cli-engine',
     defaultCommand: cli.defaultCommand || 'help',
     skipAnalytics: undefined,
-    shell: undefined
+    shell: undefined,
+    hooks: cli.hooks || {},
+    ...options
   }
-  const config: ConfigOptions = Object.assign(defaults, options)
   if (config.platform === 'win32') config.platform = 'windows'
   config.windows = config.platform === 'windows'
   config.shell = shell(config.windows)
