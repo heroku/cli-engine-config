@@ -17,6 +17,7 @@ type CLI = {
   bin?: string,
   namespaces?: ?(?string)[],
   s3?: S3,
+  hooks?: {[name: string]: string},
   plugins?: string[]
 }
 
