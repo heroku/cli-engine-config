@@ -207,7 +207,7 @@ export interface ICommand {
   +run: (options: $Shape<IRunOptions>) => Promise<any>
 }
 
-export function buildConfig (existing?: Object): Config {
+export function buildConfig (existing: ?Object = {}): Config {
   return {
     __cache: {},
     _version: '1',
