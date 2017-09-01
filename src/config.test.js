@@ -1,6 +1,6 @@
 // @flow
 
-import { configFromRoot, buildConfig } from './config'
+import { buildConfig } from './config'
 import os from 'os'
 import path from 'path'
 import fs from 'fs-extra'
@@ -95,21 +95,6 @@ describe('shell property', () => {
     const config = buildConfig()
     expect(config.shell).toEqual('fish')
   })
-})
-
-test('reads pjson values', () => {
-  const config = buildConfig({
-    pjson: {
-      name: 'mycli',
-      version: '1.0.0',
-      'cli-engine': {
-        dirname: 'heroku'
-      }
-    }
-  })
-  expect(config.name).toEqual('mycli')
-  expect(config.version).toEqual('1.0.0')
-  expect(config.dirname).toEqual('heroku')
 })
 
 test('sets version from options', () => {
@@ -260,49 +245,46 @@ describe('with mockUserConfig', () => {
   })
 })
 
-describe('hooks', () => {
-  test('is initialized', () => {
-    const config = buildConfig()
-    expect(config.hooks).toEqual({})
-  })
-  test('has hooks', () => {
-    const config = buildConfig({
-      pjson: {
-        'cli-engine': {
-          hooks: {
-            prerun: './lib/hooks/prerun.js'
-          }}}})
-    expect(config.hooks.prerun).toEqual('./lib/hooks/prerun.js')
-  })
-})
-
-describe('configFromRoot', () => {
-  const pjson = {
-    name: 'analytics',
-    version: '1.0.0',
-    'cli-engine': {
-      dirname: 'heroku'
+describe('pjson', () => {
+  let configFromPJSON = pjson => {
+    pjson = pjson || {
+      name: 'analytics',
+      version: '1.0.0',
+      'cli-engine': {
+        dirname: 'heroku'
+      }
     }
-  }
-
-  let config
-  beforeEach(() => {
     mockFS({
       '/tmp/my-cli': {
         'package.json': JSON.stringify(pjson)
       }
     })
-    config = configFromRoot('/tmp/my-cli')
-  })
+    return buildConfig({root: '/tmp/my-cli'})
+  }
 
   afterEach(() => {
     mockFS.restore()
   })
 
   test('reads the package.json', () => {
-    expect(config).toMatchObject({
+    expect(configFromPJSON()).toMatchObject({
       name: 'analytics',
-      dirname: 'heroku'
+      version: '1.0.0',
+      dirname: 'heroku',
+      hooks: {}
+    })
+  })
+
+  describe('hooks', () => {
+    test('has hooks', () => {
+      let config = configFromPJSON({
+        'cli-engine': {
+          hooks: {
+            prerun: './lib/hooks/prerun.js'
+          }
+        }
+      })
+      expect(config.hooks.prerun).toEqual('./lib/hooks/prerun.js')
     })
   })
 })

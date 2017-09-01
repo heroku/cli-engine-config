@@ -71,7 +71,7 @@ export type Config = {
 
 export type ConfigOptions = $Shape<Config>
 
-function dir (config: ConfigOptions, category: string, d: ?string): string {
+function dir (config: Config, category: string, d: ?string): string {
   let cacheKey = `dir:${category}`
   let cache = config.__cache[cacheKey]
   if (cache) return cache
@@ -158,22 +158,6 @@ function envSkipAnalytics (config: Config) {
   return false
 }
 
-export function configFromRoot (root: string): Config {
-  const pjson = require(path.join(root, 'package.json'))
-  validatePJSON(pjson)
-  return buildConfig({
-    root,
-    pjson: {
-      ...defaultConfig.pjson,
-      'cli-engine': {
-        ...defaultConfig.pjson['cli-engine'],
-        ...(pjson['cli-engine'] || {})
-      },
-      ...pjson
-    }
-  })
-}
-
 function validatePJSON (pjson: PJSON) {
   const cli = pjson['cli-engine'] || {}
   const comment = 'cli-engine-config'
@@ -207,7 +191,21 @@ export interface ICommand {
   +run: (options: $Shape<IRunOptions>) => Promise<any>
 }
 
-export function buildConfig (existing: ?Object = {}): Config {
+export function buildConfig (existing: ?ConfigOptions = {}): Config {
+  if (!existing) existing = {}
+  if (existing.root && !existing.pjson) {
+    // parse the package.json at the root
+    let pjson = fs.readJSONSync(path.join(existing.root, 'package.json'))
+    existing.pjson = {
+      ...defaultConfig.pjson,
+      'cli-engine': {
+        ...defaultConfig.pjson['cli-engine'],
+        ...(pjson['cli-engine'] || {})
+      },
+      ...pjson
+    }
+    validatePJSON(existing.pjson)
+  }
   return {
     __cache: {},
     _version: '1',
@@ -242,7 +240,7 @@ export function buildConfig (existing: ?Object = {}): Config {
     get userConfig () { return loadUserConfig(this) },
     get skipAnalytics () { return envSkipAnalytics(this) },
     get install () { return this.userConfig.install },
-    ...existing
+    ...(existing: any)
   }
 }
 
