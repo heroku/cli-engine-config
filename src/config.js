@@ -92,7 +92,7 @@ function debug (bin: string) {
 }
 
 function envVarKey (...parts: string[]) {
-  return parts.map(p => p.replace('-', '_')).join('_').toUpperCase()
+  return parts.map(p => p.replace(/-/g, '_')).join('_').toUpperCase()
 }
 
 function envVarTrue (k: string): boolean {
