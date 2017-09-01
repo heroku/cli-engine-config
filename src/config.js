@@ -243,6 +243,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get userConfig () { return loadUserConfig(this) },
     get skipAnalytics () { return envSkipAnalytics(this) },
     get install () { return this.userConfig.install },
+    get s3 () { return this.pjson['cli-engine'].s3 },
     ...(existing: any)
   }
 }
