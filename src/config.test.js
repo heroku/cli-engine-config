@@ -251,7 +251,10 @@ describe('pjson', () => {
       name: 'analytics',
       version: '1.0.0',
       'cli-engine': {
-        dirname: 'heroku'
+        dirname: 'heroku',
+        s3: {
+          host: 'mys3host'
+        }
       }
     }
     mockFS({
@@ -271,6 +274,7 @@ describe('pjson', () => {
       name: 'analytics',
       version: '1.0.0',
       dirname: 'heroku',
+      s3: {host: 'mys3host'},
       hooks: {}
     })
   })
