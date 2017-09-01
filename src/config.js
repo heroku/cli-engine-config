@@ -194,17 +194,20 @@ export interface ICommand {
 export function buildConfig (existing: ?ConfigOptions = {}): Config {
   if (!existing) existing = {}
   if (existing.root && !existing.pjson) {
-    // parse the package.json at the root
-    let pjson = fs.readJSONSync(path.join(existing.root, 'package.json'))
-    existing.pjson = {
-      ...defaultConfig.pjson,
-      'cli-engine': {
-        ...defaultConfig.pjson['cli-engine'],
-        ...(pjson['cli-engine'] || {})
-      },
-      ...pjson
+    let pjsonPath = path.join(existing.root, 'package.json')
+    if (fs.existsSync(pjsonPath)) {
+      // parse the package.json at the root
+      let pjson = fs.readJSONSync(path.join(existing.root, 'package.json'))
+      existing.pjson = {
+        ...defaultConfig.pjson,
+        'cli-engine': {
+          ...defaultConfig.pjson['cli-engine'],
+          ...(pjson['cli-engine'] || {})
+        },
+        ...pjson
+      }
+      validatePJSON(existing.pjson)
     }
-    validatePJSON(existing.pjson)
   }
   return {
     __cache: {},
