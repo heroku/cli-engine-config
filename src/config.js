@@ -5,6 +5,7 @@ import os from 'os'
 import fs from 'fs-extra'
 import uuidV4 from 'uuid/v4'
 import { type UserConfig } from './user_config'
+import {validate} from 'jest-validate'
 
 type S3 = {
   host?: string
@@ -33,17 +34,16 @@ const exampleCLI = {
 }
 
 export type PJSON = {
-  name?: ?string,
-  version?: ?string,
-  dependencies?: ?{ [name: string]: string },
-  'cli-engine'?: ?CLI
+  name: string,
+  version: string,
+  dependencies: { [name: string]: string },
+  'cli-engine': CLI
 }
 
 export type Config = {
   name: string, // name of CLI
   dirname: string, // name of CLI directory
   bin: string, // name of binary
-  namespaces: ?(?string)[], // names of permitted plugin namespaces
   s3: S3, // S3 config
   root: string, // root of CLI
   home: string, // user home directory
@@ -64,17 +64,23 @@ export type Config = {
   install: ?string, // generated uuid of this install
   userAgent: string, // user agent for API calls
   shell: string, // the shell in which the command is run
-  hooks: {[name: string]: string} // scripts to run in the CLI on lifecycle events like prerun
+  hooks: {[name: string]: string}, // scripts to run in the CLI on lifecycle events like prerun
+  userConfig: UserConfig, // users custom configuration json
+  __cache: any // memoization cache
 }
 
 export type ConfigOptions = $Shape<Config>
 
 function dir (config: ConfigOptions, category: string, d: ?string): string {
+  let cacheKey = `dir:${category}`
+  let cache = config.__cache[cacheKey]
+  if (cache) return cache
   d = d || path.join(config.home, category === 'data' ? '.local/share' : '.' + category)
   if (config.windows) d = process.env.LOCALAPPDATA || d
   d = process.env.XDG_DATA_HOME || d
   d = path.join(d, config.dirname)
   fs.mkdirpSync(d)
+  config.__cache[cacheKey] = d
   return d
 }
 
@@ -94,40 +100,36 @@ function envVarTrue (k: string): boolean {
   return v === '1' || v === 'true'
 }
 
-function skipAnalytics (bin: string, userConfig: UserConfig) {
-  if (userConfig && userConfig.skipAnalytics) {
-    return true
-  } else if (envVarTrue('TESTING') || envVarTrue(envVarKey(bin, 'SKIP_ANALYTICS'))) {
-    return true
-  }
-  return false
-}
-
-let loadUserConfig = function (configDir: string, configOptions: ConfigOptions) {
-  let config: UserConfig
-  let configPath = path.join(configDir, 'config.json')
+function loadUserConfig (config: Config): UserConfig {
+  const cache = config.__cache['userConfig']
+  if (cache) return cache
+  const configPath = path.join(config.configDir, 'config.json')
+  let userConfig: UserConfig
   try {
-    config = fs.readJSONSync(configPath)
+    userConfig = fs.readJSONSync(configPath)
   } catch (e) {
     if (e.code === 'ENOENT') {
-      config = {skipAnalytics: undefined, install: undefined}
+      userConfig = {
+        skipAnalytics: false,
+        install: null
+      }
     } else {
       throw e
     }
   }
+  config.__cache['userConfig'] = userConfig
 
-  if (config && config.skipAnalytics) {
-    config.install = null
-  } else if (config && config.install === undefined && configOptions.install === undefined) {
-    config.install = uuidV4()
+  if (config.skipAnalytics) userConfig.install = null
+  else if (!userConfig.install) {
+    userConfig.install = uuidV4()
     try {
-      fs.writeJSONSync(configPath, config)
+      fs.writeJSONSync(configPath, userConfig)
     } catch (e) {
-      config.install = null
+      userConfig.install = null
     }
   }
 
-  return config
+  return userConfig
 }
 
 function shell (onWindows: boolean = false): string {
@@ -142,10 +144,39 @@ function shell (onWindows: boolean = false): string {
   return shellPath[shellPath.length - 1]
 }
 
-function validateCLI (cli: CLI) {
-  const {version} = require('../package.json')
-  const {validate} = require('jest-validate')
-  const comment = `cli-engine-config@${version}`
+function userAgent (config: Config) {
+  const channel = config.channel === 'stable' ? '' : ` ${config.channel}`
+  return `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
+}
+
+function envSkipAnalytics (config: Config) {
+  if (config.userConfig.skipAnalytics) {
+    return true
+  } else if (envVarTrue('TESTING') || envVarTrue(envVarKey(config.bin, 'SKIP_ANALYTICS'))) {
+    return true
+  }
+  return false
+}
+
+export function configFromRoot (root: string): Config {
+  const pjson = require(path.join(root, 'package.json'))
+  validatePJSON(pjson)
+  return buildConfig({
+    root,
+    pjson: {
+      ...defaultConfig.pjson,
+      'cli-engine': {
+        ...defaultConfig.pjson['cli-engine'],
+        ...(pjson['cli-engine'] || {})
+      },
+      ...pjson
+    }
+  })
+}
+
+function validatePJSON (pjson: PJSON) {
+  const cli = pjson['cli-engine'] || {}
+  const comment = 'cli-engine-config'
   const title = {
     warning: 'invalid CLI package.json',
     error: 'invalid CLI package.json' }
@@ -156,51 +187,6 @@ function validateCLI (cli: CLI) {
   ].map(attr => {
     validate(cli[attr], {comment, title, exampleConfig: exampleCLI[attr]})
   })
-}
-
-export function buildConfig (options: ConfigOptions = {}): Config {
-  if (options._version) return options
-  const pjson = options.pjson || {}
-  const cli: CLI = pjson['cli-engine'] || {}
-  validateCLI(cli)
-  const name = options.name || pjson.name || 'cli-engine'
-  const config: ConfigOptions = {
-    pjson,
-    name,
-    dirname: cli.dirname || name,
-    version: pjson.version || '0.0.0',
-    channel: 'stable',
-    home: os.homedir() || os.tmpdir(),
-    debug: debug(cli.bin || 'cli-engine') || 0,
-    s3: cli.s3 || {},
-    root: path.join(__dirname, '..'),
-    platform: os.platform(),
-    arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
-    bin: cli.bin || 'cli-engine',
-    defaultCommand: cli.defaultCommand || 'help',
-    skipAnalytics: undefined,
-    shell: undefined,
-    hooks: cli.hooks || {},
-    ...options
-  }
-  if (config.platform === 'win32') config.platform = 'windows'
-  config.windows = config.platform === 'windows'
-  config.shell = shell(config.windows)
-  config.dataDir = config.dataDir || dir(config, 'data')
-  config.configDir = config.configDir || dir(config, 'config')
-  let defaultCacheDir = process.platform === 'darwin' ? path.join(config.home, 'Library', 'Caches') : null
-  config.cacheDir = config.cacheDir || dir(config, 'cache', defaultCacheDir)
-  config._version = '1'
-  let channel = config.channel === 'stable' ? '' : ` ${config.channel}`
-  config.userAgent = `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
-  let userConfig = loadUserConfig(config.configDir, options)
-  if (config.skipAnalytics === undefined) {
-    config.skipAnalytics = skipAnalytics(config.bin, userConfig)
-  }
-  if (config.install === undefined && userConfig) {
-    config.install = userConfig.install
-  }
-  return config
 }
 
 export interface IRunOptions {
@@ -220,3 +206,44 @@ export interface ICommand {
   +id: string,
   +run: (options: $Shape<IRunOptions>) => Promise<any>
 }
+
+export function buildConfig (existing?: Object): Config {
+  return {
+    __cache: {},
+    _version: '1',
+    pjson: {
+      name: 'cli-engine',
+      version: '0.0.0',
+      dependencies: {},
+      'cli-engine': {
+        hooks: {},
+        defaultCommand: 'help',
+        s3: { host: 'heroku-cli-assets' }
+      }
+    },
+    channel: 'stable',
+    home: os.homedir() || os.tmpdir(),
+    root: path.join(__dirname, '..'),
+    arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
+    platform: os.platform() === 'win32' ? 'windows' : os.platform(),
+    get defaultCommand () { return this.pjson['cli-engine'].defaultCommand },
+    get name () { return this.pjson.name },
+    get version () { return this.pjson.version },
+    get hooks () { return this.pjson['cli-engine'].hooks || {} },
+    get windows () { return this.platform === 'windows' },
+    get userAgent () { return userAgent(this) },
+    get dirname () { return this.pjson['cli-engine'].dirname || this.bin },
+    get shell () { return shell(this.windows) },
+    get bin () { return this.name },
+    get debug () { return debug(this.bin || 'cli-engine') || 0 },
+    get dataDir () { return dir(this, 'data') },
+    get configDir () { return dir(this, 'config') },
+    get cacheDir () { return dir(this, 'cache', this.platform === 'darwin' ? path.join(this.home, 'Library', 'Caches') : null) },
+    get userConfig () { return loadUserConfig(this) },
+    get skipAnalytics () { return envSkipAnalytics(this) },
+    get install () { return this.userConfig.install },
+    ...existing
+  }
+}
+
+export const defaultConfig = buildConfig()

@@ -5,6 +5,7 @@
   "author": "Jeff Dickey @dickeyxxx",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {
+    "fs-extra": "^4.0.1",
     "jest-validate": "^20.0.3",
     "uuid": "^3.1.0"
   },
@@ -28,6 +29,7 @@
     "flow-copy-source": "^1.2.1",
     "flow-typed": "^2.1.5",
     "jest": "20.0.4",
+    "mock-fs": "^4.4.1",
     "rimraf": "2.6.1"
   },
   "engines": {
