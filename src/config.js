@@ -14,6 +14,7 @@ type S3 = {
 type CLI = {
   dirname?: string,
   defaultCommand?: string,
+  commands?: string,
   bin?: string,
   s3?: S3,
   hooks?: {[name: string]: string},
@@ -23,6 +24,7 @@ const exampleCLI = {
   dirname: 'heroku-cli',
   node: '8.0.0',
   defaultCommand: 'dashboard',
+  commands: './lib/commands',
   hooks: {
     init: './lib/hooks/init.js',
     update: './lib/hooks/update.js',
@@ -149,6 +151,12 @@ function userAgent (config: Config) {
   return `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
 }
 
+function commandsDir (config: Config): ?string {
+  let commandsDir = config.pjson['cli-engine'].commands
+  if (!commandsDir) return
+  return path.join(config.root, commandsDir)
+}
+
 function envSkipAnalytics (config: Config) {
   if (config.userConfig.skipAnalytics) {
     return true
@@ -244,6 +252,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get skipAnalytics () { return envSkipAnalytics(this) },
     get install () { return this.userConfig.install },
     get s3 () { return this.pjson['cli-engine'].s3 },
+    get commandsDir () { return commandsDir(this) },
     ...(existing: any)
   }
 }

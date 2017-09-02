@@ -252,6 +252,7 @@ describe('pjson', () => {
       version: '1.0.0',
       'cli-engine': {
         dirname: 'heroku',
+        commands: './lib/commands',
         s3: {
           host: 'mys3host'
         }
@@ -274,6 +275,7 @@ describe('pjson', () => {
       name: 'analytics',
       version: '1.0.0',
       dirname: 'heroku',
+      commandsDir: './lib/commands',
       s3: {host: 'mys3host'},
       hooks: {}
     })
