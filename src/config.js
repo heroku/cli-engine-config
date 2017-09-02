@@ -219,7 +219,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
       'cli-engine': {
         hooks: {},
         defaultCommand: 'help',
-        s3: { host: 'heroku-cli-assets' }
+        s3: { host: null }
       }
     },
     channel: 'stable',
