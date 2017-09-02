@@ -15,7 +15,6 @@ type CLI = {
   dirname?: string,
   defaultCommand?: string,
   commands?: string,
-  bin?: string,
   s3?: S3,
   hooks?: {[name: string]: string},
   plugins?: string[]
@@ -45,6 +44,7 @@ export type PJSON = {
 export type Config = {
   name: string, // name of CLI
   dirname: string, // name of CLI directory
+  initPath: string, // path to init script
   bin: string, // name of binary
   s3: S3, // S3 config
   root: string, // root of CLI
