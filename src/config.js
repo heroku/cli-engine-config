@@ -16,7 +16,7 @@ type CLI = {
   defaultCommand?: string,
   commands?: string,
   s3?: S3,
-  hooks?: {[name: string]: string},
+  hooks?: {[name: string]: string | string[]},
   plugins?: string[]
 }
 const exampleCLI = {
@@ -45,6 +45,7 @@ export type Config = {
   name: string, // name of CLI
   dirname: string, // name of CLI directory
   initPath: string, // path to init script
+  commandsDir: string, // root path to CLI commands
   bin: string, // name of binary
   s3: S3, // S3 config
   root: string, // root of CLI
@@ -66,7 +67,7 @@ export type Config = {
   install: ?string, // generated uuid of this install
   userAgent: string, // user agent for API calls
   shell: string, // the shell in which the command is run
-  hooks: {[name: string]: string}, // scripts to run in the CLI on lifecycle events like prerun
+  hooks: {[name: string]: string[]}, // scripts to run in the CLI on lifecycle events like prerun
   userConfig: UserConfig, // users custom configuration json
   __cache: any // memoization cache
 }
@@ -157,6 +158,14 @@ function commandsDir (config: Config): ?string {
   return path.join(config.root, commandsDir)
 }
 
+function hooks (config: Config): {[name: string]: string[]} {
+  let hooks = {}
+  for (let [k, v] of Object.entries(config.pjson['cli-engine'].hooks || {})) {
+    hooks[k] = Array.isArray(v) ? v : [v]
+  }
+  return hooks
+}
+
 function envSkipAnalytics (config: Config) {
   if (config.userConfig.skipAnalytics) {
     return true
@@ -173,12 +182,14 @@ function validatePJSON (pjson: PJSON) {
     warning: 'invalid CLI package.json',
     error: 'invalid CLI package.json' }
   validate(cli, {comment, title, exampleConfig: exampleCLI})
-  ;[
-    's3',
-    'hooks'
-  ].map(attr => {
-    validate(cli[attr], {comment, title, exampleConfig: exampleCLI[attr]})
-  })
+  // validate(cli.hooks, {
+  //   comment,
+  //   condition: (option, validOption) => {
+  //     console.dir({option, validOption})
+  //   },
+  //   title,
+  //   exampleConfig: exampleCLI.hooks
+  // })
 }
 
 export interface IRunOptions {
@@ -238,7 +249,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get defaultCommand () { return this.pjson['cli-engine'].defaultCommand },
     get name () { return this.pjson.name },
     get version () { return this.pjson.version },
-    get hooks () { return this.pjson['cli-engine'].hooks || {} },
+    get hooks () { return hooks(this) },
     get windows () { return this.platform === 'windows' },
     get userAgent () { return userAgent(this) },
     get dirname () { return this.pjson['cli-engine'].dirname || this.bin },

@@ -290,7 +290,26 @@ describe('pjson', () => {
           }
         }
       })
-      expect(config.hooks.prerun).toEqual('./lib/hooks/prerun.js')
+      expect(config.hooks.prerun).toEqual(['./lib/hooks/prerun.js'])
+    })
+
+    test('has multiple hooks', () => {
+      let config = configFromPJSON({
+        'cli-engine': {
+          hooks: {
+            init: [
+              './lib/hooks/a.js',
+              './lib/hooks/b.js',
+              './lib/hooks/c.js'
+            ]
+          }
+        }
+      })
+      expect(config.hooks.init).toEqual([
+        './lib/hooks/a.js',
+        './lib/hooks/b.js',
+        './lib/hooks/c.js'
+      ])
     })
   })
 })
