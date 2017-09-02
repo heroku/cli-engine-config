@@ -27,7 +27,7 @@ test('default props are set', () => {
   expect(config.bin).toEqual('cli-engine')
   expect(config.root).toEqual(path.join(__dirname, '..'))
   expect(config.defaultCommand).toEqual('help')
-  expect(config.pjson['cli-engine'].s3).toEqual({host: 'heroku-cli-assets'})
+  expect(config.pjson['cli-engine'].s3).toEqual({host: null})
   expect(config.windows).toEqual(os.platform() === 'win32')
 })
 
