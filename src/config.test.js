@@ -275,7 +275,7 @@ describe('pjson', () => {
       name: 'analytics',
       version: '1.0.0',
       dirname: 'heroku',
-      commandsDir: './lib/commands',
+      commandsDir: '/tmp/my-cli/lib/commands',
       s3: {host: 'mys3host'},
       hooks: {}
     })
