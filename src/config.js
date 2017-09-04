@@ -20,7 +20,8 @@ type CLI = {
   plugins?: string[]
 }
 const exampleCLI = {
-  dirname: 'heroku-cli',
+  bin: 'heroku',
+  dirname: 'heroku',
   node: '8.0.0',
   defaultCommand: 'dashboard',
   commands: './lib/commands',
@@ -254,7 +255,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get userAgent () { return userAgent(this) },
     get dirname () { return this.pjson['cli-engine'].dirname || this.bin },
     get shell () { return shell(this.windows) },
-    get bin () { return this.name },
+    get bin () { return this.pjson['cli-engine'].bin || this.name },
     get debug () { return debug(this.bin || 'cli-engine') || 0 },
     get dataDir () { return dir(this, 'data') },
     get configDir () { return dir(this, 'config') },

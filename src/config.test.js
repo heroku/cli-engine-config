@@ -312,4 +312,27 @@ describe('pjson', () => {
       ])
     })
   })
+
+  describe('bin', () => {
+    test('can be set', () => {
+      let config = configFromPJSON({
+        'cli-engine': { bin: 'heroku' }
+      })
+      expect(config.bin).toEqual('heroku')
+    })
+  })
+  describe('dirname', () => {
+    test('follows bin', () => {
+      let config = configFromPJSON({
+        'cli-engine': { bin: 'heroku' }
+      })
+      expect(config.dirname).toEqual('heroku')
+    })
+    test('can be set', () => {
+      let config = configFromPJSON({
+        'cli-engine': { dirname: 'mydirname', bin: 'heroku' }
+      })
+      expect(config.dirname).toEqual('mydirname')
+    })
+  })
 })
