@@ -89,10 +89,8 @@ function dir (config: Config, category: string, d: ?string): string {
 }
 
 function debug (bin: string) {
-  const DEBUG = process.env[envVarKey(bin, 'DEBUG')]
-  if (DEBUG === 'true') return 1
-  if (DEBUG) return parseInt(DEBUG)
-  return 0
+  const debug = (process.env.DEBUG || '').includes('*') || envVarTrue(envVarKey(bin, 'DEBUG'))
+  return debug ? 1 : 0
 }
 
 function envVarKey (...parts: string[]) {

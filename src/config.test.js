@@ -103,9 +103,15 @@ test('sets version from options', () => {
 })
 
 test('sets debug value', () => {
-  process.env['CLI_ENGINE_DEBUG'] = '2'
+  process.env['CLI_ENGINE_DEBUG'] = '1'
   let sampleConfig = buildConfig()
-  expect(sampleConfig.debug).toBe(2)
+  expect(sampleConfig.debug).toBe(1)
+})
+
+test('sets debug value if DEBUG=*', () => {
+  process.env['DEBUG'] = '*,-babel'
+  let sampleConfig = buildConfig()
+  expect(sampleConfig.debug).toBe(1)
 })
 
 describe('with mockUserConfig', () => {
