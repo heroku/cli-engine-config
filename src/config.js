@@ -70,6 +70,7 @@ export type Config = {
   shell: string, // the shell in which the command is run
   hooks: {[name: string]: string[]}, // scripts to run in the CLI on lifecycle events like prerun
   userConfig: UserConfig, // users custom configuration json
+  argv: string[],
   __cache: any // memoization cache
 }
 
@@ -245,6 +246,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     root: path.join(__dirname, '..'),
     arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
     platform: os.platform() === 'win32' ? 'windows' : os.platform(),
+    argv: process.argv.slice(1),
     get defaultCommand () { return this.pjson['cli-engine'].defaultCommand },
     get name () { return this.pjson.name },
     get version () { return this.pjson.version },
