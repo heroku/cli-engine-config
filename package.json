@@ -28,7 +28,9 @@
     "flow-bin": "^0.54.0",
     "flow-copy-source": "^1.2.1",
     "flow-typed": "^2.1.5",
+    "husky": "^0.14.3",
     "jest": "20.0.4",
+    "lint-staged": "^4.1.0",
     "mock-fs": "^4.4.1",
     "rimraf": "2.6.1"
   },
@@ -48,12 +50,16 @@
     "heroku-cli-plugin"
   ],
   "license": "ISC",
+  "lint-staged": {
+    "src/**/*.js": "eslint"
+  },
   "main": "lib/config.js",
   "repository": "heroku/cli-engine-command",
   "scripts": {
     "build": "babel src -d lib --ignore '*.test.js'",
     "clean": "rimraf lib",
     "copy-flow": "flow-copy-source -v -i '**/*.test.js' src lib",
+    "precommit": "lint-staged",
     "prepare": "npm run clean && npm run build && npm run copy-flow",
     "test": "jest && flow && eslint ."
   },
