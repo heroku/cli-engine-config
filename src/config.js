@@ -90,7 +90,6 @@ function dir (config: Config, category: string, d: ?string): string {
 
 function debug (bin: string) {
   const debug = (process.env.DEBUG || '').includes('*') || envVarTrue(envVarKey(bin, 'DEBUG'))
-
   return debug ? 1 : 0
 }
 
