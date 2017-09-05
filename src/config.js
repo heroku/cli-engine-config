@@ -3,9 +3,7 @@
 import path from 'path'
 import os from 'os'
 import fs from 'fs-extra'
-import uuidV4 from 'uuid/v4'
-import { type UserConfig } from './user_config'
-import {validate} from 'jest-validate'
+import type { UserConfig } from './user_config'
 
 type S3 = {
   host?: string
@@ -18,21 +16,6 @@ type CLI = {
   s3?: S3,
   hooks?: {[name: string]: string | string[]},
   plugins?: string[]
-}
-const exampleCLI = {
-  bin: 'heroku',
-  dirname: 'heroku',
-  node: '8.0.0',
-  defaultCommand: 'dashboard',
-  commands: './lib/commands',
-  hooks: {
-    init: './lib/hooks/init.js',
-    update: './lib/hooks/update.js',
-    prerun: './lib/hooks/prerun.js',
-    'plugins:preinstall': './lib/hooks/plugins/preinstall.js'
-  },
-  s3: {host: 'host'},
-  plugins: ['heroku-pg', 'heroku-redis']
 }
 
 export type PJSON = {
@@ -71,6 +54,7 @@ export type Config = {
   hooks: {[name: string]: string[]}, // scripts to run in the CLI on lifecycle events like prerun
   userConfig: UserConfig, // users custom configuration json
   argv: string[],
+  mock: boolean,
   __cache: any // memoization cache
 }
 
@@ -124,7 +108,8 @@ function loadUserConfig (config: Config): UserConfig {
 
   if (config.skipAnalytics) userConfig.install = null
   else if (!userConfig.install) {
-    userConfig.install = uuidV4()
+    const uuid = require('uuid/v4')
+    userConfig.install = uuid()
     try {
       fs.writeJSONSync(configPath, userConfig)
     } catch (e) {
@@ -176,12 +161,28 @@ function envSkipAnalytics (config: Config) {
 }
 
 function validatePJSON (pjson: PJSON) {
-  const cli = pjson['cli-engine'] || {}
-  const comment = 'cli-engine-config'
-  const title = {
-    warning: 'invalid CLI package.json',
-    error: 'invalid CLI package.json' }
-  validate(cli, {comment, title, exampleConfig: exampleCLI})
+  // const exampleCLI = {
+  //   bin: 'heroku',
+  //   dirname: 'heroku',
+  //   node: '8.0.0',
+  //   defaultCommand: 'dashboard',
+  //   commands: './lib/commands',
+  //   hooks: {
+  //     init: './lib/hooks/init.js',
+  //     update: './lib/hooks/update.js',
+  //     prerun: './lib/hooks/prerun.js',
+  //     'plugins:preinstall': './lib/hooks/plugins/preinstall.js'
+  //   },
+  //   s3: {host: 'host'},
+  //   plugins: ['heroku-pg', 'heroku-redis']
+  // }
+  // TODO: validate
+  // const cli = pjson['cli-engine'] || {}
+  // const comment = 'cli-engine-config'
+  // const title = {
+  //   warning: 'invalid CLI package.json',
+  //   error: 'invalid CLI package.json' }
+  // validate(cli, {comment, title, exampleConfig: exampleCLI})
   // validate(cli.hooks, {
   //   comment,
   //   condition: (option, validOption) => {
@@ -190,11 +191,6 @@ function validatePJSON (pjson: PJSON) {
   //   title,
   //   exampleConfig: exampleCLI.hooks
   // })
-}
-
-export interface IRunOptions {
-  argv?: string[],
-  config?: ConfigOptions
 }
 
 export interface ICommand {
@@ -207,7 +203,7 @@ export interface ICommand {
   +aliases: string[],
   +_version: string,
   +id: string,
-  +run: (options: $Shape<IRunOptions>) => Promise<any>
+  +run: (options: ?ConfigOptions) => Promise<any>
 }
 
 export function buildConfig (existing: ?ConfigOptions = {}): Config {
@@ -246,6 +242,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     root: path.join(__dirname, '..'),
     arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
     platform: os.platform() === 'win32' ? 'windows' : os.platform(),
+    mock: false,
     argv: process.argv.slice(1),
     get defaultCommand () { return this.pjson['cli-engine'].defaultCommand },
     get name () { return this.pjson.name },
