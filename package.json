@@ -51,7 +51,7 @@
   ],
   "license": "ISC",
   "lint-staged": {
-    "src/**/*.js": "eslint"
+    "src/**/*.js": "eslint --fix"
   },
   "main": "lib/config.js",
   "repository": "heroku/cli-engine-command",
