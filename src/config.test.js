@@ -29,6 +29,7 @@ test('default props are set', () => {
   expect(config.defaultCommand).toEqual('help')
   expect(config.pjson['cli-engine'].s3).toEqual({host: null})
   expect(config.windows).toEqual(os.platform() === 'win32')
+  expect(config.userPlugins).toEqual(false)
 })
 
 describe('windows', () => {

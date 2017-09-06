@@ -15,6 +15,7 @@ type CLI = {
   commands?: string,
   s3?: S3,
   hooks?: {[name: string]: string | string[]},
+  userPlugins: boolean,
   plugins?: string[]
 }
 
@@ -55,6 +56,7 @@ export type Config = {
   userConfig: UserConfig, // users custom configuration json
   argv: string[],
   mock: boolean,
+  userPlugins: boolean,
   __cache: any // memoization cache
 }
 
@@ -234,6 +236,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
       'cli-engine': {
         hooks: {},
         defaultCommand: 'help',
+        userPlugins: false,
         s3: { host: null }
       }
     },
@@ -262,6 +265,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get install () { return this.userConfig.install },
     get s3 () { return this.pjson['cli-engine'].s3 },
     get commandsDir () { return commandsDir(this) },
+    get userPlugins () { return this.pjson['cli-engine'].userPlugins },
     ...(existing: any)
   }
 }
