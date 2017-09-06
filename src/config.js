@@ -227,7 +227,6 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     }
   }
   return {
-    __cache: {},
     _version: '1',
     pjson: {
       name: 'cli-engine',
@@ -266,7 +265,8 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get s3 () { return this.pjson['cli-engine'].s3 },
     get commandsDir () { return commandsDir(this) },
     get userPlugins () { return this.pjson['cli-engine'].userPlugins },
-    ...(existing: any)
+    ...(existing: any),
+    __cache: {}
   }
 }
 
