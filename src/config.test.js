@@ -342,4 +342,16 @@ describe('pjson', () => {
       expect(config.dirname).toEqual('mydirname')
     })
   })
+  describe('legacyConverter', () => {
+    test('defaults to undefined', () => {
+      let config = configFromPJSON()
+      expect(config.legacyConverter).toBeUndefined()
+    })
+    test('can be set', () => {
+      let config = configFromPJSON({
+        'cli-engine': { legacyConverter: 'foo' }
+      })
+      expect(config.legacyConverter).toEqual('foo')
+    })
+  })
 })

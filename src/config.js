@@ -16,7 +16,8 @@ type CLI = {
   s3?: S3,
   hooks?: {[name: string]: string | string[]},
   userPlugins: boolean,
-  plugins?: string[]
+  plugins?: string[],
+  legacyConverter?: string
 }
 
 export type PJSON = {
@@ -57,6 +58,7 @@ export type Config = {
   argv: string[],
   mock: boolean,
   userPlugins: boolean,
+  legacyConverter?: string,
   __cache: any // memoization cache
 }
 
@@ -265,6 +267,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get install () { return this.userConfig.install },
     get s3 () { return this.pjson['cli-engine'].s3 },
     get commandsDir () { return commandsDir(this) },
+    get legacyConverter () { return this.pjson['cli-engine'].legacyConverter },
     get userPlugins () { return this.pjson['cli-engine'].userPlugins },
     ...(existing: any),
     __cache: {}
