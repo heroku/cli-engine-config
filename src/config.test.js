@@ -1,6 +1,6 @@
 // @flow
 
-import { buildConfig } from './config'
+import { defaultConfig, buildConfig } from './config'
 import os from 'os'
 import path from 'path'
 import fs from 'fs-extra'
@@ -352,6 +352,29 @@ describe('pjson', () => {
         'cli-engine': { legacyConverter: 'foo' }
       })
       expect(config.legacyConverter).toEqual('foo')
+    })
+  })
+  describe('topics', () => {
+    test('defaults to undefined', () => {
+      expect(defaultConfig.topics).toEqual({})
+    })
+    test('can be set', () => {
+      let config = configFromPJSON({
+        'cli-engine': {
+          topics: {
+            foo: {
+              description: 'description for foo'
+            },
+            bar: {
+              hidden: true
+            }
+          }
+        }
+      })
+      expect(config.topics).toMatchObject({
+        foo: {name: 'foo', description: 'description for foo'},
+        bar: {name: 'bar', hidden: true}
+      })
     })
   })
 })

@@ -5,6 +5,12 @@ import os from 'os'
 import fs from 'fs-extra'
 import type { UserConfig } from './user_config'
 
+export type Topic = {
+  name: string,
+  description?: ?string,
+  hidden?: ?boolean
+}
+
 type S3 = {
   host?: string
 }
@@ -17,7 +23,8 @@ type CLI = {
   hooks?: {[name: string]: string | string[]},
   userPlugins: boolean,
   plugins?: string[],
-  legacyConverter?: string
+  legacyConverter?: string,
+  topics?: {[name: string]: Topic}
 }
 
 export type PJSON = {
@@ -58,6 +65,7 @@ export type Config = {
   argv: string[],
   mock: boolean,
   userPlugins: boolean,
+  topics: {[name: string]: Topic},
   legacyConverter?: string,
   __cache: any // memoization cache
 }
@@ -164,6 +172,16 @@ function envSkipAnalytics (config: Config) {
   return false
 }
 
+function topics (config: Config) {
+  if (!config.__cache['topics']) {
+    config.__cache['topics'] = config.pjson['cli-engine'].topics || {}
+    for (let [k, v]: [string, any] of Object.entries(config.__cache['topics'])) {
+      if (!v.name) v.name = k
+    }
+  }
+  return config.__cache['topics']
+}
+
 function validatePJSON (pjson: PJSON) {
   // const exampleCLI = {
   //   bin: 'heroku',
@@ -197,6 +215,12 @@ function validatePJSON (pjson: PJSON) {
   // })
 }
 
+export interface RunReturn {
+  +stdout?: string,
+  +stderr?: string,
+  +code?: number
+}
+
 export interface ICommand {
   +topic?: string,
   +command?: ?string,
@@ -207,7 +231,7 @@ export interface ICommand {
   +aliases: string[],
   +_version: string,
   +id: string,
-  +run: (options: ?ConfigOptions) => Promise<any>
+  +run: (options: ?ConfigOptions) => Promise<RunReturn>
 }
 
 export function buildConfig (existing: ?ConfigOptions = {}): Config {
@@ -269,6 +293,7 @@ export function buildConfig (existing: ?ConfigOptions = {}): Config {
     get commandsDir () { return commandsDir(this) },
     get legacyConverter () { return this.pjson['cli-engine'].legacyConverter },
     get userPlugins () { return this.pjson['cli-engine'].userPlugins },
+    get topics () { return topics(this) },
     ...(existing: any),
     __cache: {}
   }
