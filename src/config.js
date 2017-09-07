@@ -198,8 +198,8 @@ function validatePJSON (pjson: PJSON) {
 }
 
 export interface ICommand {
-  +topic: string,
-  +command: ?string,
+  +topic?: string,
+  +command?: ?string,
   +description: ?string,
   +hidden: ?boolean,
   +usage: ?string,
