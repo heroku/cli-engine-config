@@ -217,8 +217,7 @@ function validatePJSON (pjson: PJSON) {
 
 export interface RunReturn {
   +stdout?: string,
-  +stderr?: string,
-  +code?: number
+  +stderr?: string
 }
 
 export interface ICommand {
