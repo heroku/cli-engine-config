@@ -269,6 +269,7 @@ export interface ICommand {
   +aliases: string[],
   +_version: string,
   +id: string,
+  +buildHelp?: (config: Config) => string,
   +buildHelpLine?: (config: Config) => [string, ?string],
   +args?: Arg[],
   +flags?: {[name: string]: BooleanFlag | OptionFlag<*> },
