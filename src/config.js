@@ -220,6 +220,40 @@ export interface RunReturn {
   +stderr?: string
 }
 
+export type Arg = {
+  name: string,
+  description?: string,
+  required?: boolean,
+  optional?: boolean,
+  hidden?: boolean
+}
+
+type AlphabetUppercase = | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'X' | 'Y' | 'Z'
+type AlphabetLowercase = | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'x' | 'y' | 'z'
+
+export type Completion <T> = {
+  cacheDuration?: number,
+  cacheKey?: (T) => Promise<string>,
+  options: (T) => Promise<string[]>
+}
+
+export type Flag = {
+  char?: (AlphabetLowercase | AlphabetUppercase),
+  description?: string,
+  hidden?: boolean,
+}
+
+export type BooleanFlag = Flag & {
+  parse: null
+}
+
+export type OptionFlag <T> = Flag & {
+  required?: ?boolean,
+  optional?: ?boolean,
+  parse: (?string, any | void, string | void) => (Promise<?T> | ?T),
+  completion?: Completion<*>
+}
+
 export interface ICommand {
   +topic?: string,
   +command?: ?string,
@@ -230,6 +264,9 @@ export interface ICommand {
   +aliases: string[],
   +_version: string,
   +id: string,
+  +buildHelpLine?: (config: Config) => [string, ?string],
+  +args?: Arg[],
+  +flags?: {[name: string]: BooleanFlag | OptionFlag<*> },
   +run: (options: ?ConfigOptions) => Promise<RunReturn>
 }
 
