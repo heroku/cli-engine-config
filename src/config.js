@@ -231,10 +231,17 @@ export type Arg = {
 type AlphabetUppercase = | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'X' | 'Y' | 'Z'
 type AlphabetLowercase = | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'x' | 'y' | 'z'
 
-export type Completion <T> = {
+type CompletionContext = {
+  args?: ?{[name: string]: string},
+  flags?: ?{[name: string]: string},
+  argv?: ?string[],
+  config: Config
+}
+
+export type Completion = {
   cacheDuration?: number,
-  cacheKey?: (T) => Promise<string>,
-  options: (T) => Promise<string[]>
+  cacheKey?: (CompletionContext) => Promise<string>,
+  options: (CompletionContext) => Promise<string[]>
 }
 
 export type Flag = {
@@ -251,7 +258,7 @@ export type OptionFlag <T> = Flag & {
   required?: ?boolean,
   optional?: ?boolean,
   parse: (?string, any | void, string | void) => (Promise<?T> | ?T),
-  completion?: Completion<*>
+  completion?: Completion
 }
 
 export type Plugin = {
