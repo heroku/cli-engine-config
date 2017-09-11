@@ -72,7 +72,7 @@ export type Config = {
 
 export type ConfigOptions = $Shape<Config>
 
-function dir(config: Config, category: string, d: ?string): string {
+function dir (config: Config, category: string, d: ?string): string {
   let cacheKey = `dir:${category}`
   let cache = config.__cache[cacheKey]
   if (cache) return cache
@@ -85,24 +85,24 @@ function dir(config: Config, category: string, d: ?string): string {
   return d
 }
 
-function debug(bin: string) {
+function debug (bin: string) {
   const debug = (process.env.DEBUG || '').includes('*') || envVarTrue(envVarKey(bin, 'DEBUG'))
   return debug ? 1 : 0
 }
 
-function envVarKey(...parts: string[]) {
+function envVarKey (...parts: string[]) {
   return parts
     .map(p => p.replace(/-/g, '_'))
     .join('_')
     .toUpperCase()
 }
 
-function envVarTrue(k: string): boolean {
+function envVarTrue (k: string): boolean {
   let v = process.env[k]
   return v === '1' || v === 'true'
 }
 
-function loadUserConfig(config: Config): UserConfig {
+function loadUserConfig (config: Config): UserConfig {
   const cache = config.__cache['userConfig']
   if (cache) return cache
   const configPath = path.join(config.configDir, 'config.json')
@@ -113,7 +113,7 @@ function loadUserConfig(config: Config): UserConfig {
     if (e.code === 'ENOENT') {
       userConfig = {
         skipAnalytics: false,
-        install: null,
+        install: null
       }
     } else {
       throw e
@@ -135,7 +135,7 @@ function loadUserConfig(config: Config): UserConfig {
   return userConfig
 }
 
-function shell(onWindows: boolean = false): string {
+function shell (onWindows: boolean = false): string {
   let shellPath
   if (process.env['SHELL']) {
     shellPath = process.env['SHELL'].split(`/`)
@@ -147,18 +147,18 @@ function shell(onWindows: boolean = false): string {
   return shellPath[shellPath.length - 1]
 }
 
-function userAgent(config: Config) {
+function userAgent (config: Config) {
   const channel = config.channel === 'stable' ? '' : ` ${config.channel}`
   return `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
 }
 
-function commandsDir(config: Config): ?string {
+function commandsDir (config: Config): ?string {
   let commandsDir = config.pjson['cli-engine'].commands
   if (!commandsDir) return
   return path.join(config.root, commandsDir)
 }
 
-function hooks(config: Config): { [name: string]: string[] } {
+function hooks (config: Config): { [name: string]: string[] } {
   let hooks = {}
   for (let [k, v] of Object.entries(config.pjson['cli-engine'].hooks || {})) {
     hooks[k] = Array.isArray(v) ? v : [v]
@@ -166,7 +166,7 @@ function hooks(config: Config): { [name: string]: string[] } {
   return hooks
 }
 
-function envSkipAnalytics(config: Config) {
+function envSkipAnalytics (config: Config) {
   if (config.userConfig.skipAnalytics) {
     return true
   } else if (envVarTrue('TESTING') || envVarTrue(envVarKey(config.bin, 'SKIP_ANALYTICS'))) {
@@ -175,7 +175,7 @@ function envSkipAnalytics(config: Config) {
   return false
 }
 
-function topics(config: Config) {
+function topics (config: Config) {
   if (!config.__cache['topics']) {
     config.__cache['topics'] = config.pjson['cli-engine'].topics || {}
     for (let [k, v]: [string, any] of Object.entries(config.__cache['topics'])) {
@@ -185,7 +185,7 @@ function topics(config: Config) {
   return config.__cache['topics']
 }
 
-function validatePJSON(pjson: PJSON) {
+function validatePJSON (pjson: PJSON) {
   // const exampleCLI = {
   //   bin: 'heroku',
   //   dirname: 'heroku',
@@ -292,6 +292,7 @@ type CompletionContext = {
 }
 
 export type Completion = {
+  skipCache?: boolean,
   cacheDuration?: number,
   cacheKey?: CompletionContext => Promise<string>,
   options: CompletionContext => Promise<string[]>,
@@ -337,7 +338,7 @@ export interface ICommand {
   plugin?: ?Plugin,
 }
 
-export function buildConfig(existing: ?ConfigOptions = {}): Config {
+export function buildConfig (existing: ?ConfigOptions = {}): Config {
   if (!existing) existing = {}
   if (existing._version) return (existing: any)
   if (existing.root && !existing.pjson) {
@@ -349,9 +350,9 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
         ...defaultConfig.pjson,
         'cli-engine': {
           ...defaultConfig.pjson['cli-engine'],
-          ...(pjson['cli-engine'] || {}),
+          ...(pjson['cli-engine'] || {})
         },
-        ...pjson,
+        ...pjson
       }
       validatePJSON(existing.pjson)
     }
@@ -366,8 +367,8 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
         hooks: {},
         defaultCommand: 'help',
         userPlugins: false,
-        s3: { host: null },
-      },
+        s3: { host: null }
+      }
     },
     channel: 'stable',
     home: os.homedir() || os.tmpdir(),
@@ -376,71 +377,71 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
     platform: os.platform() === 'win32' ? 'windows' : os.platform(),
     mock: false,
     argv: process.argv.slice(1),
-    get defaultCommand() {
+    get defaultCommand () {
       return this.pjson['cli-engine'].defaultCommand
     },
-    get name() {
+    get name () {
       return this.pjson.name
     },
-    get version() {
+    get version () {
       return this.pjson.version
     },
-    get hooks() {
+    get hooks () {
       return hooks(this)
     },
-    get windows() {
+    get windows () {
       return this.platform === 'windows'
     },
-    get userAgent() {
+    get userAgent () {
       return userAgent(this)
     },
-    get dirname() {
+    get dirname () {
       return this.pjson['cli-engine'].dirname || this.bin
     },
-    get shell() {
+    get shell () {
       return shell(this.windows)
     },
-    get bin() {
+    get bin () {
       return this.pjson['cli-engine'].bin || this.name
     },
-    get debug() {
+    get debug () {
       return debug(this.bin || 'cli-engine') || 0
     },
-    get dataDir() {
+    get dataDir () {
       return dir(this, 'data')
     },
-    get configDir() {
+    get configDir () {
       return dir(this, 'config')
     },
-    get cacheDir() {
-      return dir(this, 'cache', this.platform === 'darwin' ? path.join(this.home, 'Library', 'Caches') : null)
+    get cacheDir () {
+      return dir(this, 'cache', this.platform === 'darwin' ? path.join(this.home, 'Library', 'srcs') : null)
     },
-    get userConfig() {
+    get userConfig () {
       return loadUserConfig(this)
     },
-    get skipAnalytics() {
+    get skipAnalytics () {
       return envSkipAnalytics(this)
     },
-    get install() {
+    get install () {
       return this.userConfig.install
     },
-    get s3() {
+    get s3 () {
       return this.pjson['cli-engine'].s3
     },
-    get commandsDir() {
+    get commandsDir () {
       return commandsDir(this)
     },
-    get legacyConverter() {
+    get legacyConverter () {
       return this.pjson['cli-engine'].legacyConverter
     },
-    get userPlugins() {
+    get userPlugins () {
       return this.pjson['cli-engine'].userPlugins
     },
-    get topics() {
+    get topics () {
       return topics(this)
     },
     ...(existing: any),
-    __cache: {},
+    __cache: {}
   }
 }
 
