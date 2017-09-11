@@ -27,7 +27,7 @@ test('default props are set', () => {
   expect(config.bin).toEqual('cli-engine')
   expect(config.root).toEqual(path.join(__dirname, '..'))
   expect(config.defaultCommand).toEqual('help')
-  expect(config.pjson['cli-engine'].s3).toEqual({host: null})
+  expect(config.pjson['cli-engine'].s3).toEqual({ host: null })
   expect(config.windows).toEqual(os.platform() === 'win32')
   expect(config.userPlugins).toEqual(false)
 })
@@ -76,7 +76,9 @@ describe('shell property', () => {
   })
 
   it('is set dynamically when running windows', () => {
-    os.platform = jest.fn(() => { return 'win32' })
+    os.platform = jest.fn(() => {
+      return 'win32'
+    })
     process.env['COMSPEC'] = 'C:\\ProgramFiles\\cmd.exe'
     let config = buildConfig()
     expect(config.shell).toEqual('cmd.exe')
@@ -84,14 +86,18 @@ describe('shell property', () => {
   })
 
   it('is set dynamically when running cywin', () => {
-    os.platform = jest.fn(() => { return 'win32' })
+    os.platform = jest.fn(() => {
+      return 'win32'
+    })
     process.env['SHELL'] = '/bin/bash'
     const config = buildConfig()
     expect(config.shell).toEqual('bash')
   })
 
   it('is set dynamically when running unix-like', () => {
-    os.platform = jest.fn(() => { return 'darwin' })
+    os.platform = jest.fn(() => {
+      return 'darwin'
+    })
     process.env['SHELL'] = `/usr/bin/fish`
     const config = buildConfig()
     expect(config.shell).toEqual('fish')
@@ -99,7 +105,7 @@ describe('shell property', () => {
 })
 
 test('sets version from options', () => {
-  const config = buildConfig({version: '1.0.0-foobar'})
+  const config = buildConfig({ version: '1.0.0-foobar' })
   expect(config.version).toEqual('1.0.0-foobar')
 })
 
@@ -120,8 +126,10 @@ describe('with mockUserConfig', () => {
   const originalReadJSONSync = fs.readJSONSync
 
   beforeEach(() => {
-    mockUserConfig = {'skipAnalytics': true}
-    fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+    mockUserConfig = { skipAnalytics: true }
+    fs.readJSONSync = jest.fn(() => {
+      return mockUserConfig
+    })
   })
   afterEach(() => {
     fs.readJSONSync = originalReadJSONSync
@@ -134,8 +142,10 @@ describe('with mockUserConfig', () => {
 
   describe('skipAnalytics', () => {
     it('returns true when testing environment is set to "1" or "true"', () => {
-      mockUserConfig = {'skipAnalytics': false}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      mockUserConfig = { skipAnalytics: false }
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       process.env['TESTING'] = '1'
       let sampleConfig = buildConfig()
       expect(sampleConfig.skipAnalytics).toBeTruthy()
@@ -145,8 +155,10 @@ describe('with mockUserConfig', () => {
     })
 
     it('returns true when HEROKU_SKIP_TESTING is set', () => {
-      mockUserConfig = {'skipAnalytics': false}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      mockUserConfig = { skipAnalytics: false }
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       process.env['CLI_ENGINE_SKIP_ANALYTICS'] = '1'
       let sampleConfig = buildConfig()
       expect(sampleConfig.skipAnalytics).toBeTruthy()
@@ -160,18 +172,22 @@ describe('with mockUserConfig', () => {
 
   describe('install', () => {
     it('when file does not have an install one is generated', () => {
-      mockUserConfig = {'skipAnalytics': false}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      mockUserConfig = { skipAnalytics: false }
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       fs.writeJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
       expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({'skipAnalytics': false, install: sampleConfig.install})
+      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ skipAnalytics: false, install: sampleConfig.install })
     })
 
     it('when file does have an install one is not generated', () => {
-      mockUserConfig = {'skipAnalytics': false, 'install': '1234'}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      mockUserConfig = { skipAnalytics: false, install: '1234' }
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       fs.writeJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toEqual('1234')
@@ -180,12 +196,14 @@ describe('with mockUserConfig', () => {
 
     it('does not define skipAnalytics if not defined', () => {
       mockUserConfig = {}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       fs.writeJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
       expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({install: sampleConfig.install})
+      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install })
     })
 
     it('does not define skipAnalytics if no file', () => {
@@ -200,7 +218,7 @@ describe('with mockUserConfig', () => {
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
       expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({install: sampleConfig.install, skipAnalytics: false})
+      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install, skipAnalytics: false })
     })
 
     it('install is not defined if file does not exist & could not be written', () => {
@@ -217,24 +235,28 @@ describe('with mockUserConfig', () => {
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
       expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toMatchObject({install: sampleConfig.install})
+      expect(fs.writeJSONSync.mock.calls[0][1]).toMatchObject({ install: sampleConfig.install })
     })
 
     it('install is not defined if file does exist but could not be written', () => {
       mockUserConfig = {}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       fs.writeJSONSync = jest.fn(() => {
         throw new Error()
       })
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
       expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({install: sampleConfig.install})
+      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install })
     })
 
     it('install is not defined if skipAnalytics is true', () => {
-      mockUserConfig = {'skipAnalytics': true}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      mockUserConfig = { skipAnalytics: true }
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       fs.writeJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
@@ -242,8 +264,10 @@ describe('with mockUserConfig', () => {
     })
 
     it('install is not defined if skipAnalytics is true and install is set', () => {
-      mockUserConfig = {'skipAnalytics': true, 'install': '1234'}
-      fs.readJSONSync = jest.fn(() => { return mockUserConfig })
+      mockUserConfig = { skipAnalytics: true, install: '1234' }
+      fs.readJSONSync = jest.fn(() => {
+        return mockUserConfig
+      })
       fs.writeJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
@@ -261,16 +285,16 @@ describe('pjson', () => {
         dirname: 'heroku',
         commands: './lib/commands',
         s3: {
-          host: 'mys3host'
-        }
-      }
+          host: 'mys3host',
+        },
+      },
     }
     mockFS({
       '/tmp/my-cli': {
-        'package.json': JSON.stringify(pjson)
-      }
+        'package.json': JSON.stringify(pjson),
+      },
     })
-    return buildConfig({root: '/tmp/my-cli'})
+    return buildConfig({ root: '/tmp/my-cli' })
   }
 
   afterEach(() => {
@@ -283,8 +307,8 @@ describe('pjson', () => {
       version: '1.0.0',
       dirname: 'heroku',
       commandsDir: '/tmp/my-cli/lib/commands',
-      s3: {host: 'mys3host'},
-      hooks: {}
+      s3: { host: 'mys3host' },
+      hooks: {},
     })
   })
 
@@ -293,9 +317,9 @@ describe('pjson', () => {
       let config = configFromPJSON({
         'cli-engine': {
           hooks: {
-            prerun: './lib/hooks/prerun.js'
-          }
-        }
+            prerun: './lib/hooks/prerun.js',
+          },
+        },
       })
       expect(config.hooks.prerun).toEqual(['./lib/hooks/prerun.js'])
     })
@@ -304,26 +328,18 @@ describe('pjson', () => {
       let config = configFromPJSON({
         'cli-engine': {
           hooks: {
-            init: [
-              './lib/hooks/a.js',
-              './lib/hooks/b.js',
-              './lib/hooks/c.js'
-            ]
-          }
-        }
+            init: ['./lib/hooks/a.js', './lib/hooks/b.js', './lib/hooks/c.js'],
+          },
+        },
       })
-      expect(config.hooks.init).toEqual([
-        './lib/hooks/a.js',
-        './lib/hooks/b.js',
-        './lib/hooks/c.js'
-      ])
+      expect(config.hooks.init).toEqual(['./lib/hooks/a.js', './lib/hooks/b.js', './lib/hooks/c.js'])
     })
   })
 
   describe('bin', () => {
     test('can be set', () => {
       let config = configFromPJSON({
-        'cli-engine': { bin: 'heroku' }
+        'cli-engine': { bin: 'heroku' },
       })
       expect(config.bin).toEqual('heroku')
     })
@@ -331,13 +347,13 @@ describe('pjson', () => {
   describe('dirname', () => {
     test('follows bin', () => {
       let config = configFromPJSON({
-        'cli-engine': { bin: 'heroku' }
+        'cli-engine': { bin: 'heroku' },
       })
       expect(config.dirname).toEqual('heroku')
     })
     test('can be set', () => {
       let config = configFromPJSON({
-        'cli-engine': { dirname: 'mydirname', bin: 'heroku' }
+        'cli-engine': { dirname: 'mydirname', bin: 'heroku' },
       })
       expect(config.dirname).toEqual('mydirname')
     })
@@ -349,7 +365,7 @@ describe('pjson', () => {
     })
     test('can be set', () => {
       let config = configFromPJSON({
-        'cli-engine': { legacyConverter: 'foo' }
+        'cli-engine': { legacyConverter: 'foo' },
       })
       expect(config.legacyConverter).toEqual('foo')
     })
@@ -363,17 +379,17 @@ describe('pjson', () => {
         'cli-engine': {
           topics: {
             foo: {
-              description: 'description for foo'
+              description: 'description for foo',
             },
             bar: {
-              hidden: true
-            }
-          }
-        }
+              hidden: true,
+            },
+          },
+        },
       })
       expect(config.topics).toMatchObject({
-        foo: {name: 'foo', description: 'description for foo'},
-        bar: {name: 'bar', hidden: true}
+        foo: { name: 'foo', description: 'description for foo' },
+        bar: { name: 'bar', hidden: true },
       })
     })
   })
