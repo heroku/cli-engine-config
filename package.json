@@ -60,5 +60,6 @@
     "prepare": "rimraf lib && tsc",
     "pretest": "tsc --sourcemap",
     "test": "jest"
-  }
+  },
+  "types": "./lib/config.d.ts"
 }
