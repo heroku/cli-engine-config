@@ -394,3 +394,10 @@ describe('pjson', () => {
     })
   })
 })
+
+describe('errlog', () => {
+  test('set for windows', () => {
+    let config = buildConfig({ platform: 'linux' })
+    expect(config.errlog).toEqual(path.join(config.cacheDir, 'error.log'))
+  })
+})
