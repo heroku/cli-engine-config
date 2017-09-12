@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra'
 import * as os from 'os'
 import * as path from 'path'
-import { IArg, Flag, ValueFlag } from 'cli-flags'
+import { InputArgs, InputFlags } from 'cli-flags'
 import 'core-js/library'
 
 export type Topic = {
@@ -238,16 +238,16 @@ export interface ICommand {
   _version: string
   topic?: string | undefined
   command?: string | undefined
-  description: string | undefined
+  description?: string
   hidden: boolean
-  usage: string | undefined
-  help: string | undefined
+  usage?: string
+  help?: string
   aliases: string[]
   id: string
   buildHelp?: (config: Config) => string
   buildHelpLine?: (config: Config) => [string, string | undefined]
-  args?: IArg[]
-  flags?: { [name: string]: Flag | ValueFlag<any> }
+  Args?: InputArgs
+  Flags?: InputFlags
   run: (config?: ConfigOptions) => Promise<RunReturn | void>
   plugin?: Plugin
 }

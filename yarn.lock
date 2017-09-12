@@ -479,10 +479,11 @@ cli-cursor@^1.0.2:
     restore-cursor "^1.0.1"
 
 cli-flags@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.2.tgz#901c2b32eca8596b89ef99dabbe032fcc8af16c4"
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.4.tgz#fc20129096f8e330f4e0db7fef3e95eaee032f48"
   dependencies:
     cli-ux "^1.1.1"
+    lodash "^4.17.4"
 
 cli-spinners@^0.1.2:
   version "0.1.2"
