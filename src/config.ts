@@ -289,7 +289,7 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
     platform: os.platform() === 'win32' ? 'windows' : os.platform(),
     mock: false,
-    argv: process.argv.slice(1),
+    argv: process.argv,
     name: pjson.name,
     version: pjson.version,
     hooks: hooks(pjson['cli-engine'].hooks),
