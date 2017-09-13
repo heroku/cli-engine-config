@@ -5,6 +5,8 @@
   "author": "Jeff Dickey @dickeyxxx",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {
+    "cli-flags": "^1.0.10",
+    "fs-extra": "^4.0.2",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -12,9 +14,7 @@
     "@types/jest": "^20.0.8",
     "@types/node": "^8.0.28",
     "babel-core": "^6.26.0",
-    "cli-flags": "^1.0.10",
     "del-cli": "^1.1.0",
-    "fs-extra": "^4.0.2",
     "husky": "^0.14.3",
     "jest": "^21.0.2",
     "lint-staged": "^4.1.3",
@@ -54,10 +54,6 @@
     ]
   },
   "main": "lib/config.js",
-  "peerDependencies": {
-    "cli-flags": "^1.0.8",
-    "fs-extra": "^4.0.2"
-  },
   "repository": "heroku/cli-engine-config",
   "scripts": {
     "coverage": "cat coverage/coverage-final.json | remap-istanbul -o coverage/coverage-final.json && curl -s https://codecov.io/bash | bash",
