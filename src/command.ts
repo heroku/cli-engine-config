@@ -28,7 +28,5 @@ export interface ICommand {
     flags?: InputFlags
     strict?: boolean
   }
-  init: () => Promise<void>
-  run: () => Promise<void>
-  done: () => Promise<void>
+  _run: () => Promise<void>
 }
