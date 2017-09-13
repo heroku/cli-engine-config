@@ -1,14 +1,12 @@
+import 'core-js/library'
+
 import * as fs from 'fs-extra'
 import * as os from 'os'
 import * as path from 'path'
-import { InputArgs, InputFlags } from 'cli-flags'
-import 'core-js/library'
 
-export type Topic = {
-  name: string
-  description?: string
-  hidden?: boolean
-}
+import { Topic, Plugin, ICommand } from './command'
+
+export { Topic, Plugin, ICommand }
 
 export type UserConfig = {
   skipAnalytics?: boolean
@@ -224,34 +222,6 @@ function updateHost(config: Config): string | undefined {
 //   exampleConfig: exampleCLI.hooks
 // })
 // }
-
-export interface RunReturn {
-  readonly stdout?: string
-  readonly stderr?: string
-}
-
-export type Plugin = {
-  name: string
-  version: string
-}
-
-export interface ICommand {
-  _version: string
-  topic?: string | undefined
-  command?: string | undefined
-  description?: string
-  hidden: boolean
-  usage?: string
-  help?: string
-  aliases: string[]
-  id: string
-  buildHelp?: (config: Config) => string
-  buildHelpLine?: (config: Config) => [string, string | undefined]
-  Args?: InputArgs
-  Flags?: InputFlags
-  run: (config?: ConfigOptions) => Promise<RunReturn | void>
-  plugin?: Plugin
-}
 
 export function buildConfig(existing: ConfigOptions = {}): Config {
   if (!existing) existing = {}
