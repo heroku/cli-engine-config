@@ -5,7 +5,7 @@
   "author": "Jeff Dickey @dickeyxxx",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {
-    "cli-flags": "^1.0.7",
+    "cli-flags": "^1.0.8",
     "fs-extra": "^4.0.2",
     "uuid": "^3.1.0"
   },
