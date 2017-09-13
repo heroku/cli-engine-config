@@ -23,7 +23,7 @@ export interface ICommand {
   buildHelp?: (config: ConfigOptions) => string
   buildHelpLine?: (config: ConfigOptions) => [string, string | undefined]
   plugin?: Plugin
-  parser: {
+  parse: {
     args?: InputArgs
     flags?: InputFlags
     strict?: boolean
