@@ -294,3 +294,10 @@ describe('pjson', () => {
     })
   })
 })
+
+describe('bin', () => {
+  test('can be set', () => {
+    let config = buildConfig({ platform: 'linux' })
+    expect(config.errlog).toEqual(path.join(config.cacheDir, 'error.log'))
+  })
+})

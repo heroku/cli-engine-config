@@ -68,6 +68,7 @@ export type Config = {
   mock: boolean
   userPlugins: boolean
   topics: { [name: string]: Topic }
+  errlog: string
   legacyConverter?: string
   __cache: any // memoization cache
 }
@@ -340,6 +341,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     },
     get userPlugins() {
       return pjson['cli-engine'].userPlugins
+    },
+    get errlog() {
+      return path.join(this.cacheDir, 'error.log')
     },
     ...existing,
     __cache: {},
