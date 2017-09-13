@@ -12,21 +12,26 @@ export type Plugin = {
   version: string
 }
 
-export interface ICommand {
-  _version: string
-  id: string
+export type CommandOptions = {
+  aliases?: string[]
   description?: string
-  hidden: boolean
+  hidden?: boolean
   usage?: string
+  highlight?: boolean
   help?: string
-  aliases: string[]
+  args?: InputArgs
+  flags?: InputFlags
+  strict?: boolean
+}
+
+export interface ICommand {
+  options: CommandOptions
   buildHelp?: (config: ConfigOptions) => string
   buildHelpLine?: (config: ConfigOptions) => [string, string | undefined]
-  plugin?: Plugin
-  parse: {
-    args?: InputArgs
-    flags?: InputFlags
-    strict?: boolean
-  }
   _run: (argv?: string[]) => Promise<void>
+  __config: {
+    _version: string
+    id?: string
+    plugin?: Plugin
+  }
 }
