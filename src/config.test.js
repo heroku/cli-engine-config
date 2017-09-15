@@ -115,12 +115,6 @@ test('sets debug value', () => {
   expect(sampleConfig.debug).toBe(1)
 })
 
-test('sets debug value if DEBUG=*', () => {
-  process.env['DEBUG'] = '*,-babel'
-  let sampleConfig = buildConfig()
-  expect(sampleConfig.debug).toBe(1)
-})
-
 describe('with mockUserConfig', () => {
   let mockUserConfig
   const originalReadJSONSync = fs.readJSONSync
