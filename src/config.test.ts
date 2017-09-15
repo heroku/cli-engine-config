@@ -3,6 +3,10 @@ import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as mockFS from 'mock-fs'
+import Debug = require('debug')
+
+jest.mock('debug')
+const debug: jest.Mocked<typeof Debug> = require('debug')
 
 const env = process.env
 
@@ -71,15 +75,20 @@ test('sets version from options', () => {
 })
 
 test('sets debug value', () => {
+  debug.mockImplementationOnce((name: string) => {
+    return { enabled: false }
+  })
   process.env['CLI_ENGINE_DEBUG'] = '1'
   let config = buildConfig()
-  expect(config.debug).toBe(1)
+  expect(config.debug).toBe(true)
 })
 
 test('sets debug value if DEBUG=*', () => {
-  process.env['DEBUG'] = '*,-babel'
+  debug.mockImplementationOnce((name: string) => {
+    return { enabled: name === 'cli-engine' }
+  })
   let config = buildConfig()
-  expect(config.debug).toBe(1)
+  expect(config.debug).toBe(true)
 })
 
 describe('with mockUserConfig', () => {
