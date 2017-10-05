@@ -23,6 +23,7 @@ export type CLI = {
   plugins?: string[]
   legacyConverter?: string
   topics?: { [name: string]: Topic }
+  npmRegistry?: string
 }
 
 export type PJSON = {
@@ -66,6 +67,7 @@ export type Config = {
   topics: { [name: string]: Topic }
   errlog: string
   legacyConverter?: string
+  npmRegistry: string
   __cache: any // memoization cache
 }
 
@@ -147,6 +149,11 @@ function shell(onWindows: boolean = false): string {
 function userAgent(config: Config) {
   const channel = config.channel === 'stable' ? '' : ` ${config.channel}`
   return `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
+}
+
+function registry(config: Config): string {
+  const env = process.env[envVarKey(config.bin, 'NPM_REGISTRY')]
+  return env || config.pjson['cli-engine'].npmRegistry || 'https://registry.yarnpkg.com'
 }
 
 function commandsDir(config: ConfigOptions): string | undefined {
@@ -232,7 +239,7 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
         ...defaultConfig.pjson,
         'cli-engine': {
           ...defaultConfig.pjson['cli-engine'],
-          ...pjson['cli-engine'] || {},
+          ...(pjson['cli-engine'] || {}),
         },
         ...pjson,
       }
@@ -311,6 +318,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     },
     get errlog() {
       return path.join(this.cacheDir, 'error.log')
+    },
+    get npmRegistry() {
+      return registry(this)
     },
     ...existing,
     __cache: {},
