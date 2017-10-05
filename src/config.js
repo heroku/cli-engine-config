@@ -25,6 +25,7 @@ type CLI = {
   plugins?: string[],
   legacyConverter?: string,
   topics?: { [name: string]: Topic },
+  npmRegistry?: string,
 }
 
 export type PJSON = {
@@ -68,6 +69,7 @@ export type Config = {
   topics: { [name: string]: Topic },
   legacyConverter?: string,
   errlog: string,
+  npmRegistry: string,
   __cache: any, // memoization cache
 }
 
@@ -153,6 +155,11 @@ function userAgent(config: Config) {
   return `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
 }
 
+function registry(config: Config): string {
+  const env = process.env[envVarKey(config.bin, 'NPM_REGISTRY')]
+  return env || config.pjson['cli-engine'].npmRegistry || 'https://registry.yarnpkg.com'
+}
+
 function commandsDir(config: Config): ?string {
   let commandsDir = config.pjson['cli-engine'].commands
   if (!commandsDir) return
@@ -220,8 +227,8 @@ function validatePJSON(pjson: PJSON) {
 }
 
 export interface RunReturn {
-  +stdout?: string,
-  +stderr?: string,
+  +stdout?: string;
+  +stderr?: string;
 }
 
 export type Arg = {
@@ -322,21 +329,21 @@ export type Plugin = {
 }
 
 export interface ICommand {
-  +topic?: string,
-  +command?: ?string,
-  +description: ?string,
-  +hidden: ?boolean,
-  +usage: ?string,
-  +help: ?string,
-  +aliases: string[],
-  +_version: string,
-  +id: string,
-  +buildHelp?: (config: Config) => string,
-  +buildHelpLine?: (config: Config) => [string, ?string],
-  +args?: Arg[],
-  +flags?: { [name: string]: BooleanFlag | OptionFlag<*> },
-  +run: (options: ?ConfigOptions) => Promise<RunReturn>,
-  plugin?: ?Plugin,
+  +topic?: string;
+  +command?: ?string;
+  +description: ?string;
+  +hidden: ?boolean;
+  +usage: ?string;
+  +help: ?string;
+  +aliases: string[];
+  +_version: string;
+  +id: string;
+  +buildHelp?: (config: Config) => string;
+  +buildHelpLine?: (config: Config) => [string, ?string];
+  +args?: Arg[];
+  +flags?: { [name: string]: BooleanFlag | OptionFlag<*> };
+  +run: (options: ?ConfigOptions) => Promise<RunReturn>;
+  plugin?: ?Plugin;
 }
 
 export function buildConfig(existing: ?ConfigOptions = {}): Config {
@@ -443,6 +450,9 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
     },
     get errlog() {
       return path.join(this.cacheDir, 'error.log')
+    },
+    get npmRegistry() {
+      return registry(this)
     },
     ...(existing: any),
     __cache: {},

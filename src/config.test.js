@@ -387,6 +387,34 @@ describe('pjson', () => {
       })
     })
   })
+  describe('npmRegistry', () => {
+    test('defaults to yarn', () => {
+      let config = buildConfig()
+      expect(config.npmRegistry).toEqual('https://registry.yarnpkg.com')
+    })
+    test('can be set', () => {
+      let config = configFromPJSON({
+        'cli-engine': {
+          npmRegistry: 'https://foo',
+        },
+      })
+      expect(config.npmRegistry).toEqual('https://foo')
+    })
+    test('uses env var', () => {
+      process.env.CLI_ENGINE_NPM_REGISTRY = 'https://bar'
+      let config = buildConfig()
+      expect(config.npmRegistry).toEqual('https://bar')
+    })
+    test('env var overrides default', () => {
+      process.env.CLI_ENGINE_NPM_REGISTRY = 'https://bar'
+      let config = configFromPJSON({
+        'cli-engine': {
+          npmRegistry: 'https://foo',
+        },
+      })
+      expect(config.npmRegistry).toEqual('https://bar')
+    })
+  })
 })
 
 describe('errlog', () => {
