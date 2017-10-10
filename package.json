@@ -33,7 +33,7 @@
   "files": [
     "lib"
   ],
-  "homepage": "https://github.com/heroku/cli-engine-command",
+  "homepage": "https://github.com/heroku/cli-engine-config",
   "jest": {
     "testEnvironment": "node",
     "rootDir": "./src"
