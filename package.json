@@ -50,7 +50,7 @@
     ]
   },
   "main": "lib/config.js",
-  "repository": "heroku/cli-engine-command",
+  "repository": "heroku/cli-engine-config",
   "scripts": {
     "build": "babel src -d lib --ignore '*.test.js'",
     "clean": "rimraf lib",
