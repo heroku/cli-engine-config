@@ -1,10 +1,15 @@
 {
   "compilerOptions": {
+    "strict": true,
     "alwaysStrict": true,
     "module": "commonjs",
     "outDir": "./lib",
     "declaration": true,
-    "target": "es6"
+    "target": "es2015",
+    "lib": [
+      "es6",
+      "es2017.object"
+    ]
   },
   "include": [
     "./src/**/*"

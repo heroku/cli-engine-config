@@ -10,6 +10,7 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "4.0.5",
     "@types/jest": "21.1.8",
     "@types/node": "8.0.53",
     "del-cli": "1.1.0",

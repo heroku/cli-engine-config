@@ -1,83 +1,84 @@
-import path from 'path'
-import os from 'os'
-import fs from 'fs-extra'
+import * as path from 'path'
+import * as os from 'os'
+import * as fs from 'fs-extra'
 
 export type UserConfig = {
-  skipAnalytics: boolean,
-  install: ?string,
+  skipAnalytics?: boolean | undefined | null
+  install?: string | undefined | null
 }
 
 export type Topic = {
-  name: string,
-  description?: ?string,
-  hidden?: ?boolean,
+  name: string
+  description?: string
+  hidden?: boolean
 }
 
-type S3 = {
-  host?: string,
+export type S3 = {
+  host?: string
 }
 
-type CLI = {
-  dirname?: string,
-  defaultCommand?: string,
-  commands?: string,
-  s3?: S3,
-  hooks?: { [name: string]: string | string[] },
-  userPlugins: boolean,
-  plugins?: string[],
-  legacyConverter?: string,
-  topics?: { [name: string]: Topic },
-  npmRegistry?: string,
+export type CLI = {
+  bin?: string
+  dirname?: string
+  defaultCommand?: string
+  commands?: string
+  s3?: S3
+  hooks?: { [name: string]: string | string[] }
+  userPlugins: boolean
+  plugins?: string[]
+  legacyConverter?: string
+  topics?: { [name: string]: Topic }
+  npmRegistry?: string
 }
 
 export type PJSON = {
-  name: string,
-  version: string,
-  dependencies: { [name: string]: string },
-  'cli-engine': CLI,
+  name: string
+  version: string
+  dependencies: { [name: string]: string }
+  'cli-engine': CLI
 }
 
 export type Config = {
-  name: string, // name of CLI
-  dirname: string, // name of CLI directory
-  initPath: string, // path to init script
-  commandsDir: string, // root path to CLI commands
-  bin: string, // name of binary
-  s3: S3, // S3 config
-  root: string, // root of CLI
-  home: string, // user home directory
-  pjson: PJSON, // parsed CLI package.json
-  updateDisabled: ?string, // CLI updates are disabled
-  defaultCommand: string, // default command if no args passed (usually help)
-  channel: string, // CLI channel for updates
-  version: string, // CLI version
-  debug: number, // debugging level
-  dataDir: string, // directory for storing CLI data
-  cacheDir: string, // directory for storing temporary CLI data
-  configDir: string, // directory for storing CLI config
-  arch: string, // CPU architecture
-  platform: string, // operating system
-  windows: boolean, // is windows OS
-  _version: '1', // config schema version
-  skipAnalytics: boolean, // skip processing of analytics
-  install: ?string, // generated uuid of this install
-  userAgent: string, // user agent for API calls
-  shell: string, // the shell in which the command is run
-  hooks: { [name: string]: string[] }, // scripts to run in the CLI on lifecycle events like prerun
-  userConfig: UserConfig, // users custom configuration json
-  argv: string[],
-  mock: boolean,
-  userPlugins: boolean,
-  topics: { [name: string]: Topic },
-  legacyConverter?: string,
-  errlog: string,
-  npmRegistry: string,
-  __cache: any, // memoization cache
+  name: string // name of CLI
+  dirname: string // name of CLI directory
+  initPath: string // path to init script
+  commandsDir: string // root path to CLI commands
+  bin: string // name of binary
+  s3: S3 // S3 config
+  root: string // root of CLI
+  home: string // user home directory
+  pjson: PJSON // parsed CLI package.json
+  updateDisabled: string // CLI updates are disabled
+  defaultCommand: string // default command if no args passed (usually help)
+  channel: string // CLI channel for updates
+  version: string // CLI version
+  debug: number // debugging level
+  dataDir: string // directory for storing CLI data
+  cacheDir: string // directory for storing temporary CLI data
+  configDir: string // directory for storing CLI config
+  arch: string // CPU architecture
+  platform: string // operating system
+  windows: boolean // is windows OS
+  _version: '1' // config schema version
+  skipAnalytics: boolean // skip processing of analytics
+  install: string // generated uuid of this install
+  userAgent: string // user agent for API calls
+  shell: string // the shell in which the command is run
+  hooks: { [name: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
+  userConfig: UserConfig // users custom configuration json
+  argv: string[]
+  mock: boolean
+  userPlugins: boolean
+  topics: { [name: string]: Topic }
+  legacyConverter?: string
+  errlog: string
+  npmRegistry: string
+  __cache: any // memoization cache
 }
 
-export type ConfigOptions = $Shape<Config>
+export type ConfigOptions = Partial<Config>
 
-function dir(config: Config, category: string, d: ?string): string {
+function dir(config: Config, category: string, d?: string): string {
   let cacheKey = `dir:${category}`
   let cache = config.__cache[cacheKey]
   if (cache) return cache
@@ -142,10 +143,11 @@ function loadUserConfig(config: Config): UserConfig {
 
 function shell(onWindows: boolean = false): string {
   let shellPath
-  if (process.env['SHELL']) {
-    shellPath = process.env['SHELL'].split(`/`)
-  } else if (onWindows && process.env['COMSPEC']) {
-    shellPath = process.env['COMSPEC'].split(/\\|\//)
+  const { SHELL, COMSPEC } = process.env
+  if (SHELL) {
+    shellPath = SHELL.split(`/`)
+  } else if (onWindows && COMSPEC) {
+    shellPath = COMSPEC.split(/\\|\//)
   } else {
     shellPath = ['unknown']
   }
@@ -162,14 +164,14 @@ function registry(config: Config): string {
   return env || config.pjson['cli-engine'].npmRegistry || 'https://registry.yarnpkg.com'
 }
 
-function commandsDir(config: Config): ?string {
+function commandsDir(config: Config): string | undefined {
   let commandsDir = config.pjson['cli-engine'].commands
   if (!commandsDir) return
   return path.join(config.root, commandsDir)
 }
 
 function hooks(config: Config): { [name: string]: string[] } {
-  let hooks = {}
+  let hooks: { [name: string]: string[] } = {}
   for (let [k, v] of Object.entries(config.pjson['cli-engine'].hooks || {})) {
     hooks[k] = Array.isArray(v) ? v : [v]
   }
@@ -188,7 +190,7 @@ function envSkipAnalytics(config: Config) {
 function topics(config: Config) {
   if (!config.__cache['topics']) {
     config.__cache['topics'] = config.pjson['cli-engine'].topics || {}
-    for (let [k, v]: [string, any] of Object.entries(config.__cache['topics'])) {
+    for (let [k, v] of Object.entries(config.__cache['topics'])) {
       if (!v.name) v.name = k
     }
   }
@@ -229,19 +231,19 @@ function validatePJSON(pjson: PJSON) {
 }
 
 export interface RunReturn {
-  +stdout?: string;
-  +stderr?: string;
+  stdout?: string
+  stderr?: string
 }
 
 export type Arg = {
-  name: string,
-  description?: string,
-  required?: boolean,
-  optional?: boolean,
-  hidden?: boolean,
+  name: string
+  description?: string
+  required?: boolean
+  optional?: boolean
+  hidden?: boolean
 }
 
-type AlphabetUppercase =
+export type AlphabetUppercase =
   | 'A'
   | 'B'
   | 'C'
@@ -267,7 +269,7 @@ type AlphabetUppercase =
   | 'X'
   | 'Y'
   | 'Z'
-type AlphabetLowercase =
+export type AlphabetLowercase =
   | 'a'
   | 'b'
   | 'c'
@@ -294,63 +296,67 @@ type AlphabetLowercase =
   | 'y'
   | 'z'
 
-type CompletionContext = {
-  args?: ?{ [name: string]: string },
-  flags?: ?{ [name: string]: string },
-  argv?: ?(string[]),
-  config: Config,
+export type CompletionContext = {
+  args?: { [name: string]: string }
+  flags?: { [name: string]: string }
+  argv?: string[]
+  config: Config
 }
 
 export type Completion = {
-  skipCache?: boolean,
-  cacheDuration?: number,
-  cacheKey?: CompletionContext => Promise<string>,
-  options: CompletionContext => Promise<string[]>,
+  skipCache?: boolean
+  cacheDuration?: number
+  cacheKey?: (completion: CompletionContext) => Promise<string>
+  options: (completion: CompletionContext) => Promise<string[]>
 }
 
 export type Flag = {
-  char?: AlphabetLowercase | AlphabetUppercase,
-  description?: string,
-  hidden?: boolean,
+  char?: AlphabetLowercase | AlphabetUppercase
+  description?: string
+  hidden?: boolean
 }
 
 export type BooleanFlag = Flag & {
-  parse: null,
+  parse: null
 }
 
 export type OptionFlag<T> = Flag & {
-  required?: ?boolean,
-  optional?: ?boolean,
-  parse: (?string, any | void, string | void) => Promise<?T> | ?T,
-  completion?: Completion,
+  required?: boolean
+  optional?: boolean
+  parse: (
+    input: string | undefined,
+    cmd: ICommand | undefined,
+    name: string | undefined,
+  ) => Promise<T | undefined> | T | undefined
+  completion?: Completion
 }
 
 export type Plugin = {
-  +name: string,
-  +version: string,
+  name: string
+  version: string
 }
 
 export interface ICommand {
-  +topic?: string;
-  +command?: ?string;
-  +description: ?string;
-  +hidden: ?boolean;
-  +usage: ?string;
-  +help: ?string;
-  +aliases: string[];
-  +_version: string;
-  +id: string;
-  +buildHelp?: (config: Config) => string;
-  +buildHelpLine?: (config: Config) => [string, ?string];
-  +args?: Arg[];
-  +flags?: { [name: string]: BooleanFlag | OptionFlag<*> };
-  +run: (options: ?ConfigOptions) => Promise<RunReturn>;
-  plugin?: ?Plugin;
+  topic?: string
+  command?: string
+  description: string
+  hidden: boolean
+  usage: string
+  help: string
+  aliases: string[]
+  _version: string
+  id: string
+  buildHelp?: (config: Config) => string
+  buildHelpLine?: (config: Config) => [string, string]
+  args?: Arg[]
+  flags?: { [name: string]: BooleanFlag | OptionFlag<any> }
+  run: (options: Config) => Promise<RunReturn>
+  plugin?: Plugin
 }
 
-export function buildConfig(existing: ?ConfigOptions = {}): Config {
+export function buildConfig(existing: ConfigOptions = {}): Config {
   if (!existing) existing = {}
-  if (existing._version) return (existing: any)
+  if (existing._version) return existing as any
   if (existing.root && !existing.pjson) {
     let pjsonPath = path.join(existing.root, 'package.json')
     if (fs.existsSync(pjsonPath)) {
@@ -364,7 +370,7 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
         },
         ...pjson,
       }
-      validatePJSON(existing.pjson)
+      validatePJSON(existing.pjson as PJSON)
     }
   }
   return {
@@ -424,7 +430,7 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
       return dir(this, 'config')
     },
     get cacheDir() {
-      return dir(this, 'cache', this.platform === 'darwin' ? path.join(this.home, 'Library', 'Caches') : null)
+      return dir(this, 'cache', this.platform === 'darwin' ? path.join(this.home, 'Library', 'Caches') : undefined)
     },
     get userConfig() {
       return loadUserConfig(this)
@@ -456,7 +462,7 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
     get npmRegistry() {
       return registry(this)
     },
-    ...(existing: any),
+    ...(<any>existing),
     __cache: {},
   }
 }
