@@ -1,9 +1,11 @@
-// @flow
-
 import path from 'path'
 import os from 'os'
 import fs from 'fs-extra'
-import type { UserConfig } from './user_config'
+
+export type UserConfig = {
+  skipAnalytics: boolean,
+  install: ?string,
+}
 
 export type Topic = {
   name: string,

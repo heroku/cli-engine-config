@@ -10,22 +10,17 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-jest": "^21.2.0",
-    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
-    "babel-plugin-transform-class-properties": "6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
-    "babel-plugin-transform-flow-strip-types": "6.22.0",
-    "flow-bin": "^0.56.0",
-    "flow-copy-source": "^1.2.1",
-    "flow-typed": "^2.1.5",
+    "@types/jest": "21.1.8",
+    "@types/node": "8.0.53",
+    "del-cli": "1.1.0",
     "husky": "^0.14.3",
     "jest": "^21.2.1",
-    "lint-staged": "^4.2.3",
-    "mock-fs": "^4.4.1",
-    "prettier": "^1.7.4",
+    "lint-staged": "^5.0.0",
+    "mock-fs": "^4.4.2",
+    "prettier": "^1.8.2",
     "remap-istanbul": "^0.9.5",
-    "rimraf": "2.6.2"
+    "ts-jest": "21.2.3",
+    "typescript": "2.6.2"
   },
   "engines": {
     "node": ">=7.6.0"
@@ -34,31 +29,17 @@
     "lib"
   ],
   "homepage": "https://github.com/heroku/cli-engine-config",
-  "jest": {
-    "testEnvironment": "node",
-    "rootDir": "./src"
-  },
   "keywords": [
     "heroku",
     "heroku-cli-plugin"
   ],
   "license": "ISC",
-  "lint-staged": {
-    "src/**/*.js": [
-      "prettier --write",
-      "git add"
-    ]
-  },
   "main": "lib/config.js",
   "repository": "heroku/cli-engine-config",
   "scripts": {
-    "build": "babel src -d lib --ignore '*.test.js'",
-    "clean": "rimraf lib",
-    "copy-flow": "flow-copy-source -v -i '**/*.test.js' src lib",
-    "coverage": "cat coverage/coverage-final.json | remap-istanbul -o coverage/coverage-final.json && curl -s https://codecov.io/bash | bash",
-    "posttest": "flow",
     "precommit": "lint-staged",
-    "prepare": "npm run clean && npm run build && npm run copy-flow",
+    "prepare": "del lib && tsc",
     "test": "jest"
-  }
+  },
+  "types": "./lib/config.d.ts"
 }
