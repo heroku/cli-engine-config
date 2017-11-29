@@ -2,7 +2,7 @@
   "name": "cli-engine-config",
   "description": "base cli-engine config objects and interfaces",
   "version": "4.0.1-ts.17",
-  "author": "Jeff Dickey @dickeyxxx",
+  "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {
     "debug": "^3.1.0",
