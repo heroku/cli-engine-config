@@ -1,7 +1,7 @@
 {
   "name": "cli-engine-config",
   "description": "base cli-engine config objects and interfaces",
-  "version": "3.4.0",
+  "version": "4.0.0-ts.17",
   "author": "Jeff Dickey @dickeyxxx",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {
@@ -21,6 +21,7 @@
     "prettier": "^1.8.2",
     "remap-istanbul": "^0.9.5",
     "ts-jest": "21.2.3",
+    "ts-node": "3.3.0",
     "typescript": "2.6.2"
   },
   "engines": {

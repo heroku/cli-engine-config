@@ -1,19 +1,22 @@
-#!/usr/bin/env babel-node
+#!/usr/bin/env ts-node
 
-import {buildConfig} from '../src/config'
+import { buildConfig } from '../src/config'
 
 buildConfig({
   pjson: {
+    name: 'foo',
+    version: '1.0.0',
+    dependencies: {},
     'cli-engine': {
       // s3: 'not a string',
       hooks: {
-        notahook: 'butlookslikeone'
-      }
+        notahook: 'butlookslikeone',
+      },
       // this doesn't work for some reason
       // plugins: [
       //   {a: 'b'},
       //   1
       // ]
-    }
-  }
-})
+    },
+  },
+} as any)

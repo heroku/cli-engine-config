@@ -373,19 +373,21 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
       validatePJSON(existing.pjson as PJSON)
     }
   }
+  const pjson = {
+    name: 'cli-engine',
+    version: '0.0.0',
+    dependencies: {},
+    'cli-engine': {
+      hooks: {},
+      defaultCommand: 'help',
+      userPlugins: false,
+      s3: { host: null },
+    },
+    ...(existing.pjson || {}),
+  }
   return {
     _version: '1',
-    pjson: {
-      name: 'cli-engine',
-      version: '0.0.0',
-      dependencies: {},
-      'cli-engine': {
-        hooks: {},
-        defaultCommand: 'help',
-        userPlugins: false,
-        s3: { host: null },
-      },
-    },
+    pjson,
     channel: 'stable',
     home: os.homedir() || os.tmpdir(),
     root: path.join(__dirname, '..'),
@@ -393,15 +395,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     platform: os.platform() === 'win32' ? 'windows' : os.platform(),
     mock: false,
     argv: process.argv.slice(1),
-    get defaultCommand() {
-      return this.pjson['cli-engine'].defaultCommand
-    },
-    get name() {
-      return this.pjson.name
-    },
-    get version() {
-      return this.pjson.version
-    },
+    version: pjson.version,
+    defaultCommand: pjson['cli-engine'].defaultCommand,
+    name: pjson.name,
     get hooks() {
       return hooks(this)
     },
