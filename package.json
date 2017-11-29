@@ -39,8 +39,10 @@
   "main": "lib/config.js",
   "repository": "heroku/cli-engine-config",
   "scripts": {
+    "posttest": "prettier -l 'src/**/*.ts'",
     "precommit": "lint-staged",
     "prepare": "del lib && tsc",
+    "pretest": "tsc",
     "test": "jest"
   },
   "types": "./lib/config.d.ts"
