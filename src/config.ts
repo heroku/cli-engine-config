@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as os from 'os'
 import * as fs from 'fs-extra'
+import { IFlag, IArg } from 'cli-flags'
 
 export type UserConfig = {
   skipAnalytics?: boolean | undefined | null
@@ -235,14 +236,6 @@ export interface RunReturn {
   stderr?: string
 }
 
-export type Arg = {
-  name: string
-  description?: string
-  required?: boolean
-  optional?: boolean
-  hidden?: boolean
-}
-
 export type AlphabetUppercase =
   | 'A'
   | 'B'
@@ -310,27 +303,6 @@ export type Completion = {
   options: (completion: CompletionContext) => Promise<string[]>
 }
 
-export type Flag = {
-  char?: AlphabetLowercase | AlphabetUppercase
-  description?: string
-  hidden?: boolean
-}
-
-export type BooleanFlag = Flag & {
-  parse: null
-}
-
-export type OptionFlag<T> = Flag & {
-  required?: boolean
-  optional?: boolean
-  parse: (
-    input: string | undefined,
-    cmd: ICommand | undefined,
-    name: string | undefined,
-  ) => Promise<T | undefined> | T | undefined
-  completion?: Completion
-}
-
 export type Plugin = {
   name: string
   version: string
@@ -348,8 +320,8 @@ export interface ICommand {
   id: string
   buildHelp?: (config: Config) => string
   buildHelpLine?: (config: Config) => [string, string]
-  args?: Arg[]
-  flags?: { [name: string]: BooleanFlag | OptionFlag<any> }
+  args?: IArg[]
+  flags?: { [name: string]: IFlag<any> }
   run: (options: Config) => Promise<RunReturn>
   plugin?: Plugin
 }
