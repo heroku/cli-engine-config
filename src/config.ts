@@ -9,7 +9,7 @@ export type UserConfig = {
 }
 
 export type Topic = {
-  name: string
+  topic: string
   description?: string
   hidden?: boolean
 }
@@ -311,15 +311,15 @@ export type Plugin = {
 export interface ICommand {
   topic?: string
   command?: string
-  description: string
+  description?: string
   hidden: boolean
-  usage: string
-  help: string
+  usage?: string
+  help?: string
   aliases: string[]
   _version: string
   id: string
   buildHelp?: (config: Config) => string
-  buildHelpLine?: (config: Config) => [string, string]
+  buildHelpLine?: (config: Config) => [string, string | undefined]
   args?: IArg[]
   flags?: { [name: string]: IFlag<any> }
   run: (options: Config) => Promise<RunReturn>
