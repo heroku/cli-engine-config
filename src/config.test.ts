@@ -202,7 +202,6 @@ describe('with mockUserConfig', () => {
       mockUserConfig = {}
       fs.readJSONSync = jest.fn(() => {
         let err = new Error()
-        // flow$ignore
         err.code = 'ENOENT'
         throw err
       })
@@ -217,7 +216,6 @@ describe('with mockUserConfig', () => {
       mockUserConfig = {}
       fs.readJSONSync = jest.fn(() => {
         let err = new Error()
-        // flow$ignore
         err.code = 'ENOENT'
         throw err
       })
