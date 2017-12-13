@@ -56,11 +56,11 @@
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
 
-"@types/v8flags@github:types/npm-v8flags#de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d":
+"@types/v8flags@types/npm-v8flags#de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d":
   version "2.0.0"
   resolved "https://codeload.github.com/types/npm-v8flags/tar.gz/de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d"
 
-"@types/yn@github:types/npm-yn#ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9":
+"@types/yn@types/npm-yn#ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9":
   version "2.0.0"
   resolved "https://codeload.github.com/types/npm-yn/tar.gz/ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9"
 
@@ -614,14 +614,14 @@ cli-cursor@^1.0.2:
   dependencies:
     restore-cursor "^1.0.1"
 
-cli-flags@1.0.16:
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.16.tgz#4047538d806283095fa0f4fc2462664e1cb61bcb"
+cli-flags@1.0.17:
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.17.tgz#6920d144f138e447233d72e3f06a52990957465c"
   dependencies:
-    chalk "^2.1.0"
-    cli-ux "^2.0.1"
+    chalk "^2.3.0"
+    cli-ux "^2.0.5"
     lodash "^4.17.4"
-    ts-lodash "^4.0.5"
+    ts-lodash "^4.0.6"
 
 cli-spinners@^0.1.2:
   version "0.1.2"
@@ -634,9 +634,9 @@ cli-truncate@^0.2.1:
     slice-ansi "0.0.4"
     string-width "^1.0.1"
 
-cli-ux@^2.0.1:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-2.0.4.tgz#dbe5391a1f33ca82cd60331de9eec79296907be1"
+cli-ux@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-2.0.5.tgz#4484fafbdafc996bf8a81b157adc069e34a4f4ef"
   dependencies:
     "@heroku/linewrap" "^1.0.0"
     ansi-escapes "^3.0.0"
@@ -3454,6 +3454,12 @@ ts-jest@21.2.4:
 ts-lodash@^4.0.5:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/ts-lodash/-/ts-lodash-4.0.5.tgz#1d0a74de2758df43a821d176e2cc85c50925ee67"
+  dependencies:
+    lodash "^4.17.4"
+
+ts-lodash@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/ts-lodash/-/ts-lodash-4.0.6.tgz#1166589945e8a980dc809b875c9d6b70aadd8537"
   dependencies:
     lodash "^4.17.4"
 
