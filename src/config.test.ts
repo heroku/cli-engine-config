@@ -267,7 +267,7 @@ describe('with mockUserConfig', () => {
 })
 
 describe('pjson', () => {
-  let configFromPJSON = pjson => {
+  let configFromPJSON = (pjson?: Object) => {
     pjson = pjson || {
       name: 'analytics',
       version: '1.0.0',
