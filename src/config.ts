@@ -231,11 +231,6 @@ function validatePJSON(pjson: PJSON) {
   // })
 }
 
-export interface RunReturn {
-  stdout?: string
-  stderr?: string
-}
-
 export type AlphabetUppercase =
   | 'A'
   | 'B'
@@ -322,7 +317,7 @@ export interface ICommand {
   buildHelpLine?: (config: Config) => [string, string | undefined]
   args?: IArg[]
   flags?: { [name: string]: IFlag<any> }
-  run: (options: Config) => Promise<RunReturn>
+  run: (options: Config) => Promise<any>
   plugin?: Plugin
 }
 
