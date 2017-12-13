@@ -51,7 +51,6 @@ export type Config = {
   pjson: PJSON // parsed CLI package.json
   updateDisabled: string // CLI updates are disabled
   defaultCommand: string // default command if no args passed (usually help)
-  skipCoreUpdates: boolean // skip updates to CLI core
   channel: string // CLI channel for updates
   version: string // CLI version
   debug: number // debugging level
@@ -402,8 +401,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     get skipAnalytics() {
       return envSkipAnalytics(this)
     },
-    get skipCoreUpdates() {
-      return envVarTrue(envVarKey(this.bin, 'SKIP_CORE_UPDATES'))
+    get updateDisabled() {
+      const k = envVarKey(this.bin, 'SKIP_CORE_UPDATES')
+      if (envVarTrue(k)) return `${k} is set to ${process.env[k]}`
     },
     get install() {
       return this.userConfig.install
