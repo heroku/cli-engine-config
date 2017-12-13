@@ -5,7 +5,7 @@
     "module": "commonjs",
     "outDir": "./lib",
     "declaration": true,
-    "target": "es2017",
+    "target": "esnext",
     "lib": [
       "es7",
       "es2017.object"
