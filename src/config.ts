@@ -405,7 +405,12 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
       return this.userConfig.install
     },
     get s3() {
-      return this.pjson['cli-engine'].s3
+      const config = this
+      return {
+        get host() {
+          return config.pjson['cli-engine'].s3!.host || process.env[envVarKey(config.bin, 'S3_HOST')]
+        },
+      }
     },
     get commandsDir() {
       return commandsDir(this)

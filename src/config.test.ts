@@ -383,6 +383,15 @@ describe('pjson', () => {
       })
     })
   })
+  describe('s3', () => {
+    describe('host', () => {
+      test('CLI_ENGINE_S3_HOST', () => {
+        process.env.CLI_ENGINE_S3_HOST = 'https://bar'
+        let config = buildConfig()
+        expect(config.s3.host).toEqual('https://bar')
+      })
+    })
+  })
   describe('npmRegistry', () => {
     test('defaults to yarn', () => {
       let config = buildConfig()
