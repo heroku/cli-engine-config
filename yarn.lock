@@ -614,9 +614,9 @@ cli-cursor@^1.0.2:
   dependencies:
     restore-cursor "^1.0.1"
 
-cli-flags@1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.17.tgz#6920d144f138e447233d72e3f06a52990957465c"
+cli-flags@1.0.18:
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.18.tgz#632ca43cdc872f9031b1dbbce8e92216a35ab4d2"
   dependencies:
     chalk "^2.3.0"
     cli-ux "^2.0.5"
