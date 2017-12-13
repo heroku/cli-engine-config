@@ -9,7 +9,7 @@ export type UserConfig = {
 }
 
 export type Topic = {
-  topic: string
+  name: string
   description?: string
   hidden?: boolean
 }
