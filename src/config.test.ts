@@ -420,6 +420,17 @@ describe('pjson', () => {
       expect(config.npmRegistry).toEqual('https://bar')
     })
   })
+  describe('skipCoreUpdates', () => {
+    test('defaults to false', () => {
+      let config = buildConfig()
+      expect(config.skipCoreUpdates).toEqual(false)
+    })
+    test('CLI_ENGINE_SKIP_CORE_UPDATES', () => {
+      process.env.CLI_ENGINE_SKIP_CORE_UPDATES = '1'
+      let config = buildConfig()
+      expect(config.skipCoreUpdates).toEqual(true)
+    })
+  })
 })
 
 describe('errlog', () => {
