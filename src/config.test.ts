@@ -326,6 +326,29 @@ describe('pjson', () => {
     })
   })
 
+  describe('aliases', () => {
+    test('has default aliases', () => {
+      let config = configFromPJSON()
+      expect(config.aliases).toEqual({
+        version: ['-v', '--version'],
+      })
+    })
+
+    test('can set aliases', () => {
+      let config = configFromPJSON({
+        'cli-engine': {
+          aliases: {
+            'foo:bar': 'baz',
+          },
+        },
+      })
+      expect(config.aliases).toEqual({
+        'foo:bar': ['baz'],
+        version: ['-v', '--version'],
+      })
+    })
+  })
+
   describe('bin', () => {
     test('can be set', () => {
       let config = configFromPJSON({

@@ -25,6 +25,7 @@ export type CLI = {
   commands?: string
   s3?: S3
   hooks?: { [name: string]: string | string[] }
+  aliases?: { [from: string]: string | string[] }
   userPlugins: boolean
   plugins?: string[]
   legacyConverter?: string
@@ -66,6 +67,7 @@ export type Config = {
   userAgent: string // user agent for API calls
   shell: string // the shell in which the command is run
   hooks: { [name: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
+  aliases: { [from: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
   userConfig: UserConfig // users custom configuration json
   argv: string[]
   mock: boolean
@@ -171,12 +173,18 @@ function commandsDir(config: Config): string | undefined {
   return path.join(config.root, commandsDir)
 }
 
-function hooks(config: Config): { [name: string]: string[] } {
-  let hooks: { [name: string]: string[] } = {}
-  for (let [k, v] of Object.entries(config.pjson['cli-engine'].hooks || {})) {
-    hooks[k] = Array.isArray(v) ? v : [v]
-  }
-  return hooks
+function toArray<T>(o: T | T[]): T[] {
+  return Array.isArray(o) ? o : [o]
+}
+
+function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[] } {
+  return Object.entries(input || {}).reduce(
+    (output, [k, v]) => {
+      output[k] = toArray(v)
+      return output
+    },
+    {} as { [k: string]: T[] },
+  )
 }
 
 function envSkipAnalytics(config: Config) {
@@ -310,7 +318,6 @@ export interface ICommand {
   hidden: boolean
   usage?: string
   help?: string
-  aliases: string[]
   _version: string
   id: string
   buildHelp?: (config: Config) => string
@@ -366,7 +373,13 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     defaultCommand: pjson['cli-engine'].defaultCommand,
     name: pjson.name,
     get hooks() {
-      return hooks(this)
+      return objValsToArrays(this.pjson['cli-engine'].hooks)
+    },
+    get aliases() {
+      return objValsToArrays({
+        version: ['-v', '--version'],
+        ...this.pjson['cli-engine'].aliases,
+      })
     },
     get windows() {
       return this.platform === 'windows'
