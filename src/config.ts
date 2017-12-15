@@ -55,6 +55,7 @@ export type Config = {
   channel: string // CLI channel for updates
   version: string // CLI version
   debug: number // debugging level
+  reexecBin?: string
   dataDir: string // directory for storing CLI data
   cacheDir: string // directory for storing temporary CLI data
   configDir: string // directory for storing CLI config
