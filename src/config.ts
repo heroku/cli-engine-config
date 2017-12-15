@@ -72,6 +72,7 @@ export type Config = {
   argv: string[]
   mock: boolean
   userPlugins: boolean
+  corePlugins: string[]
   topics: { [name: string]: Topic }
   legacyConverter?: string
   errlog: string
@@ -309,6 +310,8 @@ export type Completion = {
 export type Plugin = {
   name: string
   version: string
+  type: string
+  path: string
 }
 
 export interface ICommand {
@@ -378,6 +381,7 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     get aliases() {
       return objValsToArrays({
         version: ['-v', '--version'],
+        'plugins:uninstall': ['plugins:unlink'],
         ...this.pjson['cli-engine'].aliases,
       })
     },
@@ -434,6 +438,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     },
     get legacyConverter() {
       return this.pjson['cli-engine'].legacyConverter
+    },
+    get corePlugins() {
+      return this.pjson['cli-engine'].plugins || []
     },
     get userPlugins() {
       return this.pjson['cli-engine'].userPlugins

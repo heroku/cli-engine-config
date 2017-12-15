@@ -331,6 +331,7 @@ describe('pjson', () => {
       let config = configFromPJSON()
       expect(config.aliases).toEqual({
         version: ['-v', '--version'],
+        'plugins:uninstall': ['plugins:unlink'],
       })
     })
 
@@ -342,10 +343,8 @@ describe('pjson', () => {
           },
         },
       })
-      expect(config.aliases).toEqual({
-        'foo:bar': ['baz'],
-        version: ['-v', '--version'],
-      })
+      expect(config.aliases['foo:bar']).toEqual(['baz'])
+      expect(config.aliases['version']).toEqual(['-v', '--version'])
     })
   })
 
