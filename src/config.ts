@@ -312,7 +312,7 @@ export type Plugin = {
   name: string
   version: string
   type: string
-  path: string
+  root: string
 }
 
 export interface ICommand {
@@ -324,8 +324,8 @@ export interface ICommand {
   help?: string
   _version: string
   id: string
-  buildHelp?: (config: Config) => string
-  buildHelpLine?: (config: Config) => [string, string | undefined]
+  buildHelp: (config: Config) => string
+  buildHelpLine: (config: Config) => [string, string | undefined]
   args?: IArg[]
   flags?: { [name: string]: IFlag<any> }
   run: (options: Config) => Promise<any>
