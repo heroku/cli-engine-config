@@ -6,14 +6,6 @@
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@heroku/linewrap/-/linewrap-1.0.0.tgz#a9d4e99f0a3e423a899b775f5f3d6747a1ff15c6"
 
-"@types/arrify@^1.0.1":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@types/arrify/-/arrify-1.0.2.tgz#4a6856b9bfd4713c781df95349c6b15db60d4de1"
-
-"@types/diff@^3.2.1":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-3.2.2.tgz#4d6f45537322a7a420d353a0939513c7e96d14a6"
-
 "@types/fs-extra@5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.0.tgz#d3e225b35eb5c6d3a5a782c28219df365c781413"
@@ -24,29 +16,13 @@
   version "21.1.8"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-21.1.8.tgz#d497213725684f1e5a37900b17a47c9c018f1a97"
 
-"@types/minimist@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
-
-"@types/mkdirp@^0.5.0":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@types/mkdirp/-/mkdirp-0.5.2.tgz#503aacfe5cc2703d5484326b1b27efa67a339c1f"
-  dependencies:
-    "@types/node" "*"
-
 "@types/node@*":
   version "8.0.53"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.53.tgz#396b35af826fa66aad472c8cb7b8d5e277f4e6d8"
 
-"@types/node@8.0.58", "@types/node@^8.0.27":
-  version "8.0.58"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.58.tgz#5b3881c0be3a646874803fee3197ea7f1ed6df90"
-
-"@types/source-map-support@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@types/source-map-support/-/source-map-support-0.4.0.tgz#a62a1866614af68c888173c001481f242aaf148b"
-  dependencies:
-    "@types/node" "*"
+"@types/node@8.5.1":
+  version "8.5.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.5.1.tgz#4ec3020bcdfe2abffeef9ba3fbf26fca097514b5"
 
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
@@ -55,14 +31,6 @@
 "@types/strip-json-comments@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
-
-"@types/v8flags@types/npm-v8flags#de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d":
-  version "2.0.0"
-  resolved "https://codeload.github.com/types/npm-v8flags/tar.gz/de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d"
-
-"@types/yn@types/npm-yn#ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9":
-  version "2.0.0"
-  resolved "https://codeload.github.com/types/npm-yn/tar.gz/ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9"
 
 abab@^1.0.3:
   version "1.0.3"
@@ -614,12 +582,12 @@ cli-cursor@^1.0.2:
   dependencies:
     restore-cursor "^1.0.1"
 
-cli-flags@1.0.18:
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.18.tgz#632ca43cdc872f9031b1dbbce8e92216a35ab4d2"
+cli-flags@1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.19.tgz#19f117964bb4ff61d9376df7942aa1d99edd06cd"
   dependencies:
     chalk "^2.3.0"
-    cli-ux "^2.0.5"
+    cli-ux "^2.0.8"
     lodash "^4.17.4"
     ts-lodash "^4.0.6"
 
@@ -634,22 +602,22 @@ cli-truncate@^0.2.1:
     slice-ansi "0.0.4"
     string-width "^1.0.1"
 
-cli-ux@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-2.0.5.tgz#4484fafbdafc996bf8a81b157adc069e34a4f4ef"
+cli-ux@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-2.0.8.tgz#8cefd0e6d8aa9d7245fc21324287ff6fe3d7fa90"
   dependencies:
     "@heroku/linewrap" "^1.0.0"
     ansi-escapes "^3.0.0"
     ansi-styles "^3.2.0"
     cardinal "^1.0.0"
-    chalk "^2.1.0"
-    fs-extra "^4.0.2"
+    chalk "^2.3.0"
+    fs-extra "^5.0.0"
     lodash "^4.17.4"
-    moment "^2.18.1"
+    moment "^2.20.0"
     password-prompt "^1.0.3"
     strip-ansi "^4.0.0"
-    supports-color "^4.4.0"
-    ts-lodash "^4.0.5"
+    supports-color "^5.1.0"
+    ts-lodash "^4.0.6"
 
 cliui@^2.1.0:
   version "2.1.0"
@@ -2439,9 +2407,9 @@ mock-fs@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-4.4.2.tgz#09dec5313f97095a450be6aa2ad8ab6738d63d6b"
 
-moment@^2.18.1:
-  version "2.19.3"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.3.tgz#bdb99d270d6d7fda78cc0fbace855e27fe7da69f"
+moment@^2.20.0:
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.0.tgz#53396358994dd3a551e966a66af715ecb6c30ad0"
 
 ms@2.0.0:
   version "2.0.0"
@@ -3329,9 +3297,9 @@ supports-color@^4.0.0:
   dependencies:
     has-flag "^2.0.0"
 
-supports-color@^4.4.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-4.5.0.tgz#be7a0de484dec5c5cddf8b3d59125044912f635b"
+supports-color@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-5.1.0.tgz#058a021d1b619f7ddf3980d712ea3590ce7de3d5"
   dependencies:
     has-flag "^2.0.0"
 
@@ -3451,30 +3419,16 @@ ts-jest@21.2.4:
     source-map-support "^0.5.0"
     yargs "^10.0.3"
 
-ts-lodash@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/ts-lodash/-/ts-lodash-4.0.5.tgz#1d0a74de2758df43a821d176e2cc85c50925ee67"
-  dependencies:
-    lodash "^4.17.4"
-
 ts-lodash@^4.0.6:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/ts-lodash/-/ts-lodash-4.0.6.tgz#1166589945e8a980dc809b875c9d6b70aadd8537"
   dependencies:
     lodash "^4.17.4"
 
-ts-node@4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-4.0.1.tgz#4d368088b50c382d78285c029784ea0f32a4eb5c"
+ts-node@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-4.0.2.tgz#cb3d039b9898fdc79ad09ab7e69c84564c8c41ee"
   dependencies:
-    "@types/arrify" "^1.0.1"
-    "@types/diff" "^3.2.1"
-    "@types/minimist" "^1.2.0"
-    "@types/mkdirp" "^0.5.0"
-    "@types/node" "^8.0.27"
-    "@types/source-map-support" "^0.4.0"
-    "@types/v8flags" types/npm-v8flags#de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d
-    "@types/yn" types/npm-yn#ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9
     arrify "^1.0.0"
     chalk "^2.3.0"
     diff "^3.1.0"

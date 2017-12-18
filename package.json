@@ -5,7 +5,7 @@
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {
-    "cli-flags": "1.0.18",
+    "cli-flags": "1.0.19",
     "debug": "^3.1.0",
     "fs-extra": "^5.0.0",
     "uuid": "^3.1.0"
@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/fs-extra": "5.0.0",
     "@types/jest": "21.1.8",
-    "@types/node": "8.0.58",
+    "@types/node": "8.5.1",
     "del-cli": "1.1.0",
     "husky": "^0.14.3",
     "jest": "^21.2.1",
@@ -22,7 +22,7 @@
     "prettier": "^1.9.2",
     "remap-istanbul": "^0.9.5",
     "ts-jest": "21.2.4",
-    "ts-node": "4.0.1",
+    "ts-node": "4.0.2",
     "typescript": "2.6.2"
   },
   "engines": {
