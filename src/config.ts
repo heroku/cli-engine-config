@@ -137,7 +137,7 @@ function loadUserConfig(config: Config): UserConfig {
     const uuid = require('uuid/v4')
     userConfig.install = uuid()
     try {
-      fs.writeJSONSync(configPath, userConfig)
+      fs.outputJSONSync(configPath, userConfig, { spaces: 2 })
     } catch (e) {
       userConfig.install = null
     }

@@ -168,11 +168,11 @@ describe('with mockUserConfig', () => {
       fs.readJSONSync = jest.fn(() => {
         return mockUserConfig
       })
-      fs.writeJSONSync = jest.fn()
+      fs.outputJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
-      expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ skipAnalytics: false, install: sampleConfig.install })
+      expect(fs.outputJSONSync.mock.calls.length).toEqual(1)
+      expect(fs.outputJSONSync.mock.calls[0][1]).toEqual({ skipAnalytics: false, install: sampleConfig.install })
     })
 
     it('when file does have an install one is not generated', () => {
@@ -180,10 +180,10 @@ describe('with mockUserConfig', () => {
       fs.readJSONSync = jest.fn(() => {
         return mockUserConfig
       })
-      fs.writeJSONSync = jest.fn()
+      fs.outputJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toEqual('1234')
-      expect(fs.writeJSONSync.mock.calls).toEqual([])
+      expect(fs.outputJSONSync.mock.calls).toEqual([])
     })
 
     it('does not define skipAnalytics if not defined', () => {
@@ -191,11 +191,11 @@ describe('with mockUserConfig', () => {
       fs.readJSONSync = jest.fn(() => {
         return mockUserConfig
       })
-      fs.writeJSONSync = jest.fn()
+      fs.outputJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
-      expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install })
+      expect(fs.outputJSONSync.mock.calls.length).toEqual(1)
+      expect(fs.outputJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install })
     })
 
     it('does not define skipAnalytics if no file', () => {
@@ -205,11 +205,11 @@ describe('with mockUserConfig', () => {
         err.code = 'ENOENT'
         throw err
       })
-      fs.writeJSONSync = jest.fn()
+      fs.outputJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
-      expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install, skipAnalytics: false })
+      expect(fs.outputJSONSync.mock.calls.length).toEqual(1)
+      expect(fs.outputJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install, skipAnalytics: false })
     })
 
     it('install is not defined if file does not exist & could not be written', () => {
@@ -219,13 +219,13 @@ describe('with mockUserConfig', () => {
         err.code = 'ENOENT'
         throw err
       })
-      fs.writeJSONSync = jest.fn(() => {
+      fs.outputJSONSync = jest.fn(() => {
         throw new Error()
       })
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
-      expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toMatchObject({ install: sampleConfig.install })
+      expect(fs.outputJSONSync.mock.calls.length).toEqual(1)
+      expect(fs.outputJSONSync.mock.calls[0][1]).toMatchObject({ install: sampleConfig.install })
     })
 
     it('install is not defined if file does exist but could not be written', () => {
@@ -233,13 +233,13 @@ describe('with mockUserConfig', () => {
       fs.readJSONSync = jest.fn(() => {
         return mockUserConfig
       })
-      fs.writeJSONSync = jest.fn(() => {
+      fs.outputJSONSync = jest.fn(() => {
         throw new Error()
       })
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
-      expect(fs.writeJSONSync.mock.calls.length).toEqual(1)
-      expect(fs.writeJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install })
+      expect(fs.outputJSONSync.mock.calls.length).toEqual(1)
+      expect(fs.outputJSONSync.mock.calls[0][1]).toEqual({ install: sampleConfig.install })
     })
 
     it('install is not defined if skipAnalytics is true', () => {
@@ -247,10 +247,10 @@ describe('with mockUserConfig', () => {
       fs.readJSONSync = jest.fn(() => {
         return mockUserConfig
       })
-      fs.writeJSONSync = jest.fn()
+      fs.outputJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
-      expect(fs.writeJSONSync.mock.calls.length).toEqual(0)
+      expect(fs.outputJSONSync.mock.calls.length).toEqual(0)
     })
 
     it('install is not defined if skipAnalytics is true and install is set', () => {
@@ -258,10 +258,10 @@ describe('with mockUserConfig', () => {
       fs.readJSONSync = jest.fn(() => {
         return mockUserConfig
       })
-      fs.writeJSONSync = jest.fn()
+      fs.outputJSONSync = jest.fn()
       let sampleConfig = buildConfig()
       expect(sampleConfig.install).toBeNull()
-      expect(fs.writeJSONSync.mock.calls.length).toEqual(0)
+      expect(fs.outputJSONSync.mock.calls.length).toEqual(0)
     })
   })
 })
