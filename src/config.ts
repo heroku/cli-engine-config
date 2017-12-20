@@ -56,7 +56,6 @@ export type Config = {
   platform: string // operating system
   windows: boolean // is windows OS
   _version: '1' // config schema version
-  install: string // generated uuid of this install
   userAgent: string // user agent for API calls
   shell: string // the shell in which the command is run
   hooks: { [name: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
@@ -67,20 +66,16 @@ export type Config = {
   topics: { [name: string]: Topic }
   errlog: string
   npmRegistry: string
-  __cache: any // memoization cache
 }
 
 export type ConfigOptions = Partial<Config>
 
 function dir(config: Config, category: string, d?: string): string {
   let cacheKey = `dir:${category}`
-  let cache = config.__cache[cacheKey]
-  if (cache) return cache
   d = d || path.join(config.home, category === 'data' ? '.local/share' : '.' + category)
   if (config.windows) d = process.env.LOCALAPPDATA || d
   d = process.env.XDG_DATA_HOME || d
   d = path.join(d, config.dirname)
-  config.__cache[cacheKey] = d
   return d
 }
 
@@ -154,13 +149,11 @@ function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[
 }
 
 function topics(config: Config) {
-  if (!config.__cache['topics']) {
-    config.__cache['topics'] = config.pjson['cli-engine'].topics || {}
-    for (let [k, v] of Object.entries(config.__cache['topics'])) {
-      if (!v.name) v.name = k
-    }
+  let topics: { [k: string]: Topic } = config.pjson['cli-engine'].topics || {}
+  for (let [k, v] of Object.entries(topics)) {
+    if (!v.name) v.name = k
   }
-  return config.__cache['topics']
+  return topics
 }
 
 export type AlphabetUppercase =
@@ -215,20 +208,6 @@ export type AlphabetLowercase =
   | 'x'
   | 'y'
   | 'z'
-
-export type CompletionContext = {
-  args?: { [name: string]: string }
-  flags?: { [name: string]: string }
-  argv?: string[]
-  config: Config
-}
-
-export type Completion = {
-  skipCache?: boolean
-  cacheDuration?: number
-  cacheKey?: (completion: CompletionContext) => Promise<string>
-  options: (completion: CompletionContext) => Promise<string[]>
-}
 
 export type Plugin = {
   name: string
@@ -303,11 +282,7 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
       return objValsToArrays(this.pjson['cli-engine'].hooks)
     },
     get aliases() {
-      return objValsToArrays({
-        version: ['-v', '--version'],
-        'plugins:uninstall': ['plugins:unlink'],
-        ...this.pjson['cli-engine'].aliases,
-      })
+      return objValsToArrays(this.pjson['cli-engine'].aliases)
     },
     get windows() {
       return this.platform === 'windows'
@@ -367,7 +342,6 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
       return registry(this)
     },
     ...(<any>existing),
-    __cache: {},
   }
 }
 

@@ -173,12 +173,9 @@ describe('pjson', () => {
   })
 
   describe('aliases', () => {
-    test('has default aliases', () => {
+    test('has no aliases by default', () => {
       let config = configFromPJSON()
-      expect(config.aliases).toEqual({
-        version: ['-v', '--version'],
-        'plugins:uninstall': ['plugins:unlink'],
-      })
+      expect(config.aliases).toEqual({})
     })
 
     test('can set aliases', () => {
@@ -186,11 +183,11 @@ describe('pjson', () => {
         'cli-engine': {
           aliases: {
             'foo:bar': 'baz',
+            'foo:baz': ['bak'],
           },
         },
       })
-      expect(config.aliases['foo:bar']).toEqual(['baz'])
-      expect(config.aliases['version']).toEqual(['-v', '--version'])
+      expect(config.aliases).toEqual({ 'foo:bar': ['baz'], 'foo:baz': ['bak'] })
     })
   })
 
