@@ -1,7 +1,13 @@
 import * as path from 'path'
 import * as os from 'os'
-import * as fs from 'fs-extra'
-import { IFlag, IArg } from 'cli-flags'
+import FS = require('fs-extra')
+import { flags, args } from 'cli-flags'
+
+let _fs: typeof FS
+function fs() {
+  if (!_fs) _fs = require('fs-extra')
+  return _fs
+}
 
 export type UserConfig = {
   skipAnalytics?: boolean | undefined | null
@@ -91,7 +97,7 @@ function dir(config: Config, category: string, d?: string): string {
   if (config.windows) d = process.env.LOCALAPPDATA || d
   d = process.env.XDG_DATA_HOME || d
   d = path.join(d, config.dirname)
-  fs.mkdirpSync(d)
+  fs().mkdirpSync(d)
   config.__cache[cacheKey] = d
   return d
 }
@@ -119,7 +125,7 @@ function loadUserConfig(config: Config): UserConfig {
   const configPath = path.join(config.configDir, 'config.json')
   let userConfig: UserConfig
   try {
-    userConfig = fs.readJSONSync(configPath)
+    userConfig = fs().readJSONSync(configPath)
   } catch (e) {
     if (e.code === 'ENOENT') {
       userConfig = {
@@ -137,7 +143,7 @@ function loadUserConfig(config: Config): UserConfig {
     const uuid = require('uuid/v4')
     userConfig.install = uuid()
     try {
-      fs.outputJSONSync(configPath, userConfig, { spaces: 2 })
+      fs().outputJSONSync(configPath, userConfig, { spaces: 2 })
     } catch (e) {
       userConfig.install = null
     }
@@ -326,8 +332,8 @@ export interface ICommand {
   id: string
   buildHelp: (config: Config) => string
   buildHelpLine: (config: Config) => [string, string | undefined]
-  args?: IArg[]
-  flags?: { [name: string]: IFlag<any> }
+  args?: args.IArg[]
+  flags?: flags.Input
   run: (options: Config) => Promise<any>
   plugin?: Plugin
 }
@@ -337,9 +343,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
   if (existing._version) return existing as any
   if (existing.root && !existing.pjson) {
     let pjsonPath = path.join(existing.root, 'package.json')
-    if (fs.existsSync(pjsonPath)) {
+    if (fs().existsSync(pjsonPath)) {
       // parse the package.json at the root
-      let pjson = fs.readJSONSync(path.join(existing.root, 'package.json'))
+      let pjson = fs().readJSONSync(path.join(existing.root, 'package.json'))
       existing.pjson = {
         ...defaultConfig.pjson,
         'cli-engine': {

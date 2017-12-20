@@ -615,14 +615,13 @@ cli-cursor@^1.0.2:
   dependencies:
     restore-cursor "^1.0.1"
 
-cli-flags@1.0.19:
-  version "1.0.19"
-  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-1.0.19.tgz#19f117964bb4ff61d9376df7942aa1d99edd06cd"
+cli-flags@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-2.0.0.tgz#c8cee30f2f4f29807d0626284e14d59c059fe532"
   dependencies:
     chalk "^2.3.0"
-    cli-ux "^2.0.8"
-    lodash "^4.17.4"
-    ts-lodash "^4.0.6"
+    cli-ux "^2.0.9"
+    ts-lodash "^4.0.7"
 
 cli-spinners@^0.1.2:
   version "0.1.2"
@@ -635,9 +634,9 @@ cli-truncate@^0.2.1:
     slice-ansi "0.0.4"
     string-width "^1.0.1"
 
-cli-ux@^2.0.8:
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-2.0.8.tgz#8cefd0e6d8aa9d7245fc21324287ff6fe3d7fa90"
+cli-ux@^2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-2.0.9.tgz#8d4c630c821367154f32a1e204cc862f2f539c08"
   dependencies:
     "@heroku/linewrap" "^1.0.0"
     ansi-escapes "^3.0.0"
@@ -3747,6 +3746,12 @@ ts-jest@22.0.0:
 ts-lodash@^4.0.6:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/ts-lodash/-/ts-lodash-4.0.6.tgz#1166589945e8a980dc809b875c9d6b70aadd8537"
+  dependencies:
+    lodash "^4.17.4"
+
+ts-lodash@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/ts-lodash/-/ts-lodash-4.0.7.tgz#da926ec01529f6c15b2ce4e74dfc66cbeac0490c"
   dependencies:
     lodash "^4.17.4"
 
