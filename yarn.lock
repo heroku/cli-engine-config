@@ -615,11 +615,10 @@ cli-cursor@^1.0.2:
   dependencies:
     restore-cursor "^1.0.1"
 
-cli-flags@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-2.0.0.tgz#c8cee30f2f4f29807d0626284e14d59c059fe532"
+cli-flags@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/cli-flags/-/cli-flags-2.0.1.tgz#70a5b46a0e0ddc53ed1cfe19ae09b540375521c0"
   dependencies:
-    chalk "^2.3.0"
     cli-ux "^2.0.9"
     ts-lodash "^4.0.7"
 

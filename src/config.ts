@@ -103,8 +103,12 @@ function dir(config: Config, category: string, d?: string): string {
 }
 
 function debug(bin: string) {
-  const debug = require('debug')(bin).enabled || envVarTrue(envVarKey(bin, 'DEBUG'))
-  return debug ? 1 : 0
+  try {
+    let debug = require('debug')(bin).enabled || envVarTrue(envVarKey(bin, 'DEBUG'))
+    return debug ? 1 : 0
+  } catch (err) {
+    return 0
+  }
 }
 
 function envVarKey(...parts: string[]) {
