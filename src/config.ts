@@ -1,18 +1,7 @@
 import * as path from 'path'
 import * as os from 'os'
-import FS = require('fs-extra')
 import { flags, args } from 'cli-flags'
-
-let _fs: typeof FS
-function fs() {
-  if (!_fs) _fs = require('fs-extra')
-  return _fs
-}
-
-export type UserConfig = {
-  skipAnalytics?: boolean | undefined | null
-  install?: string | undefined | null
-}
+import * as fs from 'fs'
 
 export type Topic = {
   name: string
@@ -34,7 +23,6 @@ export type CLI = {
   aliases?: { [from: string]: string | string[] }
   userPlugins: boolean
   plugins?: string[]
-  legacyConverter?: string
   topics?: { [name: string]: Topic }
   npmRegistry?: string
 }
@@ -61,7 +49,6 @@ export type Config = {
   channel: string // CLI channel for updates
   version: string // CLI version
   debug: number // debugging level
-  reexecBin?: string
   dataDir: string // directory for storing CLI data
   cacheDir: string // directory for storing temporary CLI data
   configDir: string // directory for storing CLI config
@@ -69,19 +56,15 @@ export type Config = {
   platform: string // operating system
   windows: boolean // is windows OS
   _version: '1' // config schema version
-  skipAnalytics: boolean // skip processing of analytics
   install: string // generated uuid of this install
   userAgent: string // user agent for API calls
   shell: string // the shell in which the command is run
   hooks: { [name: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
   aliases: { [from: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
-  userConfig: UserConfig // users custom configuration json
   argv: string[]
-  mock: boolean
   userPlugins: boolean
   corePlugins: string[]
   topics: { [name: string]: Topic }
-  legacyConverter?: string
   errlog: string
   npmRegistry: string
   __cache: any // memoization cache
@@ -97,7 +80,6 @@ function dir(config: Config, category: string, d?: string): string {
   if (config.windows) d = process.env.LOCALAPPDATA || d
   d = process.env.XDG_DATA_HOME || d
   d = path.join(d, config.dirname)
-  fs().mkdirpSync(d)
   config.__cache[cacheKey] = d
   return d
 }
@@ -123,37 +105,9 @@ function envVarTrue(k: string): boolean {
   return v === '1' || v === 'true'
 }
 
-function loadUserConfig(config: Config): UserConfig {
-  const cache = config.__cache['userConfig']
-  if (cache) return cache
-  const configPath = path.join(config.configDir, 'config.json')
-  let userConfig: UserConfig
-  try {
-    userConfig = fs().readJSONSync(configPath)
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      userConfig = {
-        skipAnalytics: false,
-        install: null,
-      }
-    } else {
-      throw e
-    }
-  }
-  config.__cache['userConfig'] = userConfig
-
-  if (config.skipAnalytics) userConfig.install = null
-  else if (!userConfig.install) {
-    const uuid = require('uuid/v4')
-    userConfig.install = uuid()
-    try {
-      fs().outputJSONSync(configPath, userConfig, { spaces: 2 })
-    } catch (e) {
-      userConfig.install = null
-    }
-  }
-
-  return userConfig
+function readJSONSync(f: string): any {
+  let d = fs.readFileSync(f, 'utf8')
+  return JSON.parse(d)
 }
 
 function shell(onWindows: boolean = false): string {
@@ -199,15 +153,6 @@ function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[
   )
 }
 
-function envSkipAnalytics(config: Config) {
-  if (config.userConfig.skipAnalytics) {
-    return true
-  } else if (envVarTrue('TESTING') || envVarTrue(envVarKey(config.bin, 'SKIP_ANALYTICS'))) {
-    return true
-  }
-  return false
-}
-
 function topics(config: Config) {
   if (!config.__cache['topics']) {
     config.__cache['topics'] = config.pjson['cli-engine'].topics || {}
@@ -216,39 +161,6 @@ function topics(config: Config) {
     }
   }
   return config.__cache['topics']
-}
-
-function validatePJSON(pjson: PJSON) {
-  // const exampleCLI = {
-  //   bin: 'heroku',
-  //   dirname: 'heroku',
-  //   node: '8.0.0',
-  //   defaultCommand: 'dashboard',
-  //   commands: './lib/commands',
-  //   hooks: {
-  //     init: './lib/hooks/init.js',
-  //     update: './lib/hooks/update.js',
-  //     prerun: './lib/hooks/prerun.js',
-  //     'plugins:preinstall': './lib/hooks/plugins/preinstall.js'
-  //   },
-  //   s3: {host: 'host'},
-  //   plugins: ['heroku-pg', 'heroku-redis']
-  // }
-  // TODO: validate
-  // const cli = pjson['cli-engine'] || {}
-  // const comment = 'cli-engine-config'
-  // const title = {
-  //   warning: 'invalid CLI package.json',
-  //   error: 'invalid CLI package.json' }
-  // validate(cli, {comment, title, exampleConfig: exampleCLI})
-  // validate(cli.hooks, {
-  //   comment,
-  //   condition: (option, validOption) => {
-  //     console.dir({option, validOption})
-  //   },
-  //   title,
-  //   exampleConfig: exampleCLI.hooks
-  // })
 }
 
 export type AlphabetUppercase =
@@ -347,9 +259,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
   if (existing._version) return existing as any
   if (existing.root && !existing.pjson) {
     let pjsonPath = path.join(existing.root, 'package.json')
-    if (fs().existsSync(pjsonPath)) {
+    try {
       // parse the package.json at the root
-      let pjson = fs().readJSONSync(path.join(existing.root, 'package.json'))
+      let pjson = readJSONSync(path.join(existing.root, 'package.json'))
       existing.pjson = {
         ...defaultConfig.pjson,
         'cli-engine': {
@@ -358,7 +270,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
         },
         ...pjson,
       }
-      validatePJSON(existing.pjson as PJSON)
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err
+      console.error(err)
     }
   }
   const pjson = {
@@ -381,7 +295,6 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     root: path.join(__dirname, '..'),
     arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
     platform: os.platform() === 'win32' ? 'windows' : os.platform(),
-    mock: false,
     argv: process.argv.slice(1),
     version: pjson.version,
     defaultCommand: pjson['cli-engine'].defaultCommand,
@@ -423,18 +336,9 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     get cacheDir() {
       return dir(this, 'cache', this.platform === 'darwin' ? path.join(this.home, 'Library', 'Caches') : undefined)
     },
-    get userConfig() {
-      return loadUserConfig(this)
-    },
-    get skipAnalytics() {
-      return envSkipAnalytics(this)
-    },
     get updateDisabled() {
       const k = envVarKey(this.bin, 'SKIP_CORE_UPDATES')
       if (envVarTrue(k)) return `${k} is set to ${process.env[k]}`
-    },
-    get install() {
-      return this.userConfig.install
     },
     get s3() {
       const config = this
@@ -446,9 +350,6 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     },
     get commandsDir() {
       return commandsDir(this)
-    },
-    get legacyConverter() {
-      return this.pjson['cli-engine'].legacyConverter
     },
     get corePlugins() {
       return this.pjson['cli-engine'].plugins || []
