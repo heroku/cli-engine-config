@@ -19,6 +19,8 @@
     "remap-istanbul": "^0.9.5",
     "ts-jest": "22.0.0",
     "ts-node": "4.0.2",
+    "tslint": "^5.8.0",
+    "tslint-cli-engine": "^1.0.0",
     "typescript": "2.6.2"
   },
   "engines": {
@@ -39,7 +41,7 @@
   },
   "repository": "heroku/cli-engine-config",
   "scripts": {
-    "posttest": "prettier -l 'src/**/*.ts'",
+    "posttest": "tslint -p . && prettier -l 'src/**/*.ts'",
     "precommit": "lint-staged",
     "prepare": "del lib && tsc",
     "pretest": "tsc",

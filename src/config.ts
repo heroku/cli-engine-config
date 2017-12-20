@@ -1,49 +1,49 @@
-import * as path from 'path'
-import * as os from 'os'
-import { flags, args } from 'cli-flags'
+import { args, flags } from 'cli-flags'
 import * as fs from 'fs'
+import * as os from 'os'
+import * as path from 'path'
 
-export type Topic = {
+export interface ITopic {
   name: string
   description?: string
   hidden?: boolean
 }
 
-export type S3 = {
+export interface IS3 {
   host?: string
 }
 
-export type CLI = {
+export interface ICLI {
   bin?: string
   dirname?: string
   defaultCommand?: string
   commands?: string
-  s3?: S3
+  s3?: IS3
   hooks?: { [name: string]: string | string[] }
   aliases?: { [from: string]: string | string[] }
   userPlugins: boolean
   plugins?: string[]
-  topics?: { [name: string]: Topic }
+  topics?: { [name: string]: ITopic }
   npmRegistry?: string
 }
 
-export type PJSON = {
+export interface ICLIPJSON {
   name: string
   version: string
   dependencies: { [name: string]: string }
-  'cli-engine': CLI
+  'cli-engine': ICLI
 }
 
-export type Config = {
+export interface IConfig {
   name: string // name of CLI
   dirname: string // name of CLI directory
   initPath: string // path to init script
   commandsDir: string // root path to CLI commands
   bin: string // name of binary
-  s3: S3 // S3 config
+  s3: IS3 // S3 config
   root: string // root of CLI
   home: string // user home directory
-  pjson: PJSON // parsed CLI package.json
+  pjson: ICLIPJSON // parsed CLI package.json
   updateDisabled: string // CLI updates are disabled
   defaultCommand: string // default command if no args passed (usually help)
   channel: string // CLI channel for updates
@@ -63,14 +63,14 @@ export type Config = {
   argv: string[]
   userPlugins: boolean
   corePlugins: string[]
-  topics: { [name: string]: Topic }
+  topics: { [name: string]: ITopic }
   errlog: string
   npmRegistry: string
 }
 
-export type ConfigOptions = Partial<Config>
+export type ConfigOptions = Partial<IConfig>
 
-function dir(config: Config, category: string, d?: string): string {
+function dir(config: IConfig, category: string, d?: string): string {
   let cacheKey = `dir:${category}`
   d = d || path.join(config.home, category === 'data' ? '.local/share' : '.' + category)
   if (config.windows) d = process.env.LOCALAPPDATA || d
@@ -118,17 +118,17 @@ function shell(onWindows: boolean = false): string {
   return shellPath[shellPath.length - 1]
 }
 
-function userAgent(config: Config) {
+function userAgent(config: IConfig) {
   const channel = config.channel === 'stable' ? '' : ` ${config.channel}`
   return `${config.name}/${config.version}${channel} (${config.platform}-${config.arch}) node-${process.version}`
 }
 
-function registry(config: Config): string {
+function registry(config: IConfig): string {
   const env = process.env[envVarKey(config.bin, 'NPM_REGISTRY')]
   return env || config.pjson['cli-engine'].npmRegistry || 'https://registry.yarnpkg.com'
 }
 
-function commandsDir(config: Config): string | undefined {
+function commandsDir(config: IConfig): string | undefined {
   let commandsDir = config.pjson['cli-engine'].commands
   if (!commandsDir) return
   return path.join(config.root, commandsDir)
@@ -148,8 +148,8 @@ function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[
   )
 }
 
-function topics(config: Config) {
-  let topics: { [k: string]: Topic } = config.pjson['cli-engine'].topics || {}
+function topics(config: IConfig) {
+  let topics: { [k: string]: ITopic } = config.pjson['cli-engine'].topics || {}
   for (let [k, v] of Object.entries(topics)) {
     if (!v.name) v.name = k
   }
@@ -209,7 +209,7 @@ export type AlphabetLowercase =
   | 'y'
   | 'z'
 
-export type Plugin = {
+export interface IPlugin {
   name: string
   version: string
   type: string
@@ -225,15 +225,15 @@ export interface ICommand {
   help?: string
   _version: string
   id: string
-  buildHelp: (config: Config) => string
-  buildHelpLine: (config: Config) => [string, string | undefined]
+  buildHelp: (config: IConfig) => string
+  buildHelpLine: (config: IConfig) => [string, string | undefined]
   args?: args.IArg[]
   flags?: flags.Input
-  run: (options: Config) => Promise<any>
-  plugin?: Plugin
+  run: (options: IConfig) => Promise<any>
+  plugin?: IPlugin
 }
 
-export function buildConfig(existing: ConfigOptions = {}): Config {
+export function buildConfig(existing: ConfigOptions = {}): IConfig {
   if (!existing) existing = {}
   if (existing._version) return existing as any
   if (existing.root && !existing.pjson) {
@@ -250,34 +250,33 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
         ...pjson,
       }
     } catch (err) {
-      if (err.code !== 'ENOENT') throw err
-      console.error(err)
+      throw err
     }
   }
   const pjson = {
+    'cli-engine': {
+      defaultCommand: 'help',
+      hooks: {},
+      s3: { host: null },
+      userPlugins: false,
+    },
+    dependencies: {},
     name: 'cli-engine',
     version: '0.0.0',
-    dependencies: {},
-    'cli-engine': {
-      hooks: {},
-      defaultCommand: 'help',
-      userPlugins: false,
-      s3: { host: null },
-    },
     ...(existing.pjson || {}),
   }
   return {
     _version: '1',
-    pjson,
-    channel: 'stable',
-    home: os.homedir() || os.tmpdir(),
-    root: path.join(__dirname, '..'),
     arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
-    platform: os.platform() === 'win32' ? 'windows' : os.platform(),
     argv: process.argv.slice(1),
-    version: pjson.version,
+    channel: 'stable',
     defaultCommand: pjson['cli-engine'].defaultCommand,
+    home: os.homedir() || os.tmpdir(),
     name: pjson.name,
+    pjson,
+    platform: os.platform() === 'win32' ? 'windows' : os.platform(),
+    root: path.join(__dirname, '..'),
+    version: pjson.version,
     get hooks() {
       return objValsToArrays(this.pjson['cli-engine'].hooks)
     },
@@ -341,7 +340,7 @@ export function buildConfig(existing: ConfigOptions = {}): Config {
     get npmRegistry() {
       return registry(this)
     },
-    ...(<any>existing),
+    ...(existing as any),
   }
 }
 
