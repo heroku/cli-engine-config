@@ -229,7 +229,7 @@ export interface ICommand {
   buildHelpLine: (config: IConfig) => [string, string | undefined]
   args?: args.IArg[]
   flags?: flags.Input
-  run: (argv: string[], options: IConfig) => Promise<any>
+  run: (argv: string[], config: IConfig) => Promise<any>
   plugin?: IPlugin
 }
 
