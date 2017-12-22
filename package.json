@@ -36,9 +36,6 @@
   ],
   "license": "ISC",
   "main": "lib/config.js",
-  "peerDependencies": {
-    "cli-flags": "^2.0.0"
-  },
   "repository": "heroku/cli-engine-config",
   "scripts": {
     "posttest": "tslint -p . && prettier -l 'src/**/*.ts'",
