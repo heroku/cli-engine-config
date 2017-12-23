@@ -225,6 +225,7 @@ export interface ICommand {
   help?: string
   _version: string
   id: string
+  aliases: string[]
   buildHelp: (config: IConfig) => string
   buildHelpLine: (config: IConfig) => [string, string | undefined]
   args?: args.IArg[]
