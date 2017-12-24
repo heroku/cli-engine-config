@@ -2,7 +2,7 @@
 
 import { buildConfig } from '../src/config'
 
-buildConfig({
+let config = buildConfig({
   pjson: {
     name: 'foo',
     version: '1.0.0',
@@ -20,3 +20,5 @@ buildConfig({
     },
   },
 } as any)
+// tslint:disable-next-line
+console.dir(config)

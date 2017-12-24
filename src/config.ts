@@ -37,7 +37,7 @@ export interface ICLIPJSON {
 export interface IConfig {
   name: string // name of CLI
   dirname: string // name of CLI directory
-  initPath: string // path to init script
+  reexecBin: string // path to original executable for autoupdates
   commandsDir: string // root path to CLI commands
   bin: string // name of binary
   s3: IS3 // S3 config
@@ -70,13 +70,35 @@ export interface IConfig {
 
 export type ConfigOptions = Partial<IConfig>
 
-function dir(config: IConfig, category: string, d?: string): string {
+function dir({
+  dirname,
+  category,
+  home,
+  platform,
+  d,
+}: {
+  dirname: string
+  category: string
+  home: string
+  platform: string
+  d?: string
+}): string {
   let cacheKey = `dir:${category}`
-  d = d || path.join(config.home, category === 'data' ? '.local/share' : '.' + category)
-  if (config.windows) d = process.env.LOCALAPPDATA || d
+  d = d || path.join(home, category === 'data' ? '.local/share' : '.' + category)
+  if (platform === 'windows') d = process.env.LOCALAPPDATA || d
   d = process.env.XDG_DATA_HOME || d
-  d = path.join(d, config.dirname)
+  d = path.join(d, dirname)
   return d
+}
+
+function windowsHome(): string {
+  return (
+    process.env.HOME ||
+    (process.env.HOMEDRIVE && process.env.HOMEPATH && path.join(process.env.HOMEDRIVE!, process.env.HOMEPATH!)) ||
+    process.env.USERPROFILE ||
+    os.homedir() ||
+    os.tmpdir()
+  )
 }
 
 function debug(bin: string) {
@@ -243,22 +265,18 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
       // parse the package.json at the root
       let pjson = readJSONSync(path.join(existing.root, 'package.json'))
       existing.pjson = {
-        ...defaultConfig.pjson,
-        'cli-engine': {
-          ...defaultConfig.pjson['cli-engine'],
-          ...(pjson['cli-engine'] || {}),
-        },
+        'cli-engine': pjson['cli-engine'] || {},
         ...pjson,
       }
     } catch (err) {
       throw err
     }
   }
-  const pjson = {
+  const pjson: ICLIPJSON = {
     'cli-engine': {
       defaultCommand: 'help',
       hooks: {},
-      s3: { host: null },
+      s3: { host: undefined },
       userPlugins: false,
     },
     dependencies: {},
@@ -266,50 +284,44 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     version: '0.0.0',
     ...(existing.pjson || {}),
   }
+  const bin = existing.bin || pjson['cli-engine'].bin || pjson.name
+  const platform = existing.platform || os.platform()
+  const dirname = existing.dirname || pjson['cli-engine'].dirname || bin
+  const windows = platform === 'win32'
+  const home = existing.home || (windows && windowsHome()) || os.homedir() || os.tmpdir()
   return {
     _version: '1',
+    bin,
+    dirname,
+    pjson,
+    platform,
+    home,
     arch: os.arch() === 'ia32' ? 'x86' : os.arch(),
     argv: process.argv.slice(1),
     channel: 'stable',
     defaultCommand: pjson['cli-engine'].defaultCommand,
-    home: os.homedir() || os.tmpdir(),
     name: pjson.name,
-    pjson,
-    platform: os.platform() === 'win32' ? 'windows' : os.platform(),
     root: path.join(__dirname, '..'),
     version: pjson.version,
-    get hooks() {
-      return objValsToArrays(this.pjson['cli-engine'].hooks)
-    },
-    get aliases() {
-      return objValsToArrays(this.pjson['cli-engine'].aliases)
-    },
-    get windows() {
-      return this.platform === 'windows'
-    },
+    reexecBin: process.env[envVarKey(bin, 'CLI_BINPATH')],
+    hooks: objValsToArrays(pjson['cli-engine'].hooks),
+    aliases: objValsToArrays(pjson['cli-engine'].aliases),
+    windows,
+    shell: shell(windows),
+    debug: debug(bin || 'cli-engine') || 0,
+    dataDir: dir({ category: 'data', home, platform, dirname }),
+    configDir: dir({ category: 'config', home, platform, dirname }),
+    cacheDir: dir({
+      category: 'cache',
+      home,
+      platform,
+      dirname,
+      d: platform === 'darwin' ? path.join(home, 'Library', 'Caches') : undefined,
+    }),
+    corePlugins: pjson['cli-engine'].plugins || [],
+    userPlugins: pjson['cli-engine'].userPlugins,
     get userAgent() {
       return userAgent(this)
-    },
-    get dirname() {
-      return this.pjson['cli-engine'].dirname || this.bin
-    },
-    get shell() {
-      return shell(this.windows)
-    },
-    get bin() {
-      return this.pjson['cli-engine'].bin || this.name
-    },
-    get debug() {
-      return debug(this.bin || 'cli-engine') || 0
-    },
-    get dataDir() {
-      return dir(this, 'data')
-    },
-    get configDir() {
-      return dir(this, 'config')
-    },
-    get cacheDir() {
-      return dir(this, 'cache', this.platform === 'darwin' ? path.join(this.home, 'Library', 'Caches') : undefined)
     },
     get updateDisabled() {
       const k = envVarKey(this.bin, 'SKIP_CORE_UPDATES')
@@ -326,12 +338,6 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     get commandsDir() {
       return commandsDir(this)
     },
-    get corePlugins() {
-      return this.pjson['cli-engine'].plugins || []
-    },
-    get userPlugins() {
-      return this.pjson['cli-engine'].userPlugins
-    },
     get topics() {
       return topics(this)
     },
@@ -344,5 +350,3 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     ...(existing as any),
   }
 }
-
-export const defaultConfig = buildConfig()
