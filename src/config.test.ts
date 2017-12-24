@@ -44,10 +44,10 @@ describe('windows', () => {
     expect(config.windows).toEqual(true)
   })
 
-  test('other', () => {
-    platform = 'other'
+  test('darwin', () => {
+    platform = 'darwin'
     let config = buildConfig()
-    expect(config.platform).toEqual('other')
+    expect(config.platform).toEqual('darwin')
     expect(config.windows).toEqual(false)
   })
 })
