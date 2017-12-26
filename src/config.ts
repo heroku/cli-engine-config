@@ -1,28 +1,12 @@
 import * as os from 'os'
 import * as path from 'path'
+import {deprecate} from 'util'
 
 import * as Types from './types'
 
-const MEMOIZED_CONSTANT = Symbol('memoized')
+export * from './types'
 
-function memoize() {
-  return (_: any, __: string, descriptor: TypedPropertyDescriptor<any>) => {
-    if (!descriptor.value && !descriptor.get) throw new Error('Only put the @memoize decorator on a method or getter.')
-    const originalMethod = descriptor.value || descriptor.get
-    let fn: any = function (this: any, ...args: any[]) {
-      const i = this[MEMOIZED_CONSTANT] || (this[MEMOIZED_CONSTANT] = Symbol('memoized'))
-      if (!fn[i]) {
-        fn[i] = originalMethod.apply(this, args)
-      }
-      return fn[i]
-    }
-    if (descriptor.value) descriptor.value = fn
-    else descriptor.get = fn
-    return descriptor
-  }
-}
-
-export default class Config {
+export class Config {
   _version = require('../package.json').version
 
   constructor (protected opts: Types.ConfigOptions = {}) {
@@ -139,6 +123,10 @@ export default class Config {
   }
 }
 
+export const buildConfig = deprecate((opts?: any) => {
+  return new Config(opts)
+}, '`buildConfig()` is deprecated. Use `new Config()` instead.')
+
 function toArray<T>(o: T | T[]): T[] {
   return Array.isArray(o) ? o : [o]
 }
@@ -153,3 +141,21 @@ function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[
   )
 }
 
+const MEMOIZED_CONSTANT = Symbol('memoized')
+
+function memoize() {
+  return (_: any, __: string, descriptor: TypedPropertyDescriptor<any>) => {
+    if (!descriptor.value && !descriptor.get) throw new Error('Only put the @memoize decorator on a method or getter.')
+    const originalMethod = descriptor.value || descriptor.get
+    let fn: any = function (this: any, ...args: any[]) {
+      const i = this[MEMOIZED_CONSTANT] || (this[MEMOIZED_CONSTANT] = Symbol('memoized'))
+      if (!fn[i]) {
+        fn[i] = originalMethod.apply(this, args)
+      }
+      return fn[i]
+    }
+    if (descriptor.value) descriptor.value = fn
+    else descriptor.get = fn
+    return descriptor
+  }
+}

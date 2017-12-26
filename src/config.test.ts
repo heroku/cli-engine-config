@@ -1,6 +1,6 @@
 import * as path from 'path'
 
-import Config from './config'
+import { Config } from './config'
 
 const env = process.env
 jest.mock('os')
@@ -326,4 +326,9 @@ describe('memoize', () => {
   const config = new Config()
   expect(config.platform).toEqual('win32')
   expect(config.platform).toEqual('win32')
+})
+
+describe('deprecated functionality', () => {
+  const config = require('./config').buildConfig()
+  expect(config.name).toEqual('cli-engine')
 })

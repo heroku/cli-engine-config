@@ -1,6 +1,6 @@
 import { args, flags } from 'cli-flags'
 
-import Config from './config'
+import { Config } from './config'
 
 export interface ITopics {
   [name: string]: ITopic
@@ -44,6 +44,8 @@ export interface ConfigOptions {
   channel?: string
   updateDisabled?: string
   reexecBin?: string
+  arch?: ArchTypes
+  platform?: PlatformTypes
 }
 
 export interface IPlugin {
