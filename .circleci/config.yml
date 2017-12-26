@@ -1,27 +1,27 @@
 ---
 version: 2
 jobs:
-  jobs:
-    node-6: &test-build
-      docker:
-        - image: node:6
-      working_directory: ~/cli
-      steps:
-        - checkout
-        - run: yarn
-        - run: yarn test --coverage
-        - run: curl -s https://codecov.io/bash | bash
-    node-8:
-      <<: *test-build
-      docker:
-        - image: node:8
-    node-9:
-      docker:
-        - image: node:9
+  node-6: &test-build
+    docker:
+      - image: node:6
+    working_directory: ~/cli
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn test --coverage
+      - run: curl -s https://codecov.io/bash | bash
+  node-8:
+    <<: *test-build
+    docker:
+      - image: node:8
+  node-9:
+    <<: *test-build
+    docker:
+      - image: node:9
 
 workflows:
   version: 2
-  build:
+  test:
     jobs:
       - node-6
       - node-8
