@@ -1,3 +1,4 @@
+import * as MockFS from 'mock-fs'
 import * as path from 'path'
 import { inspect } from 'util'
 
@@ -12,7 +13,7 @@ beforeEach(() => {
   platform = 'linux'
   process.env = {}
   os.platform = jest.fn().mockImplementation(() => platform)
-  os.homedir = jest.fn().mockImplementation(() => '/Users/me')
+  os.homedir = jest.fn().mockImplementation(() => '/home/me')
   os.arch = jest.fn().mockImplementation(() => 'x86')
 })
 
@@ -40,11 +41,11 @@ test('default props are set', () => {
   expect(config.topics).toEqual({})
   expect(config.userPluginsEnabled).toEqual(false)
 
-  expect(config.cacheDir).toEqual('/Users/me/.cache/cli-engine')
-  expect(config.dataDir).toEqual('/Users/me/.local/share/cli-engine')
-  expect(config.configDir).toEqual('/Users/me/.config/cli-engine')
+  expect(config.cacheDir).toEqual('/home/me/.cache/cli-engine')
+  expect(config.dataDir).toEqual('/home/me/.local/share/cli-engine')
+  expect(config.configDir).toEqual('/home/me/.config/cli-engine')
 
-  expect(config.home).toEqual('/Users/me')
+  expect(config.home).toEqual('/home/me')
   expect(config.updateDisabled).toBeUndefined()
   expect(config.userAgent).toEqual(`cli-engine/0.0.0 (linux-x86) node-${process.version}`)
   expect(config.version).toEqual('0.0.0')
@@ -308,16 +309,16 @@ describe('dirs', () => {
   describe('cacheDir', () => {
     test('macos is special', () => {
       platform = 'darwin'
-      expect(new Config().cacheDir).toEqual('/Users/me/Library/Caches/cli-engine')
+      expect(new Config().cacheDir).toEqual('/home/me/Library/Caches/cli-engine')
     })
     test('linux', () => {
       platform = 'linux'
-      expect(new Config().cacheDir).toEqual('/Users/me/.cache/cli-engine')
+      expect(new Config().cacheDir).toEqual('/home/me/.cache/cli-engine')
     })
     describe('win32', () => {
       beforeEach(() => (platform = 'win32'))
       test('normal', () => {
-        expect(new Config().cacheDir).toEqual('/Users/me/.cache/cli-engine')
+        expect(new Config().cacheDir).toEqual('/home/me/.cache/cli-engine')
       })
       test('XDG_CACHE_HOME and LOCALAPPDATA', () => {
         process.env.XDG_CACHE_HOME = '/xdg/home/cache'
@@ -357,42 +358,56 @@ describe('deprecated functionality', () => {
 })
 
 describe('with root', () => {
-  const root = path.join(__dirname, '..')
   let config: Config
+  let mockFS: typeof MockFS
 
   beforeEach(() => {
-    config = new Config({ root })
+    jest.dontMock('os')
+    mockFS = require('mock-fs')
+    mockFS({
+      '/src/cli': {
+        'package.json': JSON.stringify({
+          name: 'foobar-cli',
+          version: '1.2.3-beta.0',
+        }),
+      },
+    })
+    config = new Config({ root: path.join('/src/cli') })
+  })
+
+  afterEach(() => {
+    mockFS.restore()
   })
 
   test('require package.json', () => {
-    expect(config.name).toEqual('@cli-engine/config')
+    expect(config.name).toEqual('foobar-cli')
   })
 
   describe('util.inspect()', () => {
     test('depth = 2', () => {
       const actual = inspect(config)
       const expected = `
-Config { userAgent: '@cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0',
-         root: '/Users/jdickey/src/github.com/heroku/cli-engine-config',
-         home: '/Users/me',
+Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
+         root: '/src/cli',
+         home: '/home/me',
          shell: 'unknown',
-         dataDir: '/Users/me/.local/share/@cli-engine/config',
-         cacheDir: '/Users/me/.cache/@cli-engine/config' }`.trim()
+         dataDir: '/home/me/.local/share/foobar-cli',
+         cacheDir: '/home/me/.cache/foobar-cli' }`.trim()
       expect(actual).toEqual(expected)
     })
     test('depth = 1', () => {
       const actual = inspect({ config })
       const expected = `
-{ config: Config { userAgent: '@cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0',
-            root: '/Users/jdickey/src/github.com/heroku/cli-engine-config' } }`.trim()
+{ config: Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
+            root: '/src/cli' } }`.trim()
       expect(actual).toEqual(expected)
     })
     test('depth = 0', () => {
       const actual = inspect({ config: { config } })
       const expected = `
 { config: 
-   { config: Config { userAgent: '@cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0',
-               root: '/Users/jdickey/src/github.com/heroku/cli-engine-config' } } }`.trim()
+   { config: Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
+               root: '/src/cli' } } }`.trim()
       expect(actual).toEqual(expected)
     })
     test('depth = -1', () => {
@@ -400,7 +415,7 @@ Config { userAgent: '@cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0',
       const expected = `
 { config: 
    { config: 
-      { config: [Config @cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0] } } }`.trim()
+      { config: [Config foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}] } } }`.trim()
       expect(actual).toEqual(expected)
     })
     test('depth = -2', () => {
