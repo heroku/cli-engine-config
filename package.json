@@ -6,6 +6,7 @@
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {},
   "devDependencies": {
+    "@cli-engine/util": "^1.0.2",
     "@heroku-cli/tslint": "^1.0.3",
     "@types/jest": "21.1.9",
     "@types/node": "8.5.2",
@@ -36,9 +37,9 @@
   "repository": "heroku/cli-engine-config",
   "scripts": {
     "schema": "ajv compile -s schema.js -o lib/schema.js",
-    "posttest": "cli-engine-util lint",
-    "precommit": "cli-engine-util lint",
-    "prepare": "cli-engine-util prepare && yarn run schema",
+    "posttest": "cli-engine-util",
+    "precommit": "cli-engine-util",
+    "prepare": "cli-engine-util && yarn run schema",
     "pretest": "tsc",
     "test": "jest"
   },
