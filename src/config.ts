@@ -45,6 +45,9 @@ export class Config {
   get errlog(): string { return path.join(this.cacheDir, 'error.log') }
 
   get pjson(): Types.ICLIPJSON {
+    if (!this.opts.pjson && this.root) {
+      this.opts.pjson = require(path.join(this.root, 'package.json'))
+    }
     return {
       'cli-engine': {
         ...this.opts.pjson && this.opts.pjson['cli-engine'] || {}

@@ -332,3 +332,8 @@ describe('deprecated functionality', () => {
   const config = require('./config').buildConfig()
   expect(config.name).toEqual('cli-engine')
 })
+
+describe('require package.json', () => {
+  const config = new Config({ root: path.join(__dirname, '..') })
+  expect(config.name).toEqual('@cli-engine/config')
+})
