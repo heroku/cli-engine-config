@@ -10,6 +10,7 @@ let platform: NodeJS.Platform
 const os = require('os')
 
 beforeEach(() => {
+  jest.dontMock('debug')
   platform = 'linux'
   process.env = {}
   os.platform = jest.fn().mockImplementation(() => platform)
@@ -115,10 +116,20 @@ test('sets version from options', () => {
   expect(config.version).toEqual('1.0.0-foobar')
 })
 
-test('sets debug value', () => {
-  process.env.CLI_ENGINE_DEBUG = '1'
-  let sampleConfig = new Config()
-  expect(sampleConfig.debug).toBe(1)
+describe('debug', () => {
+  test('sets debug value', () => {
+    process.env.CLI_ENGINE_DEBUG = '1'
+    let sampleConfig = new Config()
+    expect(sampleConfig.debug).toBe(1)
+  })
+
+  test('debug is 0 when it errors', () => {
+    jest.mock('debug', () => () => {
+      throw new Error('whoa!')
+    })
+    let sampleConfig = new Config()
+    expect(sampleConfig.debug).toBe(0)
+  })
 })
 
 describe('pjson', () => {
