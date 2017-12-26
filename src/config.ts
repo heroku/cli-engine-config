@@ -157,9 +157,10 @@ function toArray<T>(o: T | T[]): T[] {
 }
 
 function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[] } {
-  return Object.entries(input || {}).reduce(
-    (output, [k, v]) => {
-      output[k] = toArray(v)
+  input = input || {}
+  return Object.keys(input).reduce(
+    (output, k) => {
+      output[k] = toArray(input![k])
       return output
     },
     {} as { [k: string]: T[] },

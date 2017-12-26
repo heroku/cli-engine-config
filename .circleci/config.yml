@@ -1,21 +1,28 @@
 ---
 version: 2
 jobs:
+  jobs:
+    node-6: &test-build
+      docker:
+        - image: node:6
+      working_directory: ~/cli
+      steps:
+        - checkout
+        - run: yarn
+        - run: yarn test --coverage
+        - run: curl -s https://codecov.io/bash | bash
+    node-8:
+      <<: *test-build
+      docker:
+        - image: node:8
+    node-9:
+      docker:
+        - image: node:9
+
+workflows:
+  version: 2
   build:
-    docker:
-      - image: node:9
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-yarn-{{ .Branch }}-{{checksum "yarn.lock"}}
-            - v1-yarn-{{ .Branch }}
-            - v1-yarn-master
-      - run: yarn
-      - run: yarn test --coverage
-      - run: curl -s https://codecov.io/bash | bash
-      - save_cache:
-          key: v1-yarn-{{ .Branch }}-{{checksum "yarn.lock"}}
-          paths:
-            - ~/cli-engine-config/node_modules
-            - /usr/local/share/.cache/yarn
+    jobs:
+      - node-6
+      - node-8
+      - node-9

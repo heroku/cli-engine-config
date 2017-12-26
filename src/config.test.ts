@@ -1,5 +1,6 @@
 import * as MockFS from 'mock-fs'
 import * as path from 'path'
+import * as semver from 'semver'
 import { inspect } from 'util'
 
 import { Config } from './config'
@@ -368,6 +369,8 @@ describe('deprecated functionality', () => {
   expect(config.name).toEqual('cli-engine')
 })
 
+const skipIfNodeLt6 = semver.gte(process.versions.node, '8.0.0') ? test : test.skip
+
 describe('with root', () => {
   let config: Config
   let mockFS: typeof MockFS
@@ -395,7 +398,7 @@ describe('with root', () => {
   })
 
   describe('util.inspect()', () => {
-    test('depth = 2', () => {
+    skipIfNodeLt6('depth = 2', () => {
       const actual = inspect(config)
       const expected = `
 Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
@@ -406,14 +409,14 @@ Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}
          cacheDir: '/home/me/.cache/foobar-cli' }`.trim()
       expect(actual).toEqual(expected)
     })
-    test('depth = 1', () => {
+    skipIfNodeLt6('depth = 1', () => {
       const actual = inspect({ config })
       const expected = `
 { config: Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
             root: '/src/cli' } }`.trim()
       expect(actual).toEqual(expected)
     })
-    test('depth = 0', () => {
+    skipIfNodeLt6('depth = 0', () => {
       const actual = inspect({ config: { config } })
       const expected = `
 { config: 
@@ -421,7 +424,7 @@ Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}
                root: '/src/cli' } } }`.trim()
       expect(actual).toEqual(expected)
     })
-    test('depth = -1', () => {
+    skipIfNodeLt6('depth = -1', () => {
       const actual = inspect({ config: { config: { config } } })
       const expected = `
 { config: 

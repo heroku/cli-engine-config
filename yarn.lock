@@ -10,24 +10,24 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@cli-engine/command@^11.0.0-beta.1":
-  version "11.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@cli-engine/command/-/command-11.0.0-beta.1.tgz#212d57e242fef77b07d389d03f7e101ea6306782"
+"@cli-engine/command@https://github.com/heroku/cli-engine-command#050162b":
+  version "11.0.0-beta.2"
+  resolved "https://github.com/heroku/cli-engine-command#050162bc24fd0e1432613a801ec695eb86c78832"
   dependencies:
     chalk "^2.3.0"
     cli-flags "^2.0.3"
 
-"@cli-engine/config@^5.0.0-beta.1":
-  version "5.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@cli-engine/config/-/config-5.0.0-beta.1.tgz#87c5e3c11f240c7013e4e7ef940d6ba1d798b06e"
+"@cli-engine/config@^5.0.0-beta.4":
+  version "5.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@cli-engine/config/-/config-5.0.0-beta.4.tgz#c61dd31b92163e986b3c8f102c823d31c997ae79"
 
-"@cli-engine/engine@https://github.com/heroku/cli-engine#bae2fd9e":
-  version "5.0.13"
-  resolved "https://github.com/heroku/cli-engine#bae2fd9e5e024f74b983e81cb9e5c172367c0bc3"
+"@cli-engine/engine@https://github.com/heroku/cli-engine#5aacdd61":
+  version "5.0.0-beta.0"
+  resolved "https://github.com/heroku/cli-engine#5aacdd611255e7df38f04c04ff2e225ae8fa9140"
   dependencies:
     "@heroku-cli/color" "^1.0.3"
     assync "^1.0.3"
-    cli-ux "^2.0.14"
+    cli-ux "^2.0.15"
     debug "^3.1.0"
     fs-extra "^5.0.0"
     graceful-fs "^4.1.11"
@@ -41,14 +41,14 @@
     strip-ansi "4.0.0"
     ts-lodash "4.0.8"
 
-"@cli-engine/util@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@cli-engine/util/-/util-1.0.2.tgz#1c622f9546d7f991c9120f16319e17f82ac54466"
+"@cli-engine/util@https://github.com/jdxcode/cli-engine-util#cd0f1fb":
+  version "1.0.3"
+  resolved "https://github.com/jdxcode/cli-engine-util#cd0f1fb0b9509603ae03a95d164424ebe5d852a7"
   dependencies:
-    "@cli-engine/command" "^11.0.0-beta.1"
-    "@cli-engine/config" "^5.0.0-beta.1"
-    "@cli-engine/engine" "https://github.com/heroku/cli-engine#bae2fd9e"
-    cli-ux "^2.0.14"
+    "@cli-engine/command" "https://github.com/heroku/cli-engine-command#050162b"
+    "@cli-engine/config" "^5.0.0-beta.4"
+    "@cli-engine/engine" "https://github.com/heroku/cli-engine#5aacdd61"
+    cli-ux "^2.0.15"
     del "^3.0.0"
     fs-extra "^5.0.0"
 
@@ -87,6 +87,10 @@
 "@types/node@8.5.2":
   version "8.5.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.5.2.tgz#83b8103fa9a2c2e83d78f701a9aa7c9539739aa5"
+
+"@types/semver@^5.4.0":
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.4.0.tgz#f3658535af7f1f502acd6da7daf405ffeb1f7ee4"
 
 abab@^1.0.3:
   version "1.0.3"
@@ -629,7 +633,7 @@ cli-flags@2.0.3, cli-flags@^2.0.3:
     "@heroku/linewrap" "^1.0.0"
     ts-lodash "^4.0.8"
 
-cli-ux@^2.0.14:
+cli-ux@^2.0.15:
   version "2.0.15"
   resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-2.0.15.tgz#a8be9f83e64d94331394bd4af7a9ecf501a16ff4"
   dependencies:

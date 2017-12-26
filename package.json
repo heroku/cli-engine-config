@@ -4,9 +4,11 @@
   "version": "5.0.0-beta.4",
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
-  "dependencies": {},
+  "dependencies": {
+    "@types/semver": "^5.4.0"
+  },
   "devDependencies": {
-    "@cli-engine/util": "^1.0.2",
+    "@cli-engine/util": "https://github.com/jdxcode/cli-engine-util#cd0f1fb",
     "@heroku-cli/tslint": "^1.0.3",
     "@types/jest": "21.1.9",
     "@types/mock-fs": "^3.6.30",
@@ -24,7 +26,7 @@
     "typescript": "2.6.2"
   },
   "engines": {
-    "node": ">=7.6.0"
+    "node": ">=6.12.2"
   },
   "files": [
     "lib"
