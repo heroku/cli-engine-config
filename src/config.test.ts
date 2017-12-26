@@ -1,13 +1,15 @@
 import * as path from 'path'
+import { inspect } from 'util'
 
 import { Config } from './config'
 
 const env = process.env
 jest.mock('os')
-let platform: NodeJS.Platform = 'linux'
+let platform: NodeJS.Platform
 const os = require('os')
 
 beforeEach(() => {
+  platform = 'linux'
   process.env = {}
   os.platform = jest.fn().mockImplementation(() => platform)
   os.homedir = jest.fn().mockImplementation(() => '/Users/me')
@@ -354,7 +356,57 @@ describe('deprecated functionality', () => {
   expect(config.name).toEqual('cli-engine')
 })
 
-describe('require package.json', () => {
-  const config = new Config({ root: path.join(__dirname, '..') })
-  expect(config.name).toEqual('@cli-engine/config')
+describe('with root', () => {
+  const root = path.join(__dirname, '..')
+  let config: Config
+
+  beforeEach(() => {
+    config = new Config({ root })
+  })
+
+  test('require package.json', () => {
+    expect(config.name).toEqual('@cli-engine/config')
+  })
+
+  describe('util.inspect()', () => {
+    test('depth = 2', () => {
+      const actual = inspect(config)
+      const expected = `
+Config { userAgent: '@cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0',
+         root: '/Users/jdickey/src/github.com/heroku/cli-engine-config',
+         home: '/Users/me',
+         shell: 'unknown',
+         dataDir: '/Users/me/.local/share/@cli-engine/config',
+         cacheDir: '/Users/me/.cache/@cli-engine/config' }`.trim()
+      expect(actual).toEqual(expected)
+    })
+    test('depth = 1', () => {
+      const actual = inspect({ config })
+      const expected = `
+{ config: Config { userAgent: '@cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0',
+            root: '/Users/jdickey/src/github.com/heroku/cli-engine-config' } }`.trim()
+      expect(actual).toEqual(expected)
+    })
+    test('depth = 0', () => {
+      const actual = inspect({ config: { config } })
+      const expected = `
+{ config: 
+   { config: Config { userAgent: '@cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0',
+               root: '/Users/jdickey/src/github.com/heroku/cli-engine-config' } } }`.trim()
+      expect(actual).toEqual(expected)
+    })
+    test('depth = -1', () => {
+      const actual = inspect({ config: { config: { config } } })
+      const expected = `
+{ config: 
+   { config: 
+      { config: [Config @cli-engine/config/5.0.0-beta.3 (linux-x86) node-v9.3.0] } } }`.trim()
+      expect(actual).toEqual(expected)
+    })
+    test('depth = -2', () => {
+      expect(inspect({ config: { config: { config: { config } } } })).toEqual(
+        '{ config: { config: { config: [Object] } } }',
+      )
+    })
+  })
 })

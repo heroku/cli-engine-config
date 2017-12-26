@@ -1,6 +1,6 @@
 import * as os from 'os'
 import * as path from 'path'
-import {deprecate} from 'util'
+import {deprecate, inspect} from 'util'
 
 import * as Types from './types'
 
@@ -100,6 +100,22 @@ export class Config {
       let debug = require('debug')(this.bin).enabled || this.scopedEnvVarTrue('DEBUG')
       return debug ? 1 : 0
     } catch (err) { return 0 }
+  }
+
+  [inspect.custom](depth: number, options: NodeJS.InspectOptions & {stylize: any}) {
+    if (depth < 0) return options.stylize(`[Config ${this.userAgent}]`, 'special')
+    let props: any = {
+      userAgent: this.userAgent,
+    }
+    if (this.root) props.root = this.root
+    if (this.reexecBin) props.reexecBin = this.reexecBin
+    if (depth > 1) props = {...props, home: this.home, shell: this.shell, dataDir: this.dataDir, cacheDir: this.cacheDir}
+
+    const newOptions = {...options, depth: (options.depth === null) ? null : (options.depth || 0 - 1)} as NodeJS.InspectOptions
+    const padding = ' '.repeat(7)
+    const inner = inspect(props, newOptions).replace(/\n/g, `\n${padding}`);
+
+    return `${options.stylize('Config', 'special')} ${inner}`
   }
 
   protected get windowsHome() { return this.windowsHomedriveHome || this.windowsUserprofileHome }
