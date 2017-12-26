@@ -15,36 +15,36 @@ export class Config {
 
   // exec info
   get argv(): string[] { return this.opts.argv || process.argv }
-  get bin(): string { return this.cliPjson.bin || this.pjson.name }
-  get channel(): string { return this.opts.channel || 'stable' }
-  get name(): string { return this.pjson.name }
-  get reexecBin(): string | undefined { return this.opts.reexecBin || this.scopedEnvVar('CLI_BINPATH') }
-  get root(): string | undefined { return this.opts.root }
-  get version(): string { return this.opts.version || this.pjson.version }
+  @memoize() get bin(): string { return this.cliPjson.bin || this.pjson.name }
+  @memoize() get channel(): string { return this.opts.channel || 'stable' }
+  @memoize() get name(): string { return this.pjson.name }
+  @memoize() get reexecBin(): string | undefined { return this.opts.reexecBin || this.scopedEnvVar('CLI_BINPATH') }
+  @memoize() get root(): string | undefined { return this.opts.root }
+  @memoize() get version(): string { return this.opts.version || this.pjson.version }
 
   // system
-  get arch(): Types.ArchTypes { return this.opts.arch || (os.arch() === 'ia32' ? 'x86' : os.arch() as any) }
+  @memoize() get arch(): Types.ArchTypes { return this.opts.arch || (os.arch() === 'ia32' ? 'x86' : os.arch() as any) }
   @memoize() get platform(): Types.PlatformTypes { return this.opts.platform || (os.platform() as any) }
-  get windows(): boolean { return this.platform === 'win32' }
+  @memoize() get windows(): boolean { return this.platform === 'win32' }
 
   // plugin info
-  get corePlugins(): string[] { return this.cliPjson.corePlugins || this.cliPjson.plugins || [] }
-  get defaultCommand(): string | undefined { return this.cliPjson.defaultCommand }
-  get hooks(): {[name: string]: string[]} { return objValsToArrays(this.cliPjson.hooks) }
-  get npmRegistry(): string { return this.scopedEnvVar('NPM_REGISTRY') || this.cliPjson.npmRegistry || 'https://registry.yarnpkg.com' }
-  get topics(): Types.ITopics { return this.cliPjson.topics || {} }
-  get userPluginsEnabled(): boolean { return !!this.cliPjson.userPluginsEnabled }
-  get s3() { return { host: this.scopedEnvVar('S3_HOST') || this.cliPjson.s3 && this.cliPjson.s3.host } }
+  @memoize() get corePlugins(): string[] { return this.cliPjson.corePlugins || this.cliPjson.plugins || [] }
+  @memoize() get defaultCommand(): string | undefined { return this.cliPjson.defaultCommand }
+  @memoize() get hooks(): {[name: string]: string[]} { return objValsToArrays(this.cliPjson.hooks) }
+  @memoize() get npmRegistry(): string { return this.scopedEnvVar('NPM_REGISTRY') || this.cliPjson.npmRegistry || 'https://registry.yarnpkg.com' }
+  @memoize() get topics(): Types.ITopics { return this.cliPjson.topics || {} }
+  @memoize() get userPluginsEnabled(): boolean { return !!this.cliPjson.userPluginsEnabled }
+  @memoize() get s3() { return { host: this.scopedEnvVar('S3_HOST') || this.cliPjson.s3 && this.cliPjson.s3.host } }
 
   // paths
-  get dirname(): string { return this.cliPjson.dirname || this.bin }
-  get home () { return process.env.HOME || (this.windows && this.windowsHome) || os.homedir() || os.tmpdir() }
-  get cacheDir(): string { return this.macosCacheDir || this.dir('cache') }
-  get configDir(): string { return this.dir('config') }
-  get dataDir(): string { return this.dir('data') }
-  get errlog(): string { return path.join(this.cacheDir, 'error.log') }
+  @memoize() get dirname(): string { return this.cliPjson.dirname || this.bin }
+  @memoize() get home () { return process.env.HOME || (this.windows && this.windowsHome) || os.homedir() || os.tmpdir() }
+  @memoize() get cacheDir(): string { return this.macosCacheDir || this.dir('cache') }
+  @memoize() get configDir(): string { return this.dir('config') }
+  @memoize() get dataDir(): string { return this.dir('data') }
+  @memoize() get errlog(): string { return path.join(this.cacheDir, 'error.log') }
 
-  get pjson(): Types.ICLIPJSON {
+  @memoize() get pjson(): Types.ICLIPJSON {
     if (!this.opts.pjson && this.root) {
       this.opts.pjson = require(path.join(this.root, 'package.json'))
     }
@@ -58,11 +58,14 @@ export class Config {
       ...(this.opts.pjson || {}),
     }
   }
+
+  @memoize()
   get userAgent(): string {
     const channel = this.channel === 'stable' ? '' : ` ${this.channel}`
     return `${this.name}/${this.version}${channel} (${this.platform}-${this.arch}) node-${process.version}`
   }
 
+  @memoize()
   get commandsDir(): string | undefined {
     if (!this.root) return
     let commandsDir = this.pjson['cli-engine'].commands
@@ -70,12 +73,14 @@ export class Config {
     return path.join(this.root, commandsDir)
   }
 
+  @memoize()
   get updateDisabled () {
     if (this.opts.updateDisabled) return this.opts.updateDisabled
     const k = this.scopedEnvVarKey('SKIP_CORE_UPDATES')
     if (process.env[k]) return `${k} is set to ${process.env[k]}`
   }
 
+  @memoize()
   get shell(): string {
     let shellPath
     const { SHELL, COMSPEC } = process.env
@@ -89,6 +94,7 @@ export class Config {
     return shellPath[shellPath.length - 1]
   }
 
+  @memoize()
   get debug(): number {
     try {
       let debug = require('debug')(this.bin).enabled || this.scopedEnvVarTrue('DEBUG')
