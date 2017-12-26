@@ -4,15 +4,14 @@
   "version": "5.0.0-beta.4",
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
-  "dependencies": {
-    "@types/semver": "^5.4.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@cli-engine/util": "https://github.com/jdxcode/cli-engine-util#cd0f1fb",
+    "@cli-engine/util": "^1.0.5",
     "@heroku-cli/tslint": "^1.0.3",
     "@types/jest": "21.1.9",
     "@types/mock-fs": "^3.6.30",
     "@types/node": "8.5.2",
+    "@types/semver": "^5.4.0",
     "ajv-cli": "^2.1.0",
     "cli-flags": "2.0.3",
     "debug": "^3.1.0",
@@ -40,11 +39,11 @@
   "main": "lib/config.js",
   "repository": "heroku/cli-engine-config",
   "scripts": {
-    "schema": "ajv compile -s schema.js -o lib/schema.js",
     "posttest": "cli-engine-util",
     "precommit": "cli-engine-util",
     "prepare": "cli-engine-util && yarn run schema",
     "pretest": "tsc",
+    "schema": "ajv compile -s schema.js -o lib/schema.js",
     "test": "jest"
   },
   "types": "./lib/config.d.ts"
