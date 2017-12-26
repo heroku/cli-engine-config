@@ -4,13 +4,11 @@
   "version": "5.0.8",
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
-  "dependencies": {
-    "is-my-json-valid": "^2.17.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/is-my-json-valid": "^0.0.20",
     "@types/jest": "21.1.9",
     "@types/node": "8.5.2",
+    "ajv-cli": "^2.1.0",
     "cli-flags": "2.0.3",
     "debug": "^3.1.0",
     "del-cli": "1.1.0",
@@ -41,9 +39,12 @@
   "main": "lib/config.js",
   "repository": "heroku/cli-engine-config",
   "scripts": {
+    "clean": "del-cli lib",
+    "build": "tsc && ajv compile -s schema.js -o lib/schema.js",
     "posttest": "tslint -p . && prettier -l 'src/**/*.ts'",
     "precommit": "lint-staged",
-    "prepare": "del-cli lib && tsc && del-cli \"lib/**/*.test.+(d.ts|js)\"",
+    "prepare": "yarn run clean && yarn run build && yarn run prune",
+    "prune": "del-cli \"lib/**/*.test.+(d.ts|js)\"",
     "pretest": "tsc",
     "test": "jest"
   },

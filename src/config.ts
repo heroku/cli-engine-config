@@ -1,6 +1,5 @@
 import { args, flags } from 'cli-flags'
 import * as fs from 'fs'
-import JSONValidator = require('is-my-json-valid')
 import * as os from 'os'
 import * as path from 'path'
 
@@ -28,53 +27,6 @@ export interface ICLI {
   s3?: IS3
   topics?: ITopics
   userPlugins: boolean
-}
-
-const schema = {
-  type: 'object',
-  properties: {
-    'cli-engine': {
-      type: 'object',
-      description: "cli-engine entry in CLI's package.json",
-      additionalProperties: false,
-      properties: {
-        bin: { type: 'string' },
-        commands: { type: 'string' },
-        defaultCommand: { type: 'string' },
-        dirname: { type: 'string' },
-        npmRegistry: { type: 'string' },
-        userPlugins: { type: 'boolean' },
-        plugins: { type: 'array', items: { type: 'string' } },
-        hooks: {
-          additionalProperties: {
-            anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
-          },
-        },
-        s3: {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            host: { type: 'string' },
-          },
-        },
-        topics: { $ref: '#/definitions/topics' },
-      },
-    },
-  },
-  definitions: {
-    topics: {
-      type: 'object',
-      additionalProperties: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          description: { type: 'string' },
-          hidden: { type: 'boolean' },
-          subtopics: { $ref: '#/definitions/topics' },
-        },
-      },
-    },
-  },
 }
 
 export interface ICLIPJSON {
@@ -219,14 +171,6 @@ function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[
   )
 }
 
-function validate(pjson: ICLIPJSON, filename: string) {
-  const validator = require('is-my-json-valid') as typeof JSONValidator
-  const validate = validator(schema, { verbose: true })
-  if (validate(pjson)) return
-  const e = validate.errors[0]
-  throw new Error(`Error parsing ${filename}: ${e.field} ${e.message}. Received ${e.value}`)
-}
-
 export type AlphabetUppercase =
   | 'A'
   | 'B'
@@ -313,7 +257,6 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     try {
       // parse the package.json at the root
       let pjson = readJSONSync(path.join(existing.root, 'package.json'))
-      validate(pjson, pjsonPath)
       existing.pjson = {
         'cli-engine': pjson['cli-engine'] || {},
         ...pjson,

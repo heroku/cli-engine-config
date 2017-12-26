@@ -1,5 +1,8 @@
-"**/*.{ts,js}":
+"**/*.ts":
   - prettier --write
   - tslint --fix
   - git add
   - jest --bail --findRelatedTests
+"**/*.js":
+  - prettier --write
+  - git add

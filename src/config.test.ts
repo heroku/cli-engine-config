@@ -272,23 +272,6 @@ describe('pjson', () => {
       expect(config.home).toEqual('/home/userprofile')
     })
   })
-
-  describe('validation', () => {
-    test('is invalid', () => {
-      expect.assertions(1)
-      try {
-        configFromPJSON({
-          'cli-engine': {
-            foo: 'bar',
-          },
-        })
-      } catch (err) {
-        expect(err.message).toEqual(
-          `Error parsing /tmp/my-cli/package.json: data["cli-engine"] has additional properties. Received data["cli-engine"].foo`,
-        )
-      }
-    })
-  })
 })
 
 describe('errlog', () => {
