@@ -79,7 +79,7 @@ module.exports = {
             defaultCommand: { type: 'string' },
             dirname: { type: 'string' },
             npmRegistry: { type: 'string' },
-            userPlugins: { type: 'boolean' },
+            userPluginsEnabled: { type: 'boolean' },
             corePlugins: { type: 'array', items: { type: 'string' } },
             hooks: {
               additionalProperties: {
