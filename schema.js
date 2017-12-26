@@ -80,7 +80,7 @@ module.exports = {
             dirname: { type: 'string' },
             npmRegistry: { type: 'string' },
             userPlugins: { type: 'boolean' },
-            plugins: { type: 'array', items: { type: 'string' } },
+            corePlugins: { type: 'array', items: { type: 'string' } },
             hooks: {
               additionalProperties: {
                 anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
@@ -89,6 +89,7 @@ module.exports = {
             s3: {
               type: 'object',
               additionalProperties: false,
+              required: ['host'],
               properties: {
                 host: { type: 'string' },
               },
@@ -103,6 +104,7 @@ module.exports = {
       additionalProperties: {
         type: 'object',
         additionalProperties: false,
+        required: ['description'],
         properties: {
           description: { type: 'string' },
           hidden: { type: 'boolean' },

@@ -5,11 +5,10 @@
     "module": "commonjs",
     "outDir": "./lib",
     "declaration": true,
-    "target": "esnext",
-    "lib": [
-      "es7",
-      "es2017.object"
-    ]
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "experimentalDecorators": true,
+    "target": "es2017"
   },
   "include": [
     "./src/**/*"

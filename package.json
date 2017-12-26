@@ -1,11 +1,12 @@
 {
-  "name": "cli-engine-config",
+  "name": "@cli-engine/config",
   "description": "base cli-engine config objects and interfaces",
-  "version": "5.0.9",
+  "version": "5.0.0-beta.0",
   "author": "Jeff Dickey @jdxcode",
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {},
   "devDependencies": {
+    "@heroku-cli/tslint": "^1.0.3",
     "@types/jest": "21.1.9",
     "@types/node": "8.5.2",
     "ajv-cli": "^2.1.0",
@@ -14,14 +15,9 @@
     "del-cli": "1.1.0",
     "husky": "^0.14.3",
     "jest": "^22.0.4",
-    "lint-staged": "^6.0.0",
-    "mock-fs": "^4.4.2",
     "prettier": "^1.9.2",
-    "remap-istanbul": "^0.9.5",
     "ts-jest": "22.0.0",
-    "ts-node": "4.1.0",
     "tslint": "^5.8.0",
-    "tslint-cli-engine": "^1.0.3",
     "typescript": "2.6.2"
   },
   "engines": {
@@ -39,12 +35,10 @@
   "main": "lib/config.js",
   "repository": "heroku/cli-engine-config",
   "scripts": {
-    "clean": "del-cli lib",
-    "build": "tsc && ajv compile -s schema.js -o lib/schema.js",
-    "posttest": "tslint -p . && prettier -l 'src/**/*.ts'",
-    "precommit": "lint-staged",
-    "prepare": "yarn run clean && yarn run build && yarn run prune",
-    "prune": "del-cli \"lib/**/*.test.+(d.ts|js)\"",
+    "schema": "ajv compile -s schema.js -o lib/schema.js",
+    "posttest": "cli-engine-util lint",
+    "precommit": "cli-engine-util lint",
+    "prepare": "cli-engine-util prepare && yarn run schema",
     "pretest": "tsc",
     "test": "jest"
   },
