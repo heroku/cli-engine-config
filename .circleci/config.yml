@@ -7,7 +7,7 @@ jobs:
     working_directory: ~/cli
     steps:
       - checkout
-      - run: yarn
+      - run: yarn --ignore-engines
       - run: yarn test --coverage
       - run: curl -s https://codecov.io/bash | bash
   node-8:
