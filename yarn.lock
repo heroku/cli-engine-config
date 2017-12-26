@@ -21,9 +21,9 @@
   version "5.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/@cli-engine/config/-/config-5.0.0-beta.1.tgz#87c5e3c11f240c7013e4e7ef940d6ba1d798b06e"
 
-"@cli-engine/engine@git+https://github.com/heroku/cli-engine.git#bae2fd9e":
+"@cli-engine/engine@https://github.com/heroku/cli-engine#bae2fd9e":
   version "5.0.13"
-  resolved "git+https://github.com/heroku/cli-engine.git#bae2fd9e5e024f74b983e81cb9e5c172367c0bc3"
+  resolved "https://github.com/heroku/cli-engine#bae2fd9e5e024f74b983e81cb9e5c172367c0bc3"
   dependencies:
     "@heroku-cli/color" "^1.0.3"
     assync "^1.0.3"

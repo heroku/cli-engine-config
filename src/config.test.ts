@@ -11,7 +11,7 @@ beforeEach(() => {
   process.env = {}
   os.platform = jest.fn().mockImplementation(() => platform)
   os.homedir = jest.fn().mockImplementation(() => '/Users/me')
-  os.arch = jest.fn().mockImplementation(() => 'x64')
+  os.arch = jest.fn().mockImplementation(() => 'x86')
 })
 
 afterEach(() => {
@@ -21,7 +21,7 @@ afterEach(() => {
 test('default props are set', () => {
   let config = new Config()
   expect(config._version).toEqual(require('../package.json').version)
-  expect(config.arch).toEqual('x64')
+  expect(config.arch).toEqual('x86')
   expect(config.argv).toEqual(process.argv)
   expect(config.bin).toEqual('cli-engine')
   expect(config.channel).toEqual('stable')
@@ -44,12 +44,12 @@ test('default props are set', () => {
 
   expect(config.home).toEqual('/Users/me')
   expect(config.updateDisabled).toBeUndefined()
-  expect(config.userAgent).toEqual(`cli-engine/0.0.0 (linux-x64) node-${process.version}`)
+  expect(config.userAgent).toEqual(`cli-engine/0.0.0 (linux-x86) node-${process.version}`)
   expect(config.version).toEqual('0.0.0')
   expect(config.windows).toEqual(false)
 })
 
-describe('windows', () => {
+describe('platform', () => {
   test('win32', () => {
     platform = 'win32'
     let config = new Config()
@@ -62,6 +62,18 @@ describe('windows', () => {
     let config = new Config()
     expect(config.platform).toEqual('darwin')
     expect(config.windows).toEqual(false)
+  })
+
+  test('uses opts', () => {
+    let config = new Config({ platform: 'freebsd' })
+    expect(config.platform).toEqual('freebsd')
+  })
+})
+
+describe('arch', () => {
+  test('uses opts', () => {
+    let config = new Config({ arch: 'mips' })
+    expect(config.arch).toEqual('mips')
   })
 })
 
@@ -323,9 +335,18 @@ describe('memoize', () => {
     .fn()
     .mockReturnValueOnce('win32')
     .mockReturnValueOnce('freebsd')
-  const config = new Config()
+    .mockReturnValueOnce('darwin')
+  let config = new Config()
   expect(config.platform).toEqual('win32')
   expect(config.platform).toEqual('win32')
+
+  config = new Config()
+  expect(config.platform).toEqual('freebsd')
+  expect(config.platform).toEqual('freebsd')
+
+  config = new Config()
+  expect(config.platform).toEqual('darwin')
+  expect(config.platform).toEqual('darwin')
 })
 
 describe('deprecated functionality', () => {

@@ -23,8 +23,8 @@ export class Config {
   get version(): string { return this.opts.version || this.pjson.version }
 
   // system
-  get arch(): Types.ArchTypes { return os.arch() === 'ia31' ? 'x86' : os.arch() as any }
-  @memoize() get platform(): Types.PlatformTypes { return os.platform() as any }
+  get arch(): Types.ArchTypes { return this.opts.arch || (os.arch() === 'ia32' ? 'x86' : os.arch() as any) }
+  @memoize() get platform(): Types.PlatformTypes { return this.opts.platform || (os.platform() as any) }
   get windows(): boolean { return this.platform === 'win32' }
 
   // plugin info
