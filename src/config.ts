@@ -1,12 +1,16 @@
 import { args, flags } from 'cli-flags'
 import * as fs from 'fs'
+import JSONValidator = require('is-my-json-valid')
 import * as os from 'os'
 import * as path from 'path'
 
+export interface ITopics {
+  [name: string]: ITopic
+}
 export interface ITopic {
-  name: string
   description?: string
   hidden?: boolean
+  subtopics?: ITopics
 }
 
 export interface IS3 {
@@ -15,16 +19,62 @@ export interface IS3 {
 
 export interface ICLI {
   bin?: string
-  dirname?: string
-  defaultCommand?: string
   commands?: string
-  s3?: IS3
+  defaultCommand?: string
+  dirname?: string
   hooks?: { [name: string]: string | string[] }
-  aliases?: { [from: string]: string | string[] }
-  userPlugins: boolean
-  plugins?: string[]
-  topics?: { [name: string]: ITopic }
   npmRegistry?: string
+  plugins?: string[]
+  s3?: IS3
+  topics?: ITopics
+  userPlugins: boolean
+}
+
+const schema = {
+  type: 'object',
+  properties: {
+    'cli-engine': {
+      type: 'object',
+      description: "cli-engine entry in CLI's package.json",
+      additionalProperties: false,
+      properties: {
+        bin: { type: 'string' },
+        commands: { type: 'string' },
+        defaultCommand: { type: 'string' },
+        dirname: { type: 'string' },
+        npmRegistry: { type: 'string' },
+        userPlugins: { type: 'boolean' },
+        plugins: { type: 'array', items: { type: 'string' } },
+        hooks: {
+          additionalProperties: {
+            anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+          },
+        },
+        s3: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            host: { type: 'string' },
+          },
+        },
+        topics: { $ref: '#/definitions/topics' },
+      },
+    },
+  },
+  definitions: {
+    topics: {
+      type: 'object',
+      additionalProperties: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          description: { type: 'string' },
+          hidden: { type: 'boolean' },
+          subtopics: { $ref: '#/definitions/topics' },
+        },
+      },
+    },
+  },
 }
 
 export interface ICLIPJSON {
@@ -59,11 +109,10 @@ export interface IConfig {
   userAgent: string // user agent for API calls
   shell: string // the shell in which the command is run
   hooks: { [name: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
-  aliases: { [from: string]: string[] } // scripts to run in the CLI on lifecycle events like prerun
   argv: string[]
   userPlugins: boolean
   corePlugins: string[]
-  topics: { [name: string]: ITopic }
+  topics: ITopics
   errlog: string
   npmRegistry: string
 }
@@ -170,12 +219,12 @@ function objValsToArrays<T>(input?: { [k: string]: T | T[] }): { [k: string]: T[
   )
 }
 
-function topics(config: IConfig) {
-  let topics: { [k: string]: ITopic } = config.pjson['cli-engine'].topics || {}
-  for (let [k, v] of Object.entries(topics)) {
-    if (!v.name) v.name = k
-  }
-  return topics
+function validate(pjson: ICLIPJSON, filename: string) {
+  const validator = require('is-my-json-valid') as typeof JSONValidator
+  const validate = validator(schema, { verbose: true })
+  if (validate(pjson)) return
+  const e = validate.errors[0]
+  throw new Error(`Error parsing ${filename}: ${e.field} ${e.message}. Received ${e.value}`)
 }
 
 export type AlphabetUppercase =
@@ -264,6 +313,7 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     try {
       // parse the package.json at the root
       let pjson = readJSONSync(path.join(existing.root, 'package.json'))
+      validate(pjson, pjsonPath)
       existing.pjson = {
         'cli-engine': pjson['cli-engine'] || {},
         ...pjson,
@@ -305,7 +355,6 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     version: pjson.version,
     reexecBin: process.env[envVarKey(bin, 'CLI_BINPATH')],
     hooks: objValsToArrays(pjson['cli-engine'].hooks),
-    aliases: objValsToArrays(pjson['cli-engine'].aliases),
     windows,
     shell: shell(windows),
     debug: debug(bin || 'cli-engine') || 0,
@@ -320,6 +369,7 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     }),
     corePlugins: pjson['cli-engine'].plugins || [],
     userPlugins: pjson['cli-engine'].userPlugins,
+    topics: pjson['cli-engine'].topics || {},
     get userAgent() {
       return userAgent(this)
     },
@@ -337,9 +387,6 @@ export function buildConfig(existing: ConfigOptions = {}): IConfig {
     },
     get commandsDir() {
       return commandsDir(this)
-    },
-    get topics() {
-      return topics(this)
     },
     get errlog() {
       return path.join(this.cacheDir, 'error.log')

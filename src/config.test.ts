@@ -143,25 +143,6 @@ describe('pjson', () => {
     })
   })
 
-  describe('aliases', () => {
-    test('has no aliases by default', () => {
-      let config = configFromPJSON()
-      expect(config.aliases).toEqual({})
-    })
-
-    test('can set aliases', () => {
-      let config = configFromPJSON({
-        'cli-engine': {
-          aliases: {
-            'foo:bar': 'baz',
-            'foo:baz': ['bak'],
-          },
-        },
-      })
-      expect(config.aliases).toEqual({ 'foo:bar': ['baz'], 'foo:baz': ['bak'] })
-    })
-  })
-
   describe('bin', () => {
     test('can be set', () => {
       let config = configFromPJSON({
@@ -201,10 +182,7 @@ describe('pjson', () => {
           },
         },
       })
-      expect(config.topics).toMatchObject({
-        foo: { name: 'foo', description: 'description for foo' },
-        bar: { name: 'bar', hidden: true },
-      })
+      expect(config.topics.foo.description).toEqual('description for foo')
     })
   })
   describe('s3', () => {
@@ -292,6 +270,23 @@ describe('pjson', () => {
       process.env.USERPROFILE = '/home/userprofile'
       let config = buildConfig()
       expect(config.home).toEqual('/home/userprofile')
+    })
+  })
+
+  describe('validation', () => {
+    test('is invalid', () => {
+      expect.assertions(1)
+      try {
+        configFromPJSON({
+          'cli-engine': {
+            foo: 'bar',
+          },
+        })
+      } catch (err) {
+        expect(err.message).toEqual(
+          `Error parsing /tmp/my-cli/package.json: data["cli-engine"] has additional properties. Received data["cli-engine"].foo`,
+        )
+      }
     })
   })
 })
