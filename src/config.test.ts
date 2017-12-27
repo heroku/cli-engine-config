@@ -154,7 +154,7 @@ describe('pjson', () => {
     expect(config.name).toEqual('analytics')
     expect(config.version).toEqual('1.0.0')
     expect(config.dirname).toEqual('heroku')
-    expect(config.commandsDir).toEqual('/foo/lib/commands')
+    expect(config.commandsDir).toEqual(path.join('/foo/lib/commands'))
     expect(config.s3).toEqual({ host: 'mys3host' })
     expect(config.hooks).toEqual({})
   })
@@ -289,7 +289,7 @@ describe('pjson', () => {
       process.env.HOMEPATH = path.join('homepath')
       process.env.HOME = path.join('/home/home')
       let config = new Config()
-      expect(config.home).toEqual('/home/home')
+      expect(config.home).toEqual(path.join('/home/home'))
     })
 
     test('defaults to HOMEDRIVE/HOMEPATH even if USERPROIFLE set', () => {
@@ -298,14 +298,14 @@ describe('pjson', () => {
       process.env.HOMEDRIVE = path.join('/home/homedrive')
       process.env.HOMEPATH = path.join('homepath')
       let config = new Config()
-      expect(config.home).toEqual('/home/homedrive/homepath')
+      expect(config.home).toEqual(path.join('/home/homedrive/homepath'))
     })
 
     test('defaults to USERPROIFLE', () => {
       platform = 'win32'
       process.env.USERPROFILE = path.join('/home/userprofile')
       let config = new Config()
-      expect(config.home).toEqual('/home/userprofile')
+      expect(config.home).toEqual(path.join('/home/userprofile'))
     })
   })
 })
@@ -321,25 +321,25 @@ describe('dirs', () => {
   describe('cacheDir', () => {
     test('macos is special', () => {
       platform = 'darwin'
-      expect(new Config().cacheDir).toEqual('/home/me/Library/Caches/cli-engine')
+      expect(new Config().cacheDir).toEqual(path.join('/home/me/Library/Caches/cli-engine'))
     })
     test('linux', () => {
       platform = 'linux'
-      expect(new Config().cacheDir).toEqual('/home/me/.cache/cli-engine')
+      expect(new Config().cacheDir).toEqual(path.join('/home/me/.cache/cli-engine'))
     })
     describe('win32', () => {
       beforeEach(() => (platform = 'win32'))
       test('normal', () => {
-        expect(new Config().cacheDir).toEqual('/home/me/.cache/cli-engine')
+        expect(new Config().cacheDir).toEqual(path.join('/home/me/.cache/cli-engine'))
       })
       test('XDG_CACHE_HOME and LOCALAPPDATA', () => {
-        process.env.XDG_CACHE_HOME = '/xdg/home/cache'
-        process.env.LOCALAPPDATA = '/local/home/cache'
-        expect(new Config().cacheDir).toEqual('/xdg/home/cache/cli-engine')
+        process.env.XDG_CACHE_HOME = path.join('/xdg/home/cache')
+        process.env.LOCALAPPDATA = path.join('/local/home/cache')
+        expect(new Config().cacheDir).toEqual(path.join('/xdg/home/cache/cli-engine'))
       })
       test('LOCALAPPDATA', () => {
-        process.env.LOCALAPPDATA = '/local/home/cache'
-        expect(new Config().cacheDir).toEqual('/local/home/cache/cli-engine')
+        process.env.LOCALAPPDATA = path.join('/local/home/cache')
+        expect(new Config().cacheDir).toEqual(path.join('/local/home/cache/cli-engine'))
       })
     })
   })
@@ -417,7 +417,7 @@ describe('with root', () => {
       const actual = inspect(config)
       const expected = `
 Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
-         root: '/src/cli',
+         root: ${inspect(path.join('/src/cli'))},
          home: '/home/me',
          shell: 'unknown',
          dataDir: '/home/me/.local/share/foobar-cli',
