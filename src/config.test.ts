@@ -418,17 +418,17 @@ describe('with root', () => {
       const expected = `
 Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
          root: ${inspect(path.join('/src/cli'))},
-         home: '/home/me',
+         home: ${inspect(path.join('/home/me'))},
          shell: 'unknown',
-         dataDir: '/home/me/.local/share/foobar-cli',
-         cacheDir: '/home/me/.cache/foobar-cli' }`.trim()
+         dataDir: ${inspect(path.join('/home/me/.local/share/foobar-cli'))},
+         cacheDir: ${inspect(path.join('/home/me/.cache/foobar-cli'))} }`.trim()
       expect(actual).toEqual(expected)
     })
     skipIfNodeLt6('depth = 1', () => {
       const actual = inspect({ config })
       const expected = `
 { config: Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
-            root: '/src/cli' } }`.trim()
+            root: ${inspect(path.join('/src/cli'))} } }`.trim()
       expect(actual).toEqual(expected)
     })
     skipIfNodeLt6('depth = 0', () => {
@@ -436,7 +436,7 @@ Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}
       const expected = `
 { config: 
    { config: Config { userAgent: 'foobar-cli/1.2.3-beta.0 (linux-x86) node-${process.version}',
-               root: '/src/cli' } } }`.trim()
+               root: ${inspect(path.join('/src/cli'))} } } }`.trim()
       expect(actual).toEqual(expected)
     })
     skipIfNodeLt6('depth = -1', () => {
