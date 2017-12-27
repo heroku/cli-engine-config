@@ -1,4 +1,5 @@
-require('util').deprecate = jest.fn().mockImplementation((fn: () => {}) => (...args: any[]) => fn(...args))
+const util = require('util')
+util.deprecate = jest.fn().mockImplementation((fn: () => {}) => (...args: any[]) => fn(...args))
 
 import * as MockFS from 'mock-fs'
 import * as path from 'path'
@@ -370,6 +371,7 @@ describe('deprecated functionality', () => {
   test('no args', () => {
     const config = require('./config').buildConfig()
     expect(config.name).toEqual('cli-engine')
+    expect(util.deprecate.mock.calls[0][1]).toEqual('`buildConfig()` is deprecated. Use `new Config()` instead.')
   })
   test('with args', () => {
     const config = require('./config').buildConfig({ platform: 'openbsd' })

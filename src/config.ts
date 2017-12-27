@@ -148,9 +148,10 @@ export class Config {
   }
 }
 
-export const buildConfig = deprecate((opts?: Types.ConfigOptions) => {
-  return new Config(opts)
-}, '`buildConfig()` is deprecated. Use `new Config()` instead.')
+export const buildConfig = deprecate(
+  (opts?: Types.ConfigOptions) => new Config(opts),
+  '`buildConfig()` is deprecated. Use `new Config()` instead.'
+)
 
 function toArray<T>(o: T | T[]): T[] {
   return Array.isArray(o) ? o : [o]
