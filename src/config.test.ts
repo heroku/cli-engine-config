@@ -365,8 +365,23 @@ describe('memoize', () => {
 })
 
 describe('deprecated functionality', () => {
-  const config = require('./config').buildConfig()
-  expect(config.name).toEqual('cli-engine')
+  const util = require('util')
+  const { deprecate: origDeprecate } = util
+
+  beforeEach(() => {
+    util.deprecate = jest.fn().mockImplementation(fn => () => {
+      fn()
+    })
+  })
+
+  afterEach(() => {
+    util.deprecate = origDeprecate
+  })
+
+  test('ok', () => {
+    const config = require('./config').buildConfig()
+    expect(config.name).toEqual('cli-engine')
+  })
 })
 
 const skipIfNodeLt6 = semver.gte(process.versions.node, '8.0.0') ? test : test.skip
