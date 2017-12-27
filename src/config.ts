@@ -148,7 +148,7 @@ export class Config {
   }
 }
 
-export const buildConfig = deprecate((opts?: any) => {
+export const buildConfig = deprecate((opts?: Types.ConfigOptions) => {
   return new Config(opts)
 }, '`buildConfig()` is deprecated. Use `new Config()` instead.')
 

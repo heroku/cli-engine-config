@@ -1,3 +1,5 @@
+require('util').deprecate = jest.fn().mockImplementation((fn: () => {}) => (...args: any[]) => fn(...args))
+
 import * as MockFS from 'mock-fs'
 import * as path from 'path'
 import * as semver from 'semver'
@@ -365,22 +367,13 @@ describe('memoize', () => {
 })
 
 describe('deprecated functionality', () => {
-  const util = require('util')
-  const { deprecate: origDeprecate } = util
-
-  beforeEach(() => {
-    util.deprecate = jest.fn().mockImplementation(fn => () => {
-      fn()
-    })
-  })
-
-  afterEach(() => {
-    util.deprecate = origDeprecate
-  })
-
-  test('ok', () => {
+  test('no args', () => {
     const config = require('./config').buildConfig()
     expect(config.name).toEqual('cli-engine')
+  })
+  test('with args', () => {
+    const config = require('./config').buildConfig({ platform: 'openbsd' })
+    expect(config.platform).toEqual('openbsd')
   })
 })
 
