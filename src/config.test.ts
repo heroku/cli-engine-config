@@ -43,11 +43,11 @@ test('default props are set', () => {
   expect(config.topics).toEqual({})
   expect(config.userPluginsEnabled).toEqual(false)
 
-  expect(config.cacheDir).toEqual('/home/me/.cache/cli-engine')
-  expect(config.dataDir).toEqual('/home/me/.local/share/cli-engine')
-  expect(config.configDir).toEqual('/home/me/.config/cli-engine')
+  expect(config.cacheDir).toEqual(path.join('/home/me/.cache/cli-engine'))
+  expect(config.dataDir).toEqual(path.join('/home/me/.local/share/cli-engine'))
+  expect(config.configDir).toEqual(path.join('/home/me/.config/cli-engine'))
 
-  expect(config.home).toEqual('/home/me')
+  expect(config.home).toEqual(path.join('/home/me'))
   expect(config.updateDisabled).toBeUndefined()
   expect(config.userAgent).toEqual(`cli-engine/0.0.0 (linux-x86) node-${process.version}`)
   expect(config.version).toEqual('0.0.0')
@@ -284,26 +284,26 @@ describe('pjson', () => {
   describe('home', () => {
     test('defaults to HOME even if USERPROFILE and HOMEDRIVE/HOMEPATH is set', () => {
       platform = 'win32'
-      process.env.USERPROFILE = '/home/userprofile'
-      process.env.HOMEDRIVE = '/homedrive/'
-      process.env.HOMEPATH = '/home/homepath'
-      process.env.HOME = '/home/home'
+      process.env.USERPROFILE = path.join('/home/userprofile')
+      process.env.HOMEDRIVE = path.join('/home/homedrive')
+      process.env.HOMEPATH = path.join('homepath')
+      process.env.HOME = path.join('/home/home')
       let config = new Config()
       expect(config.home).toEqual('/home/home')
     })
 
     test('defaults to HOMEDRIVE/HOMEPATH even if USERPROIFLE set', () => {
       platform = 'win32'
-      process.env.USERPROFILE = '/home/userprofile'
-      process.env.HOMEDRIVE = '/homedrive/'
-      process.env.HOMEPATH = '/home/homepath'
+      process.env.USERPROFILE = path.join('/home/userprofile')
+      process.env.HOMEDRIVE = path.join('/home/homedrive')
+      process.env.HOMEPATH = path.join('homepath')
       let config = new Config()
-      expect(config.home).toEqual('/homedrive/home/homepath')
+      expect(config.home).toEqual('/home/homedrive/homepath')
     })
 
     test('defaults to USERPROIFLE', () => {
       platform = 'win32'
-      process.env.USERPROFILE = '/home/userprofile'
+      process.env.USERPROFILE = path.join('/home/userprofile')
       let config = new Config()
       expect(config.home).toEqual('/home/userprofile')
     })
