@@ -6,7 +6,7 @@
   "bugs": "https://github.com/heroku/cli-engine-config/issues",
   "dependencies": {},
   "devDependencies": {
-    "@cli-engine/util": "^1.0.6",
+    "@cli-engine/util": "^1.0.7",
     "@heroku-cli/tslint": "^1.0.3",
     "@types/jest": "21.1.9",
     "@types/mock-fs": "^3.6.30",
