@@ -15,7 +15,7 @@ beforeEach(() => {
   platform = 'linux'
   process.env = {}
   os.platform = jest.fn().mockImplementation(() => platform)
-  os.homedir = jest.fn().mockImplementation(() => '/home/me')
+  os.homedir = jest.fn().mockImplementation(() => path.join('/home/me'))
   os.arch = jest.fn().mockImplementation(() => 'x86')
 })
 
