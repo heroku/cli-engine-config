@@ -147,6 +147,7 @@ export class Config {
     return path.join(base, this.dirname)
   }
 }
+export default Config
 
 export const buildConfig = deprecate(
   (opts?: Types.ConfigOptions) => new Config(opts),

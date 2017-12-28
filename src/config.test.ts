@@ -6,7 +6,7 @@ import * as path from 'path'
 import * as semver from 'semver'
 import { inspect } from 'util'
 
-import { Config } from './config'
+import Config from './config'
 
 const env = process.env
 jest.mock('os')
