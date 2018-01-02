@@ -46,6 +46,9 @@ export interface ConfigOptions {
   reexecBin?: string
   arch?: ArchTypes
   platform?: PlatformTypes
+  dataDir?: string
+  configDir?: string
+  cacheDir?: string
 }
 
 export interface IPlugin {

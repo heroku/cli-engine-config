@@ -39,9 +39,9 @@ export class Config {
   // paths
   @memoize() get dirname(): string { return this.cliPjson.dirname || this.bin }
   @memoize() get home () { return process.env.HOME || (this.windows && this.windowsHome) || os.homedir() || os.tmpdir() }
-  @memoize() get cacheDir(): string { return this.scopedEnvVar('CACHE_DIR') || this.macosCacheDir || this.dir('cache') }
-  @memoize() get configDir(): string { return this.scopedEnvVar('CONFIG_DIR') || this.dir('config') }
-  @memoize() get dataDir(): string { return this.scopedEnvVar('DATA_DIR') || this.dir('data') }
+  @memoize() get cacheDir(): string { return this.opts.cacheDir || this.scopedEnvVar('CACHE_DIR') || this.macosCacheDir || this.dir('cache') }
+  @memoize() get configDir(): string { return this.opts.configDir || this.scopedEnvVar('CONFIG_DIR') || this.dir('config') }
+  @memoize() get dataDir(): string { return this.opts.dataDir || this.scopedEnvVar('DATA_DIR') || this.dir('data') }
   @memoize() get errlog(): string { return path.join(this.cacheDir, 'error.log') }
 
   @memoize() get pjson(): Types.ICLIPJSON {
