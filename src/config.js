@@ -348,7 +348,8 @@ export interface ICommand {
 
 export function buildConfig(existing: ?ConfigOptions = {}): Config {
   if (!existing) existing = {}
-  if (existing._version) return (existing: any)
+  if (existing._version && existing._version === '1') return (existing: any)
+  if (!existing.root && existing.opts && existing.opts.root) existing.root = existing.opts.root
   if (existing.root && !existing.pjson) {
     let pjsonPath = path.join(existing.root, 'package.json')
     if (fs.existsSync(pjsonPath)) {
