@@ -227,8 +227,8 @@ function validatePJSON(pjson: PJSON) {
 }
 
 export interface RunReturn {
-  +stdout?: string,
-  +stderr?: string,
+  +stdout?: string;
+  +stderr?: string;
 }
 
 export type Arg = {
@@ -324,8 +324,8 @@ export type OptionFlag<T> = Flag & {
 }
 
 export type Plugin = {
-  +name: string;
-  +version: string;
+  +name: string,
+  +version: string,
 }
 
 export interface ICommand {
