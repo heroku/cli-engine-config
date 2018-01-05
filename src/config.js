@@ -324,26 +324,26 @@ export type OptionFlag<T> = Flag & {
 }
 
 export type Plugin = {
-  +name: string,
-  +version: string,
+  +name: string;
+  +version: string;
 }
 
 export interface ICommand {
-  +topic?: string,
-  +command?: ?string,
-  +description: ?string,
-  +hidden: ?boolean,
-  +usage: ?string,
-  +help: ?string,
-  +aliases: string[],
-  +_version: string,
-  +id: string,
-  +buildHelp?: (config: Config) => string,
-  +buildHelpLine?: (config: Config) => [string, ?string],
-  +args?: Arg[],
-  +flags?: { [name: string]: BooleanFlag | OptionFlag<*> },
-  +run: (options: ?ConfigOptions) => Promise<RunReturn>,
-  plugin?: ?Plugin,
+  +topic?: string;
+  +command?: ?string;
+  +description: ?string;
+  +hidden: ?boolean;
+  +usage: ?string;
+  +help: ?string;
+  +aliases: string[];
+  +_version: string;
+  +id: string;
+  +buildHelp?: (config: Config) => string;
+  +buildHelpLine?: (config: Config) => [string, ?string];
+  +args?: Arg[];
+  +flags?: { [name: string]: BooleanFlag | OptionFlag<*> };
+  +run: (options: ?ConfigOptions) => Promise<RunReturn>;
+  plugin?: ?Plugin;
 }
 
 export function buildConfig(existing: ?ConfigOptions = {}): Config {
