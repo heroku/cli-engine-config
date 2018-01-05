@@ -227,8 +227,8 @@ function validatePJSON(pjson: PJSON) {
 }
 
 export interface RunReturn {
-  +stdout?: string;
-  +stderr?: string;
+  +stdout?: string,
+  +stderr?: string,
 }
 
 export type Arg = {
@@ -329,26 +329,27 @@ export type Plugin = {
 }
 
 export interface ICommand {
-  +topic?: string;
-  +command?: ?string;
-  +description: ?string;
-  +hidden: ?boolean;
-  +usage: ?string;
-  +help: ?string;
-  +aliases: string[];
-  +_version: string;
-  +id: string;
-  +buildHelp?: (config: Config) => string;
-  +buildHelpLine?: (config: Config) => [string, ?string];
-  +args?: Arg[];
-  +flags?: { [name: string]: BooleanFlag | OptionFlag<*> };
-  +run: (options: ?ConfigOptions) => Promise<RunReturn>;
-  plugin?: ?Plugin;
+  +topic?: string,
+  +command?: ?string,
+  +description: ?string,
+  +hidden: ?boolean,
+  +usage: ?string,
+  +help: ?string,
+  +aliases: string[],
+  +_version: string,
+  +id: string,
+  +buildHelp?: (config: Config) => string,
+  +buildHelpLine?: (config: Config) => [string, ?string],
+  +args?: Arg[],
+  +flags?: { [name: string]: BooleanFlag | OptionFlag<*> },
+  +run: (options: ?ConfigOptions) => Promise<RunReturn>,
+  plugin?: ?Plugin,
 }
 
 export function buildConfig(existing: ?ConfigOptions = {}): Config {
   if (!existing) existing = {}
-  if (existing._version) return (existing: any)
+  if (existing._version && existing._version === '1') return (existing: any)
+  if (!existing.root && existing.opts && existing.opts.root) existing.root = existing.opts.root
   if (existing.root && !existing.pjson) {
     let pjsonPath = path.join(existing.root, 'package.json')
     if (fs.existsSync(pjsonPath)) {
