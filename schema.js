@@ -62,6 +62,7 @@ module.exports = {
           type: 'object',
           additionalProperties: false,
           properties: {
+            type: { type: 'string', pattern: 'plugin' },
             commands: { type: 'string' },
             topics: { $ref: '#/definitions/topics' },
           },
@@ -74,6 +75,7 @@ module.exports = {
           type: 'object',
           additionalProperties: false,
           properties: {
+            type: { type: 'string', pattern: 'cli' },
             bin: { type: 'string' },
             commands: { type: 'string' },
             defaultCommand: { type: 'string' },

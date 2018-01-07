@@ -16,6 +16,7 @@ export interface IS3 {
 }
 
 export interface ICLI {
+  type: 'cli'
   bin?: string
   commands?: string
   defaultCommand?: string

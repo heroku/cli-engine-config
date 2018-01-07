@@ -50,7 +50,8 @@ export class Config {
     }
     return {
       'cli-engine': {
-        ...this.opts.pjson && this.opts.pjson['cli-engine'] || {}
+        ...this.opts.pjson && this.opts.pjson['cli-engine'] || {},
+        type: 'cli',
       },
       dependencies: {},
       name: 'cli-engine',
