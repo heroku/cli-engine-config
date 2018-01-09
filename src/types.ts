@@ -1,11 +1,35 @@
 import { args, flags } from 'cli-flags'
+import { Package } from 'read-pkg'
 
 import { Config } from './config'
 
+export * from './hooks'
+export * from './engine'
+
+export interface IPluginModuleTopic {
+  name: string
+  description?: string
+  subtopics?: { [k: string]: IPluginModuleTopic }
+  hidden?: boolean
+}
+export interface IPluginModule {
+  commands: ICommand[]
+  topic?: IPluginModuleTopic
+  topics: IPluginModuleTopic[]
+}
+export interface IPluginPJSON extends Package {
+  name: string
+  version: string
+  'cli-engine': {
+    commands?: string
+    topics?: { [k: string]: ITopic }
+  }
+}
 export interface ITopics {
   [name: string]: ITopic
 }
 export interface ITopic {
+  name: string
   description?: string
   hidden?: boolean
   subtopics?: ITopics
@@ -30,7 +54,7 @@ export interface ICLI {
   userPluginsEnabled?: boolean
 }
 
-export interface ICLIPJSON {
+export interface ICLIPJSON extends Package {
   name: string
   version: string
   dependencies: { [name: string]: string }
