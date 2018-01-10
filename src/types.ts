@@ -84,21 +84,13 @@ export interface IPlugin {
 }
 
 export interface ICommand {
-  topic?: string
-  command?: string
-  description?: string
+  id?: string
   hidden: boolean
-  usage?: string
-  help?: string
-  _version: string
-  id: string
+  base: '@cli-engine/command@1.0.0'
   aliases: string[]
-  buildHelp: (config: Config) => string
-  buildHelpLine: (config: Config) => [string, string | undefined]
-  args?: args.IArg[]
-  flags?: flags.Input
+  help: (config: Config) => string
+  helpLine: (config: Config) => [string, string | undefined]
   run: (argv: string[], config: Config) => Promise<any>
-  plugin?: IPlugin
 }
 
 export type PlatformTypes = 'darwin' | 'linux' | 'win32' | 'aix' | 'freebsd' | 'openbsd' | 'sunos'

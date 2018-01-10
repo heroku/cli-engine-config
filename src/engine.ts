@@ -15,15 +15,13 @@ export interface ILinkPluginInstallOpts {
 
 export interface IPluginManager {
   readonly plugins: Observable<IPlugin>
-  readonly commands: Observable<ICommand>
-  readonly topics: Observable<ITopic>
 
   install(opts: IUserPluginInstallOpts | ILinkPluginInstallOpts): Promise<void>
   uninstall(name: string): Promise<boolean>
   update(): Promise<void>
 }
 
-export interface IEngine {
+export interface IEngine extends ICommand {
   readonly hooks: Hooks
   readonly plugins: IPluginManager
 
