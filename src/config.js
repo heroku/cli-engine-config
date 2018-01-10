@@ -160,6 +160,12 @@ function registry(config: Config): string {
   return env || config.pjson['cli-engine'].npmRegistry || 'https://registry.yarnpkg.com'
 }
 
+function s3(config: Config): S3 {
+  const env = process.env[envVarKey(config.bin, 'S3_HOST')]
+  const host = env || (config.pjson['cli-engine'].s3 && config.pjson['cli-engine'].s3.host)
+  return host ? { host } : {}
+}
+
 function commandsDir(config: Config): ?string {
   let commandsDir = config.pjson['cli-engine'].commands
   if (!commandsDir) return
@@ -434,7 +440,7 @@ export function buildConfig(existing: ?ConfigOptions = {}): Config {
       return this.userConfig.install
     },
     get s3() {
-      return this.pjson['cli-engine'].s3
+      return s3(this)
     },
     get commandsDir() {
       return commandsDir(this)
