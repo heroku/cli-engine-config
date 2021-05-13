@@ -9,7 +9,6 @@ jobs:
       - checkout
       - run: yarn
       - run: yarn test --coverage
-      - run: curl -s https://codecov.io/bash | bash
   node-8:
     <<: *test-build
     docker:
