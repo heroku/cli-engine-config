@@ -2,11 +2,13 @@ import * as os from 'os'
 import * as path from 'path'
 import {deprecate, inspect} from 'util'
 
+import {IEngine} from './engine'
 import * as Types from './types'
 
 export * from './types'
 
 export class Config {
+  readonly engine: IEngine
   _version = require('../package.json').version
 
   constructor (protected opts: Types.ConfigOptions = {}) {
@@ -57,7 +59,7 @@ export class Config {
       name: 'cli-engine',
       version: '0.0.0',
       ...(this.opts.pjson || {}),
-    }
+    } as Types.ICLIPJSON
   }
 
   @memoize()

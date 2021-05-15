@@ -1,11 +1,35 @@
 import { args, flags } from 'cli-flags'
+import { Package } from 'read-pkg'
 
 import { Config } from './config'
 
+export * from './hooks'
+export * from './engine'
+
+export interface IPluginModuleTopic {
+  name: string
+  description?: string
+  subtopics?: { [k: string]: IPluginModuleTopic }
+  hidden?: boolean
+}
+export interface IPluginModule {
+  commands: ICommand[]
+  topic?: IPluginModuleTopic
+  topics: IPluginModuleTopic[]
+}
+export interface IPluginPJSON extends Package {
+  name: string
+  version: string
+  'cli-engine': {
+    commands?: string
+    topics?: { [k: string]: ITopic }
+  }
+}
 export interface ITopics {
   [name: string]: ITopic
 }
 export interface ITopic {
+  name: string
   description?: string
   hidden?: boolean
   subtopics?: ITopics
@@ -30,7 +54,7 @@ export interface ICLI {
   userPluginsEnabled?: boolean
 }
 
-export interface ICLIPJSON {
+export interface ICLIPJSON extends Package {
   name: string
   version: string
   dependencies: { [name: string]: string }
@@ -60,21 +84,13 @@ export interface IPlugin {
 }
 
 export interface ICommand {
-  topic?: string
-  command?: string
-  description?: string
+  id?: string
   hidden: boolean
-  usage?: string
-  help?: string
-  _version: string
-  id: string
+  base: '@cli-engine/command@1.0.0'
   aliases: string[]
-  buildHelp: (config: Config) => string
-  buildHelpLine: (config: Config) => [string, string | undefined]
-  args?: args.IArg[]
-  flags?: flags.Input
+  help: (config: Config) => string
+  helpLine: (config: Config) => [string, string | undefined]
   run: (argv: string[], config: Config) => Promise<any>
-  plugin?: IPlugin
 }
 
 export type PlatformTypes = 'darwin' | 'linux' | 'win32' | 'aix' | 'freebsd' | 'openbsd' | 'sunos'
